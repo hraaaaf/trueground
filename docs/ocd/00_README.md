@@ -20,6 +20,12 @@ The product is a separate client/vertical. IAmina is the reusable platform/core;
 6. `06_ROADMAP_TO_TARGET.md` — execution path from foundation to V1 target.
 7. `07_ACCEPTANCE_GATES.md` — objective evidence required before any phase can be considered verified.
 8. `08_SPECIALIST_REVIEW_MATRIX.md` — mandatory independent specialist/agent checks by change type, flow and roadmap phase.
+9. `09_LOT_WINDOW_HANDOVER_PROTOCOL.md` — one-lot-per-window rule, mandatory handover and next-window starter prompt.
+
+Templates:
+
+- `templates/LOT_HANDOVER_TEMPLATE.md`
+- `templates/LOT_START_PROMPT_TEMPLATE.md`
 
 ## Source-of-truth precedence
 
@@ -33,6 +39,7 @@ When documents overlap, use this precedence by subject:
 - Execution order → `06_ROADMAP_TO_TARGET.md`
 - Definition of verified → `07_ACCEPTANCE_GATES.md`
 - Required specialist review → `08_SPECIALIST_REVIEW_MATRIX.md`
+- Lot/window transitions and handovers → `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`
 
 A decision must have one canonical home. Do not duplicate competing truths across files.
 
@@ -40,7 +47,7 @@ A decision must have one canonical home. Do not duplicate competing truths acros
 
 Every significant task follows:
 
-`READ → PLAN → EXECUTE → SPECIALIST REVIEW → VERIFY`
+`READ → PLAN → EXECUTE → SPECIALIST REVIEW → VERIFY → HANDOVER → NEXT WINDOW PROMPT`
 
 And must define:
 
@@ -49,6 +56,25 @@ And must define:
 - PROOF — concrete evidence that success was achieved.
 
 The builder does not validate its own work alone. Material work must receive the specialist checks required by `08_SPECIALIST_REVIEW_MATRIX.md` before its acceptance gate can become `VERIFIED`.
+
+## One lot per window
+
+Execution is deliberately split by lot:
+
+> **ONE WINDOW = ONE LOT.**
+
+When the current lot ends, do not silently begin the next material lot in the same conversation/window.
+
+Instead:
+
+1. stop the current lot;
+2. verify repository truth and evidence;
+3. create `docs/ocd/handovers/LOT_XX_HANDOVER.md`;
+4. create `docs/ocd/handovers/LOT_YY_START_PROMPT.md` if the next lot is already approved;
+5. begin LOT YY in a fresh window using that prompt;
+6. re-check branch, HEAD, PR, divergence and CI before acting because handover values may already be stale.
+
+Detailed rules are canonical in `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`.
 
 ## Project guardrails
 
@@ -61,6 +87,8 @@ The builder does not validate its own work alone. Material work must receive the
 - Preserve existing validated behavior and provide non-regression evidence for every significant change.
 - Keep changes small, isolated and auditable.
 - Mandatory specialist review cannot be skipped merely because implementation tests or CI are green.
+- A lot is not fully closed until its required handover package exists.
+- A handover or `VERIFIED` state never implies authorization to merge or deploy.
 
 ## Status vocabulary
 
@@ -73,6 +101,8 @@ Use only:
 - `VERIFIED`
 
 `VERIFIED` requires the acceptance gate, required specialist checks and evidence. Green CI alone is not sufficient.
+
+For execution sequencing, a lot may be treated as `CLOSED` only after the handover requirements in `09_LOT_WINDOW_HANDOVER_PROTOCOL.md` are satisfied. `CLOSED` does not authorize merge or deployment.
 
 ## Current state
 
