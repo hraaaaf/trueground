@@ -5,85 +5,127 @@ Date: 2026-09-15
 
 ## GOAL
 
-Define the V1 product behavior precisely enough that design, mobile, backend and AI work converge on the same product instead of building four neighboring interpretations.
+Define the V1 product behavior precisely enough that design, mobile, backend and AI work converge on the same product instead of building neighboring interpretations.
 
 This document defines product behavior only. Clinical/safety constraints are canonical in `03_OCD_CLINICAL_SAFETY.md`.
+
+The product must align with the approved Dashboard V3 in `01_PRODUCT_NORTH_STAR.md` and `assets/DASHBOARD_TARGET_V3.md`.
 
 ## Primary product loop
 
 The intended product loop is:
 
-`Trigger → user notices distress/urge → app helps classify the loop → bounded support/action → user records outcome if useful → longitudinal progress`
+`Notice → choose → practice → return to life`
+
+A more detailed interaction may be:
+
+`Trigger / urge → user opens app → bounded loop support → user chooses an approved next action → practice ends → user returns attention toward what matters`.
 
 The app must avoid turning this into:
 
 `Trigger → ask for certainty → AI reassures → temporary relief → repeat`.
 
+It must also avoid turning recovery into:
+
+`Trigger → score symptoms → check dashboard → compare trend → seek certainty about progress → repeat`.
+
 ## V1 navigation
 
-Primary bottom navigation:
+Primary bottom navigation for Dashboard V3:
 
 - `Home`
-- `SOS`
-- `Journal`
-- `Progress`
-- `Coach`
+- `Loop`
+- `Practice`
+- `Support`
+- `Profile`
 
-Names may change only through an explicit product decision.
+Names may change only through an explicit product decision reflected in the canonical North Star.
 
 ## Home
 
-The dashboard is a summary and launch surface, not a dense analytics page.
+The dashboard is a calm launch surface, not a symptom analytics page.
 
-Required blocks:
+Required hierarchy:
 
 ### Greeting
 - Calm contextual greeting.
 - No false claim about mood/state unless derived from user-provided data.
 
-### I'm spiraling
+### Choose your next move
+- Primary home framing.
+- Supporting principle: `Make room for uncertainty. Choose what matters.`
+- Must not imply the app can guarantee calm, certainty or symptom reduction.
+
+### I'm stuck in a loop
 - Highest-priority CTA.
-- Opens the bounded SOS flow.
+- Opens the bounded Loop flow.
 - Must not immediately drop the user into unrestricted free chat.
+- Supporting language should orient toward noticing the urge and creating space before a ritual/compulsive response.
 
-### OCD Loop Status
-- Gives a compact user-facing summary of recent self-reported/app-observed activity.
-- Wording must avoid presenting an unvalidated medical score or diagnosis.
+### Pause the ritual
+- Short bounded tool for creating time/space between urge and action.
+- Must not become a countdown that users are encouraged to repeat compulsively.
+- Exact behavioral guidance must be governed by approved safety/content policy.
 
-### Today's Plan
-- Small number of relevant actions.
-- Avoid excessive task count or completion pressure.
+### Practice uncertainty
+- Entry point for approved uncertainty-tolerance / OCD-specific practice.
+- Must not promise anxiety reduction as the immediate goal.
+- Must not generate uncontrolled exposure tasks from a generic model.
 
-### ERP Practice
-- Entry point for structured practice.
-- Actual clinical protocol must be validated before implementation beyond a safe prototype.
+### Continue planned practice
+- Returns the user to a previously approved/saved practice.
+- Avoid streaks, completion pressure and competitive scoring.
 
-### Compulsion Firewall
-- Entry point for handling likely reassurance/checking/rumination loops.
+### Return to what matters
+- Values-oriented redirection toward meaningful life activity.
+- Candidate categories may include work, family, rest, faith, friends or user-defined values.
+- Values content must remain user-led; the app must not impose moral priorities.
 
-### Progress This Week
-- Small set of meaningful indicators.
-- Metrics must not reward compulsive logging or perfectionism.
+### Need a person, not an answer?
+- Clear escape hatch toward human support.
+- May include therapist/trusted-person pathways once approved and implemented.
+- Must not imply the app contacted someone unless it actually did.
 
-### Recent Journal
-- Quick access to recent user-authored entry/context.
+### Review patterns when useful
+- Optional and user-initiated.
+- Not a persistent scorecard.
+- Should summarize recurring themes cautiously and without diagnostic certainty.
+- Must be designed to reduce compulsive checking/perfectionistic monitoring risk.
 
-## SOS / "I'm spiraling"
+## Home anti-targets
+
+Do not make the home dashboard default to:
+
+- OCD severity labels such as `mild / moderate / severe`;
+- streaks;
+- daily completion pressure;
+- reassurance-resisted counters;
+- exposure counts as competitive performance;
+- prominent anxiety trend charts;
+- repeated prompts to rate symptoms;
+- gamified badges for resisting compulsions;
+- open-ended journaling prompts that invite repeated analysis of the obsession.
+
+Measurement may exist only when purposeful, bounded and reviewed against OCD safety risk.
+
+## Loop flow / `I'm stuck in a loop`
 
 Purpose: provide short, bounded support during a difficult moment without becoming a reassurance loop.
 
 Candidate flow:
 
-1. User enters what is happening, optionally in free text.
-2. System identifies the likely interaction pattern, with uncertainty language.
-3. System checks for safety-critical content where required.
-4. System avoids certainty/reassurance if the request appears compulsive.
-5. System offers a bounded next action appropriate to the validated policy.
-6. Session ends or transitions to a safe tool instead of encouraging indefinite looping.
+1. User briefly describes what is happening or selects a pattern.
+2. System checks for safety-critical content where required.
+3. System identifies the likely interaction pattern using uncertainty-aware language.
+4. System avoids certainty/reassurance when the request appears compulsive.
+5. System offers a small set of approved actions, such as pausing, practicing uncertainty, returning to a planned practice or reconnecting with a chosen value.
+6. Interaction ends, transitions to a bounded tool or routes to human support instead of encouraging indefinite looping.
 
-The exact wording and decision policy belong to the safety specification and evaluated prompt/policy layer.
+The exact wording and decision policy belong to the safety specification and evaluated policy layer.
 
-## Compulsion Firewall
+## Compulsion Firewall capability
+
+`Compulsion Firewall` is a capability, not necessarily a permanent dashboard card.
 
 Purpose: detect and interrupt patterns such as:
 
@@ -102,62 +144,26 @@ Expected product behavior:
 - redirect toward an approved bounded response/tool;
 - keep an auditable internal reason code for evaluation where privacy policy allows.
 
-## Coach
+## Practice
 
-The Coach is not an unrestricted therapist simulation.
+The Practice area contains approved OCD-specific exercises/tools.
 
-V1 responsibilities:
+V1 principles:
 
-- explain app concepts;
-- guide approved exercises;
-- help structure a journal entry;
-- identify likely loop patterns using cautious language;
-- redirect reassurance-seeking behavior according to safety policy;
-- surface professional-help guidance when policy requires it.
+- bounded sessions;
+- no pressure to complete every day;
+- no punitive streak loss;
+- no implication that discomfort itself proves success;
+- clear start/end state;
+- safe degraded state if AI/provider functionality is unavailable.
 
-V1 must not:
+ERP-related functionality remains controlled by the requirements below.
 
-- diagnose OCD or another condition;
-- prescribe or change medication;
-- make emergency-care decisions beyond approved escalation guidance;
-- claim to replace professional care;
-- invent personalized exposure tasks outside validated boundaries.
-
-## Journal
-
-The journal should capture useful context without demanding exhaustive logging.
-
-Candidate fields:
-
-- timestamp;
-- user text;
-- optional trigger category;
-- optional urge/compulsion category;
-- optional distress/intensity self-rating if validated for UX;
-- action taken;
-- optional reflection.
-
-Avoid mandatory fields that may encourage compulsive completeness.
-
-## Progress
-
-Progress should emphasize behavior and flexibility rather than symptom perfection.
-
-Candidate indicators for validation:
-
-- urges delayed;
-- compulsive responses resisted;
-- practices completed;
-- time/instances where user chose a planned alternative;
-- qualitative reflection.
-
-No score should be labeled clinically meaningful without validation.
-
-## ERP Practice
+## ERP-related functionality
 
 ERP-related functionality is a controlled domain feature and must not be improvised from a generic LLM.
 
-Before production implementation, define and approve:
+Before production implementation beyond a safe prototype, define and approve:
 
 - intended scope;
 - inclusion/exclusion rules;
@@ -166,9 +172,94 @@ Before production implementation, define and approve:
 - stop/escalation conditions;
 - contraindication/safety handling;
 - data captured;
-- evaluation set.
+- evaluation set;
+- product claims.
 
 Until then, ERP UI may be mocked but must not be represented as clinically validated treatment delivery.
+
+## Support
+
+The Support area must make human-help pathways visible without turning every normal OCD interaction into an alarm state.
+
+Potential approved pathways:
+
+- therapist contact/reference;
+- trusted person;
+- educational guidance about seeking professional care;
+- crisis/escalation resources when the dedicated policy requires them.
+
+Exact regional resources require explicit launch-jurisdiction validation.
+
+## Profile
+
+Profile may contain:
+
+- preferences;
+- language;
+- notification controls;
+- privacy/data controls;
+- account controls;
+- human-support configuration if later approved.
+
+Do not bury critical privacy/deletion controls behind unnecessary friction.
+
+## Journal / reflection
+
+A traditional open-ended journal is not a primary V3 navigation destination.
+
+If reflection is offered, it should be structured and optional so it does not encourage exhaustive rumination or compulsive completeness.
+
+Candidate fields, only if validated:
+
+- brief context;
+- optional trigger/urge category;
+- action chosen;
+- whether the user returned to a valued activity;
+- short optional note.
+
+Avoid forcing distress ratings, exhaustive thought analysis or repeated rewriting.
+
+## Pattern review / progress
+
+Progress should emphasize flexibility and meaningful action rather than symptom perfection.
+
+Candidate review concepts for validation:
+
+- recurring patterns shown without grades;
+- practices the user chose to return to;
+- qualitative reflections;
+- values/actions the user re-engaged with;
+- optional clinician-approved measures if introduced later.
+
+No score should be labeled clinically meaningful without validation.
+
+Pattern review must be:
+
+- user-initiated;
+- bounded;
+- non-gamified;
+- designed against repeated checking behavior.
+
+## Conversational Coach capability
+
+Conversational support may exist inside Loop/Practice/Support flows, but V1 must not present an unrestricted therapist simulation.
+
+Allowed responsibilities after safety approval:
+
+- explain app concepts;
+- guide approved exercises;
+- help identify likely loop patterns using cautious language;
+- redirect reassurance-seeking behavior according to safety policy;
+- help the user choose among approved next actions;
+- surface professional-help guidance when policy requires it.
+
+It must not:
+
+- diagnose OCD or another condition;
+- prescribe or change medication;
+- make emergency-care decisions beyond approved escalation guidance;
+- claim to replace professional care;
+- invent personalized exposure tasks outside validated boundaries.
 
 ## States required for every major screen
 
