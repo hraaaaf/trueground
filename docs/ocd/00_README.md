@@ -19,6 +19,7 @@ The product is a separate client/vertical. IAmina is the reusable platform/core;
 5. `05_DATA_PRIVACY_SECURITY.md` — sensitive-data, privacy and security requirements.
 6. `06_ROADMAP_TO_TARGET.md` — execution path from foundation to V1 target.
 7. `07_ACCEPTANCE_GATES.md` — objective evidence required before any phase can be considered verified.
+8. `08_SPECIALIST_REVIEW_MATRIX.md` — mandatory independent specialist/agent checks by change type, flow and roadmap phase.
 
 ## Source-of-truth precedence
 
@@ -31,6 +32,7 @@ When documents overlap, use this precedence by subject:
 - Data / privacy / security → `05_DATA_PRIVACY_SECURITY.md`
 - Execution order → `06_ROADMAP_TO_TARGET.md`
 - Definition of verified → `07_ACCEPTANCE_GATES.md`
+- Required specialist review → `08_SPECIALIST_REVIEW_MATRIX.md`
 
 A decision must have one canonical home. Do not duplicate competing truths across files.
 
@@ -38,13 +40,15 @@ A decision must have one canonical home. Do not duplicate competing truths acros
 
 Every significant task follows:
 
-`READ → PLAN → EXECUTE → VERIFY`
+`READ → PLAN → EXECUTE → SPECIALIST REVIEW → VERIFY`
 
 And must define:
 
 - GOAL — what must be achieved.
 - SUCCESS — measurable acceptance condition.
 - PROOF — concrete evidence that success was achieved.
+
+The builder does not validate its own work alone. Material work must receive the specialist checks required by `08_SPECIALIST_REVIEW_MATRIX.md` before its acceptance gate can become `VERIFIED`.
 
 ## Project guardrails
 
@@ -56,6 +60,7 @@ And must define:
 - Every AI feature must be evaluated for reassurance seeking, checking, rumination, repetitive questioning and inadvertent reinforcement of compulsions.
 - Preserve existing validated behavior and provide non-regression evidence for every significant change.
 - Keep changes small, isolated and auditable.
+- Mandatory specialist review cannot be skipped merely because implementation tests or CI are green.
 
 ## Status vocabulary
 
@@ -67,7 +72,7 @@ Use only:
 - `READY FOR REVIEW`
 - `VERIFIED`
 
-`VERIFIED` requires the acceptance gate and evidence. Green CI alone is not sufficient.
+`VERIFIED` requires the acceptance gate, required specialist checks and evidence. Green CI alone is not sufficient.
 
 ## Current state
 
