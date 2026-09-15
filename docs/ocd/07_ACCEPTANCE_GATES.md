@@ -18,11 +18,20 @@ A gate is `VERIFIED` only when:
 - real behavior has been checked;
 - non-regression has been checked;
 - required screenshots/evidence exist;
+- required specialist reviews from `08_SPECIALIST_REVIEW_MATRIX.md` are recorded;
 - known risks are documented;
 - no release blocker remains hidden;
 - product-owner approval is obtained where explicitly required.
 
-Allowed status values:
+A **lot** is not considered execution-closed merely because its acceptance gate is `VERIFIED`.
+
+Lot closure additionally requires the handover package defined in `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`:
+
+- `docs/ocd/handovers/LOT_XX_HANDOVER.md`;
+- `docs/ocd/handovers/LOT_YY_START_PROMPT.md` when the next approved lot is known;
+- exact repository-state snapshot at handover time.
+
+Allowed verification status values:
 
 - `NOT STARTED`
 - `IN PROGRESS`
@@ -33,12 +42,14 @@ Allowed status values:
 ## GATE 0 — CANONICAL_FOUNDATION_REVIEWED
 
 ### Required
-- all eight canonical Markdown files exist;
+- all nine canonical Markdown files exist;
 - Dashboard V3 is referenced as the current target;
 - Product Spec navigation matches North Star navigation;
 - no score-heavy V1/V2 home requirement remains canonical;
 - Core IAmina / OCD capsule boundary is explicit;
 - privacy and safety release blockers are explicit;
+- specialist review requirements are explicit;
+- one-lot-per-window and handover requirements are explicit;
 - roadmap and gates reference each other correctly.
 
 ### Proof
@@ -299,6 +310,26 @@ Without that approval:
 
 **DO NOT MERGE. DO NOT DEPLOY.**
 
+## Lot closeout gate
+
+Every lot/window closeout must satisfy `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`.
+
+### Required
+
+- one coherent lot only was executed in the window;
+- current lot state is explicit;
+- required specialist verdicts are recorded;
+- tests and non-regression evidence are recorded;
+- exact repository truth is captured;
+- `LOT_XX_HANDOVER.md` exists;
+- `LOT_YY_START_PROMPT.md` exists if the next lot is already approved;
+- next window is instructed to re-check all potentially stale repository state;
+- no handover text implies automatic merge or deployment.
+
+### Blocker
+
+Do not begin the next material lot in the same window merely because time/context remains available.
+
 ## Standard chantier closeout
 
 Every significant chantier ends with:
@@ -326,3 +357,5 @@ One allowed status only.
 
 ### Prochaine étape
 One recommended next action.
+
+Then, if the window is closing the lot, generate the mandatory handover package before starting a new window.
