@@ -50,46 +50,43 @@ class DashboardV3Screen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: TrueGroundSpacing.lg),
-              _PrimaryActionCard(
-                onTap: () => context.go('/loop'),
-              ),
+              _PrimaryActionCard(onTap: () => context.go('/loop')),
               const SizedBox(height: TrueGroundSpacing.md),
               _ActionCard(
                 icon: Icons.pause_circle_outline_rounded,
                 title: 'Pause the ritual',
-                description: 'Create a little space before the next move.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               _ActionCard(
                 icon: Icons.waves_rounded,
                 title: 'Practice uncertainty',
-                description: 'Practice without needing a perfect answer.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               _ActionCard(
                 icon: Icons.play_circle_outline_rounded,
                 title: 'Continue planned practice',
-                description: 'Return to what you already chose to practice.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: TrueGroundSpacing.md),
               const _StaticCard(
                 icon: Icons.favorite_outline_rounded,
                 title: 'Return to what matters',
-                description: 'Shift attention toward the life you want to be in.',
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               _ActionCard(
                 icon: Icons.people_outline_rounded,
                 title: 'Need a person, not an answer?',
-                description: 'Human support stays within reach.',
                 onTap: () => context.go('/support'),
                 quiet: true,
               ),
               const SizedBox(height: TrueGroundSpacing.md),
-              const _PatternReviewCard(),
+              const _StaticCard(
+                icon: Icons.history_rounded,
+                title: 'Review patterns when useful',
+                muted: true,
+              ),
             ],
           ),
         ),
@@ -109,7 +106,6 @@ class _BrandHeader extends StatelessWidget {
       container: true,
       label: 'TrueGround. Less checking. More living.',
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
             width: 40,
@@ -170,7 +166,6 @@ class _PrimaryActionCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(TrueGroundSpacing.lg),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
                   width: 48,
@@ -209,10 +204,7 @@ class _PrimaryActionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: TrueGroundSpacing.sm),
                 const ExcludeSemantics(
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.white,
-                  ),
+                  child: Icon(Icons.arrow_forward_rounded, color: Colors.white),
                 ),
               ],
             ),
@@ -227,27 +219,24 @@ class _ActionCard extends StatelessWidget {
   const _ActionCard({
     required this.icon,
     required this.title,
-    required this.description,
     required this.onTap,
     this.quiet = false,
   });
 
   final IconData icon;
   final String title;
-  final String description;
   final VoidCallback onTap;
   final bool quiet;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final background = quiet
         ? TrueGroundColors.surface
         : TrueGroundColors.primaryContainer;
 
     return Semantics(
       button: true,
-      label: '$title. $description',
+      label: title,
       child: Material(
         color: background,
         borderRadius: BorderRadius.circular(TrueGroundRadii.control),
@@ -255,7 +244,7 @@ class _ActionCard extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(TrueGroundRadii.control),
           child: Container(
-            constraints: const BoxConstraints(minHeight: 72),
+            constraints: const BoxConstraints(minHeight: 64),
             padding: const EdgeInsets.symmetric(
               horizontal: TrueGroundSpacing.md,
               vertical: TrueGroundSpacing.md,
@@ -269,18 +258,13 @@ class _ActionCard extends StatelessWidget {
                   )
                 : null,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Icon(icon, color: TrueGroundColors.primary, size: 24),
                 const SizedBox(width: TrueGroundSpacing.md),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(title, style: theme.textTheme.titleMedium),
-                      const SizedBox(height: TrueGroundSpacing.xs),
-                      Text(description, style: theme.textTheme.bodyMedium),
-                    ],
+                  child: Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
                 const SizedBox(width: TrueGroundSpacing.sm),
@@ -304,85 +288,40 @@ class _StaticCard extends StatelessWidget {
   const _StaticCard({
     required this.icon,
     required this.title,
-    required this.description,
+    this.muted = false,
   });
 
   final IconData icon;
   final String title;
-  final String description;
+  final bool muted;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
-      padding: const EdgeInsets.all(TrueGroundSpacing.md),
-      decoration: BoxDecoration(
-        color: TrueGroundColors.surface,
-        borderRadius: BorderRadius.circular(TrueGroundRadii.control),
-        border: Border.all(color: TrueGroundColors.outline),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Icon(icon, color: TrueGroundColors.primary, size: 24),
-          const SizedBox(width: TrueGroundSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(title, style: theme.textTheme.titleMedium),
-                const SizedBox(height: TrueGroundSpacing.xs),
-                Text(description, style: theme.textTheme.bodyMedium),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PatternReviewCard extends StatelessWidget {
-  const _PatternReviewCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
+      constraints: const BoxConstraints(minHeight: 64),
       padding: const EdgeInsets.symmetric(
         horizontal: TrueGroundSpacing.md,
         vertical: TrueGroundSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: TrueGroundColors.surfaceMuted,
+        color: muted
+            ? TrueGroundColors.surfaceMuted
+            : TrueGroundColors.surface,
         borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+        border: muted ? null : Border.all(color: TrueGroundColors.outline),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Icon(
-            Icons.history_rounded,
-            size: 22,
-            color: TrueGroundColors.inkMuted,
+          Icon(
+            icon,
+            color: muted
+                ? TrueGroundColors.inkMuted
+                : TrueGroundColors.primary,
+            size: 24,
           ),
           const SizedBox(width: TrueGroundSpacing.md),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Review patterns when useful',
-                  style: theme.textTheme.titleMedium,
-                ),
-                const SizedBox(height: TrueGroundSpacing.xs),
-                Text(
-                  'Optional, not a scorecard.',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-            ),
+            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
           ),
         ],
       ),
