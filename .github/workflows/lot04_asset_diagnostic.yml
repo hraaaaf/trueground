@@ -10,11 +10,12 @@ permissions:
 jobs:
   inspect-target:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
 
-      - name: Decode and inspect canonical Dashboard V3 asset
+      - name: Recover canonical Dashboard V3 asset by expected SHA
         shell: bash
         run: |
           set -euo pipefail
@@ -22,49 +23,76 @@ jobs:
           import base64, hashlib
           from pathlib import Path
 
+          expected = '117f1121fa2cec0d3319d5e2c93cf514ec5f40be3a05950ed7b8b89db97210a5'
+          alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
           path = Path('docs/ocd/assets/dashboard_target_v3.jpg.b64')
           text = ''.join(path.read_text(encoding='utf-8').split())
-          data = base64.b64decode(text, validate=True)
-          Path('/tmp/dashboard_target_v3.decoded').write_bytes(data)
-
           print(f'encoded_chars={len(text)}')
-          print(f'decoded_bytes={len(data)}')
-          print(f'sha256={hashlib.sha256(data).hexdigest()}')
-          print(f'first32={data[:32].hex()}')
-          print(f'last32={data[-32:].hex()}')
+          print(f'endswith_padding={text[-4:]}')
 
-          markers = {
-              'SOI_FFD8': b'\xff\xd8',
-              'EOI_FFD9': b'\xff\xd9',
-              'SOF0_FFC0': b'\xff\xc0',
-              'SOF2_FFC2': b'\xff\xc2',
-              'SOS_FFDA': b'\xff\xda',
-              'DQT_FFDB': b'\xff\xdb',
-              'DHT_FFC4': b'\xff\xc4',
-              'APP0_FFE0': b'\xff\xe0',
-              'APP1_FFE1': b'\xff\xe1',
-          }
-          for name, marker in markers.items():
-              positions = []
-              start = 0
-              while True:
-                  idx = data.find(marker, start)
-                  if idx < 0:
+          try:
+              raw = base64.b64decode(text, validate=True)
+          except Exception as exc:
+              print(f'current_decode_error={exc}')
+          else:
+              print(f'current_sha256={hashlib.sha256(raw).hexdigest()}')
+              if hashlib.sha256(raw).hexdigest() == expected:
+                  Path('build/lot04').mkdir(parents=True, exist_ok=True)
+                  Path('build/lot04/dashboard_target_v3.jpg').write_bytes(raw)
+                  Path('build/lot04/dashboard_target_v3.jpg.b64').write_text(text + '\n', encoding='utf-8')
+                  raise SystemExit(0)
+
+          if not text.endswith('=='):
+              raise SystemExit('Expected the corrupted payload to retain == padding; refusing heuristic repair.')
+
+          data_part = text[:-2]
+          if len(data_part) % 4 != 1:
+              raise SystemExit(f'Unexpected data length modulo 4: {len(data_part) % 4}')
+
+          print(f'data_chars={len(data_part)}; attempting exact single-character recovery')
+          found = None
+          checked = 0
+          for pos in range(len(data_part) + 1):
+              prefix = data_part[:pos]
+              suffix = data_part[pos:]
+              for ch in alphabet:
+                  candidate = prefix + ch + suffix + '=='
+                  checked += 1
+                  try:
+                      raw = base64.b64decode(candidate, validate=True)
+                  except Exception:
+                      continue
+                  if hashlib.sha256(raw).hexdigest() == expected:
+                      found = (pos, ch, candidate, raw)
                       break
-                  positions.append(idx)
-                  start = idx + 1
-              print(f'{name}={positions[:20]} count={len(positions)}')
+              if found:
+                  break
+              if pos and pos % 2500 == 0:
+                  print(f'progress_positions={pos} candidates={checked}')
 
-          for marker_name, marker in [('SOF0', b'\xff\xc0'), ('SOF2', b'\xff\xc2')]:
-              idx = data.find(marker)
-              if idx >= 0 and idx + 9 <= len(data):
-                  seglen = int.from_bytes(data[idx+2:idx+4], 'big')
-                  precision = data[idx+4]
-                  height = int.from_bytes(data[idx+5:idx+7], 'big')
-                  width = int.from_bytes(data[idx+7:idx+9], 'big')
-                  print(f'{marker_name}_segment_length={seglen} precision={precision} width={width} height={height}')
+          if not found:
+              raise SystemExit(f'No exact one-character recovery matched expected SHA after {checked} candidates.')
 
-          print(f'jpeg_soi_at_start={data.startswith(bytes.fromhex("ffd8"))}')
-          print(f'ends_with_eoi={data.endswith(bytes.fromhex("ffd9"))}')
+          pos, ch, candidate, raw = found
+          out = Path('build/lot04')
+          out.mkdir(parents=True, exist_ok=True)
+          (out / 'dashboard_target_v3.jpg.b64').write_text(candidate + '\n', encoding='utf-8')
+          (out / 'dashboard_target_v3.jpg').write_bytes(raw)
+          print(f'RECOVERED position={pos} char={ch!r} candidates={checked}')
+          print(f'recovered_bytes={len(raw)}')
+          print(f'recovered_sha256={hashlib.sha256(raw).hexdigest()}')
+          print(f'first16={raw[:16].hex()}')
+          print(f'last16={raw[-16:].hex()}')
           PY
-          file /tmp/dashboard_target_v3.decoded || true
+
+          file build/lot04/dashboard_target_v3.jpg
+          identify build/lot04/dashboard_target_v3.jpg || true
+
+      - name: Upload recovered canonical target
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot04-recovered-dashboard-target
+          path: build/lot04/
+          if-no-files-found: error
+          retention-days: 14
