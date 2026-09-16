@@ -1,6 +1,9 @@
 name: LOT 03 Flutter shell
 
 on:
+  push:
+    branches:
+      - lot/03-app-shell-design-foundation
   pull_request:
   workflow_dispatch:
 
