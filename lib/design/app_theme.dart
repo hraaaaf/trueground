@@ -87,10 +87,16 @@ abstract final class TrueGroundTheme {
         ),
       ),
       navigationBarTheme: const NavigationBarThemeData(
-        height: 72,
+        height: 64,
         backgroundColor: TrueGroundColors.surface,
         indicatorColor: Colors.transparent,
         elevation: 0,
+        labelTextStyle: WidgetStatePropertyAll(
+          TextStyle(fontSize: 11.5, color: TrueGroundColors.primary),
+        ),
+        iconTheme: WidgetStatePropertyAll(
+          IconThemeData(size: 22, color: TrueGroundColors.primary),
+        ),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: TrueGroundColors.primary,
