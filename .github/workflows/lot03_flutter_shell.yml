@@ -50,21 +50,21 @@ jobs:
       - name: Web build proof
         run: flutter build web --release
 
-      - name: Local web-server smoke boot
+      - name: Local web smoke and visual capture
         shell: bash
         run: |
           set -euo pipefail
-          flutter run -d web-server --web-hostname=127.0.0.1 --web-port=7357 > /tmp/trueground-web.log 2>&1 &
-          app_pid=$!
-          trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
+          python3 -m http.server 7357 --bind 127.0.0.1 --directory build/web > /tmp/trueground-web.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" >/dev/null 2>&1 || true' EXIT
 
           booted=0
-          for _ in $(seq 1 90); do
+          for _ in $(seq 1 30); do
             if curl --fail --silent --show-error http://127.0.0.1:7357/ > /tmp/trueground-index.html; then
               booted=1
               break
             fi
-            if ! kill -0 "$app_pid" 2>/dev/null; then
+            if ! kill -0 "$server_pid" 2>/dev/null; then
               cat /tmp/trueground-web.log
               exit 1
             fi
@@ -77,6 +77,42 @@ jobs:
           fi
 
           grep -q '<script' /tmp/trueground-index.html
+
+          chrome_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_bin" ]; then
+            echo 'No headless Chrome/Chromium binary found on runner.'
+            exit 1
+          fi
+
+          mkdir -p build/lot03/screenshots
+
+          timeout 45s "$chrome_bin" \
+            --headless \
+            --disable-gpu \
+            --no-sandbox \
+            --hide-scrollbars \
+            --force-device-scale-factor=1 \
+            --run-all-compositor-stages-before-draw \
+            --virtual-time-budget=5000 \
+            --window-size=360,800 \
+            --screenshot=build/lot03/screenshots/shell_360.png \
+            http://127.0.0.1:7357/
+
+          timeout 45s "$chrome_bin" \
+            --headless \
+            --disable-gpu \
+            --no-sandbox \
+            --hide-scrollbars \
+            --force-device-scale-factor=1 \
+            --run-all-compositor-stages-before-draw \
+            --virtual-time-budget=5000 \
+            --window-size=390,844 \
+            --screenshot=build/lot03/screenshots/shell_390.png \
+            http://127.0.0.1:7357/
+
+          test -s build/lot03/screenshots/shell_360.png
+          test -s build/lot03/screenshots/shell_390.png
+          file build/lot03/screenshots/shell_360.png build/lot03/screenshots/shell_390.png
           cat /tmp/trueground-web.log
 
       - name: Upload LOT 03 visual evidence

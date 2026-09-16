@@ -8,15 +8,17 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
+    try {
+      await tester.pumpWidget(const TrueGroundApp());
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(const TrueGroundApp());
-    await tester.pumpAndSettle();
-
-    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(textContrastGuideline));
-    expect(tester.takeException(), isNull);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(textContrastGuideline));
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
   });
 }

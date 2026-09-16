@@ -1,8 +1,4 @@
-import 'dart:io';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/shell/app_shell.dart';
@@ -10,19 +6,6 @@ import 'package:trueground/shell/app_shell.dart';
 Future<void> _useSurface(WidgetTester tester, Size size) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
-}
-
-Future<void> _captureShell(WidgetTester tester, String filename) async {
-  final boundary = tester.firstRenderObject<RenderRepaintBoundary>(
-    find.byKey(AppShell.captureKey),
-  );
-  final image = await boundary.toImage(pixelRatio: 1);
-  final data = await image.toByteData(format: ui.ImageByteFormat.png);
-  final directory = Directory('build/lot03/screenshots');
-  await directory.create(recursive: true);
-  await File(
-    '${directory.path}/$filename',
-  ).writeAsBytes(data!.buffer.asUint8List());
 }
 
 void main() {
@@ -68,7 +51,6 @@ void main() {
 
       expect(find.byKey(AppShell.captureKey), findsOneWidget);
       expect(tester.takeException(), isNull);
-      await _captureShell(tester, 'shell_${width.toInt()}.png');
     });
   }
 
@@ -83,6 +65,5 @@ void main() {
     expect(find.byKey(AppShell.captureKey), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(tester.takeException(), isNull);
-    await _captureShell(tester, 'shell_360_text_200.png');
   });
 }
