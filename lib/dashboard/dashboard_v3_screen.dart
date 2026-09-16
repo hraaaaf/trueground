@@ -172,7 +172,9 @@ class _PrimaryActionCard extends StatelessWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+                    borderRadius: BorderRadius.circular(
+                      TrueGroundRadii.control,
+                    ),
                   ),
                   child: const Icon(
                     Icons.refresh_rounded,
@@ -304,9 +306,7 @@ class _StaticCard extends StatelessWidget {
         vertical: TrueGroundSpacing.md,
       ),
       decoration: BoxDecoration(
-        color: muted
-            ? TrueGroundColors.surfaceMuted
-            : TrueGroundColors.surface,
+        color: muted ? TrueGroundColors.surfaceMuted : TrueGroundColors.surface,
         borderRadius: BorderRadius.circular(TrueGroundRadii.control),
         border: muted ? null : Border.all(color: TrueGroundColors.outline),
       ),
@@ -314,9 +314,7 @@ class _StaticCard extends StatelessWidget {
         children: <Widget>[
           Icon(
             icon,
-            color: muted
-                ? TrueGroundColors.inkMuted
-                : TrueGroundColors.primary,
+            color: muted ? TrueGroundColors.inkMuted : TrueGroundColors.primary,
             size: 24,
           ),
           const SizedBox(width: TrueGroundSpacing.md),
