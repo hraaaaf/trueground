@@ -71,15 +71,9 @@ class DashboardV3Screen extends StatelessWidget {
                 onTap: () => context.go('/loop'),
               ),
               const SizedBox(height: 10),
-              _PracticeActions(
-                stacked: stackedCards,
-                compact: compactPhone,
-              ),
+              _PracticeActions(stacked: stackedCards, compact: compactPhone),
               const SizedBox(height: 8),
-              _ValuesActions(
-                stacked: stackedCards,
-                compact: compactPhone,
-              ),
+              _ValuesActions(stacked: stackedCards, compact: compactPhone),
               const SizedBox(height: 8),
               const _ReviewCard(),
             ],
@@ -518,8 +512,7 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label:
-          'Review patterns when useful. Look at recurring themes, without judgment.',
+      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: Container(
         constraints: const BoxConstraints(minHeight: 60),
