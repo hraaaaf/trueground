@@ -1,0 +1,91 @@
+name: LOT 03 Flutter shell
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  app-shell:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Toolchain proof
+        run: flutter --version
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Client isolation guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'diabetes|firebase|supabase|IAMINA-MVP|iamina_mvp' lib pubspec.yaml; then
+            echo 'Forbidden cross-client/runtime dependency marker found.'
+            exit 1
+          fi
+
+      - name: Widget and accessibility tests
+        run: flutter test
+
+      - name: Web build proof
+        run: flutter build web --release
+
+      - name: Local web-server smoke boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter run -d web-server --web-hostname=127.0.0.1 --web-port=7357 > /tmp/trueground-web.log 2>&1 &
+          app_pid=$!
+          trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
+
+          booted=0
+          for _ in $(seq 1 90); do
+            if curl --fail --silent --show-error http://127.0.0.1:7357/ > /tmp/trueground-index.html; then
+              booted=1
+              break
+            fi
+            if ! kill -0 "$app_pid" 2>/dev/null; then
+              cat /tmp/trueground-web.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$booted" -ne 1 ]; then
+            cat /tmp/trueground-web.log
+            exit 1
+          fi
+
+          grep -q '<script' /tmp/trueground-index.html
+          cat /tmp/trueground-web.log
+
+      - name: Upload LOT 03 visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot03-visual-evidence
+          path: |
+            build/lot03/screenshots/
+            pubspec.lock
+          if-no-files-found: warn
+          retention-days: 14
