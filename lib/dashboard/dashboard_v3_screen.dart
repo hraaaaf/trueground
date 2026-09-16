@@ -66,11 +66,20 @@ class DashboardV3Screen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              _PrimaryActionCard(compact: compactPhone, onTap: () => context.go('/loop')),
+              _PrimaryActionCard(
+                compact: compactPhone,
+                onTap: () => context.go('/loop'),
+              ),
               const SizedBox(height: 10),
-              _PracticeActions(stacked: stackedCards, compact: compactPhone),
+              _PracticeActions(
+                stacked: stackedCards,
+                compact: compactPhone,
+              ),
               const SizedBox(height: 8),
-              _ValuesActions(stacked: stackedCards, compact: compactPhone),
+              _ValuesActions(
+                stacked: stackedCards,
+                compact: compactPhone,
+              ),
               const SizedBox(height: 8),
               const _ReviewCard(),
             ],
