@@ -31,7 +31,11 @@ void main() {
       'Need a person, not an answer?',
       'Review patterns when useful',
     ]) {
-      expect(find.text(text), findsOneWidget, reason: 'Missing canonical copy: $text');
+      expect(
+        find.text(text),
+        findsOneWidget,
+        reason: 'Missing canonical copy: $text',
+      );
     }
 
     for (final forbidden in <String>[
