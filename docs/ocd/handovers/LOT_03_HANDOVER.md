@@ -128,8 +128,9 @@ Closeout documentation added after implementation review:
 
 - `docs/ocd/reviews/LOT_03_SPECIALIST_REVIEW.md`
 - `docs/ocd/handovers/LOT_03_HANDOVER.md`
+- `docs/ocd/handovers/LOT_04_START_PROMPT.md` (added only after later explicit LOT 04 authorization).
 
-No pre-existing file is removed by the LOT 03 diff.
+No pre-existing runtime file is removed by the LOT 03 diff.
 
 ## 6. TESTS / NON-REGRESSION
 
@@ -159,7 +160,7 @@ Verified on GitHub Actions run #8 against reviewed implementation/evidence HEAD 
 Non-regression/boundary proof:
 
 - branch was 0 commits behind base at review time;
-- no existing repository file was modified/deleted by the implementation diff;
+- no existing repository runtime file was modified/deleted by the implementation diff;
 - no IAmina Core source was changed;
 - no Diabetes runtime/data/auth dependency was introduced;
 - no production infrastructure was required;
@@ -202,7 +203,7 @@ No known Gate 2 blocker remains on the reviewed implementation/evidence HEAD.
 - merge: not performed;
 - deployment: not performed.
 
-The next window MUST re-check all of these values live.
+The next window MUST re-check all of these values live. Later documentation-only closeout commits intentionally make this historical snapshot older than the current PR HEAD.
 
 ## 10. NEXT LOT
 
@@ -226,11 +227,11 @@ Gate 2 requirements are verified on the reviewed implementation/evidence HEAD: i
 
 ### Modifications
 
-Small isolated Flutter shell + tests/CI only, followed by specialist review and this handover. LOT 04 authorization later added only the fresh-window starter prompt; LOT 04 implementation has not started.
+Small isolated Flutter shell + tests/CI only, followed by specialist review and this handover. LOT 04 authorization later added only transition documentation; LOT 04 implementation has not started.
 
 ### Tests
 
-Full run #8 succeeded, including format, analyze, isolation, widget/accessibility tests, release build, local smoke and visual capture. Later closeout runs also revalidated the unchanged runtime after documentation-only commits.
+Full run #8 succeeded, including format, analyze, isolation, widget/accessibility tests, release build, local smoke and visual capture. Later closeout runs revalidate the unchanged runtime after documentation-only commits.
 
 ### Non-régression
 
@@ -238,7 +239,7 @@ No existing runtime existed to regress; existing documentation/base history was 
 
 ### Preuves
 
-PR #5, implementation/evidence SHA `cc60b560...`, closeout evidence through final documentation commits, CI evidence, screenshot artifacts/hashes and specialist review artifact.
+PR #5, implementation/evidence SHA `cc60b560...`, subsequent closeout/documentation HEADs, CI evidence, screenshot artifacts/hashes and specialist review artifact.
 
 ### Risques
 
