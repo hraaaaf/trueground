@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../design/app_theme.dart';
 
 class AppShell extends StatelessWidget {
-  const AppShell({
-    required this.navigationShell,
-    super.key,
-  });
+  const AppShell({required this.navigationShell, super.key});
 
   static const captureKey = ValueKey('trueground-shell-capture');
 

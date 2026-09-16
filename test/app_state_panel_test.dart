@@ -40,13 +40,15 @@ Future<void> _captureStates(WidgetTester tester) async {
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
   final directory = Directory('build/lot03/screenshots');
   await directory.create(recursive: true);
-  await File('${directory.path}/states_390.png').writeAsBytes(
-    data!.buffer.asUint8List(),
-  );
+  await File(
+    '${directory.path}/states_390.png',
+  ).writeAsBytes(data!.buffer.asUint8List());
 }
 
 void main() {
-  testWidgets('loading empty and error conventions are explicit', (tester) async {
+  testWidgets('loading empty and error conventions are explicit', (
+    tester,
+  ) async {
     await tester.binding.setSurfaceSize(const Size(390, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 

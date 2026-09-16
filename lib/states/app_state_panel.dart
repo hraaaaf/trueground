@@ -5,11 +5,7 @@ import '../design/app_theme.dart';
 enum AppStateKind { loading, empty, error }
 
 class AppStatePanel extends StatelessWidget {
-  const AppStatePanel({
-    required this.kind,
-    this.onRetry,
-    super.key,
-  });
+  const AppStatePanel({required this.kind, this.onRetry, super.key});
 
   final AppStateKind kind;
   final VoidCallback? onRetry;
@@ -18,20 +14,20 @@ class AppStatePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final config = switch (kind) {
       AppStateKind.loading => (
-          TrueGroundIcons.loading,
-          'Loading',
-          'Getting this space ready.',
-        ),
+        TrueGroundIcons.loading,
+        'Loading',
+        'Getting this space ready.',
+      ),
       AppStateKind.empty => (
-          TrueGroundIcons.empty,
-          'Nothing here yet',
-          'This space is ready for content when the feature is implemented.',
-        ),
+        TrueGroundIcons.empty,
+        'Nothing here yet',
+        'This space is ready for content when the feature is implemented.',
+      ),
       AppStateKind.error => (
-          TrueGroundIcons.error,
-          'Something went wrong',
-          'Try again when you are ready.',
-        ),
+        TrueGroundIcons.error,
+        'Something went wrong',
+        'Try again when you are ready.',
+      ),
     };
 
     return Card(
@@ -41,10 +37,10 @@ class AppStatePanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             if (kind == AppStateKind.loading)
-              const Semantics(
+              Semantics(
                 liveRegion: true,
                 label: 'Loading',
-                child: SizedBox.square(
+                child: const SizedBox.square(
                   dimension: 32,
                   child: CircularProgressIndicator(strokeWidth: 3),
                 ),

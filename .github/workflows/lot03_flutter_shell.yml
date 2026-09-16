@@ -1,9 +1,6 @@
 name: LOT 03 Flutter shell
 
 on:
-  push:
-    branches:
-      - lot/03-app-shell-design-foundation
   pull_request:
   workflow_dispatch:
 
@@ -32,19 +29,8 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Format workspace for verification
-        id: format
-        shell: bash
-        run: |
-          set -euo pipefail
-          dart format lib test
-          if ! git diff --quiet -- lib test; then
-            echo 'dirty=true' >> "$GITHUB_OUTPUT"
-            echo 'Formatter changed committed Dart source:'
-            git diff -- lib test
-          else
-            echo 'dirty=false' >> "$GITHUB_OUTPUT"
-          fi
+      - name: Format check
+        run: dart format --output=none --set-exit-if-changed lib test
 
       - name: Static analysis
         run: flutter analyze
@@ -93,22 +79,11 @@ jobs:
           grep -q '<script' /tmp/trueground-index.html
           cat /tmp/trueground-web.log
 
-      - name: Upload LOT 03 evidence and formatter output
+      - name: Upload LOT 03 visual evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lot03-visual-evidence
-          path: |
-            build/lot03/screenshots/
-            pubspec.lock
-            analysis_options.yaml
-            lib/
-            test/
+          path: build/lot03/screenshots/
           if-no-files-found: warn
           retention-days: 14
-
-      - name: Enforce committed formatting
-        if: steps.format.outputs.dirty == 'true'
-        run: |
-          echo 'Committed Dart source must match dart format output.'
-          exit 1

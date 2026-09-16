@@ -12,10 +12,7 @@ Future<void> _useSurface(WidgetTester tester, Size size) async {
   addTearDown(() => tester.binding.setSurfaceSize(null));
 }
 
-Future<void> _captureShell(
-  WidgetTester tester,
-  String filename,
-) async {
+Future<void> _captureShell(WidgetTester tester, String filename) async {
   final boundary = tester.firstRenderObject<RenderRepaintBoundary>(
     find.byKey(AppShell.captureKey),
   );
@@ -23,13 +20,15 @@ Future<void> _captureShell(
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
   final directory = Directory('build/lot03/screenshots');
   await directory.create(recursive: true);
-  await File('${directory.path}/$filename').writeAsBytes(
-    data!.buffer.asUint8List(),
-  );
+  await File(
+    '${directory.path}/$filename',
+  ).writeAsBytes(data!.buffer.asUint8List());
 }
 
 void main() {
-  testWidgets('canonical navigation changes shell destinations', (tester) async {
+  testWidgets('canonical navigation changes shell destinations', (
+    tester,
+  ) async {
     await _useSurface(tester, const Size(390, 844));
     await tester.pumpWidget(const TrueGroundApp());
     await tester.pumpAndSettle();

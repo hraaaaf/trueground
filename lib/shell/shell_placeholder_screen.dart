@@ -25,8 +25,8 @@ class ShellPlaceholderScreen extends StatelessWidget {
               Text(
                 'TrueGround',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: TrueGroundColors.primary,
-                    ),
+                  color: TrueGroundColors.primary,
+                ),
               ),
               const SizedBox(height: TrueGroundSpacing.xl),
               Semantics(
@@ -37,10 +37,7 @@ class ShellPlaceholderScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
-              Text(
-                description,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              Text(description, style: Theme.of(context).textTheme.bodyLarge),
             ],
           ),
         ),
