@@ -1,0 +1,72 @@
+name: LOT 04 target asset diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect-target:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Decode and inspect canonical Dashboard V3 asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib
+          from pathlib import Path
+
+          path = Path('docs/ocd/assets/dashboard_target_v3.jpg.b64')
+          text = ''.join(path.read_text(encoding='utf-8').split())
+          data = base64.b64decode(text, validate=True)
+          Path('/tmp/dashboard_target_v3.decoded').write_bytes(data)
+
+          print(f'encoded_chars={len(text)}')
+          print(f'decoded_bytes={len(data)}')
+          print(f'sha256={hashlib.sha256(data).hexdigest()}')
+          print(f'first32={data[:32].hex()}')
+          print(f'last32={data[-32:].hex()}')
+
+          markers = {
+              'SOI_FFD8': b'\xff\xd8',
+              'EOI_FFD9': b'\xff\xd9',
+              'SOF0_FFC0': b'\xff\xc0',
+              'SOF2_FFC2': b'\xff\xc2',
+              'SOS_FFDA': b'\xff\xda',
+              'DQT_FFDB': b'\xff\xdb',
+              'DHT_FFC4': b'\xff\xc4',
+              'APP0_FFE0': b'\xff\xe0',
+              'APP1_FFE1': b'\xff\xe1',
+          }
+          for name, marker in markers.items():
+              positions = []
+              start = 0
+              while True:
+                  idx = data.find(marker, start)
+                  if idx < 0:
+                      break
+                  positions.append(idx)
+                  start = idx + 1
+              print(f'{name}={positions[:20]} count={len(positions)}')
+
+          for marker_name, marker in [('SOF0', b'\xff\xc0'), ('SOF2', b'\xff\xc2')]:
+              idx = data.find(marker)
+              if idx >= 0 and idx + 9 <= len(data):
+                  seglen = int.from_bytes(data[idx+2:idx+4], 'big')
+                  precision = data[idx+4]
+                  height = int.from_bytes(data[idx+5:idx+7], 'big')
+                  width = int.from_bytes(data[idx+7:idx+9], 'big')
+                  print(f'{marker_name}_segment_length={seglen} precision={precision} width={width} height={height}')
+
+          if data.startswith(b'\xff\xd8'):
+              print('jpeg_soi_at_start=true')
+          else:
+              print('jpeg_soi_at_start=false')
+          print(f'ends_with_eoi={data.endswith(bytes.fromhex("ffd9"))}')
+          PY
+          file /tmp/dashboard_target_v3.decoded || true
