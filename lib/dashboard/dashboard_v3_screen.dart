@@ -13,11 +13,17 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final compactPhone = MediaQuery.sizeOf(context).width <= 370;
     final stackedCards = textScale > 1.4;
 
     return SingleChildScrollView(
       key: screenKey,
-      padding: const EdgeInsets.fromLTRB(18, 12, 18, 18),
+      padding: EdgeInsets.fromLTRB(
+        compactPhone ? 16 : 18,
+        8,
+        compactPhone ? 16 : 18,
+        12,
+      ),
       child: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
@@ -25,12 +31,12 @@ class DashboardV3Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               const _BrandHeader(),
-              const SizedBox(height: 14),
+              const SizedBox(height: 10),
               const Text(
                 'Good evening',
                 style: TextStyle(
                   fontFamily: 'serif',
-                  fontSize: 15,
+                  fontSize: 13.5,
                   height: 1.15,
                   color: TrueGroundColors.primary,
                 ),
@@ -42,30 +48,30 @@ class DashboardV3Screen extends StatelessWidget {
                   'Choose your next move.',
                   style: TextStyle(
                     fontFamily: 'serif',
-                    fontSize: 31,
-                    height: 1.04,
+                    fontSize: compactPhone ? 28 : 29,
+                    height: 1.02,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: -0.6,
+                    letterSpacing: -0.55,
                     color: TrueGroundColors.primary,
                   ),
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               const Text(
                 'Make room for uncertainty.\nChoose what matters.',
                 style: TextStyle(
-                  fontSize: 16,
-                  height: 1.28,
+                  fontSize: 14,
+                  height: 1.25,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
-              const SizedBox(height: 18),
-              _PrimaryActionCard(onTap: () => context.go('/loop')),
-              const SizedBox(height: 12),
-              _PracticeActions(stacked: stackedCards),
+              const SizedBox(height: 14),
+              _PrimaryActionCard(compact: compactPhone, onTap: () => context.go('/loop')),
               const SizedBox(height: 10),
-              _ValuesActions(stacked: stackedCards),
-              const SizedBox(height: 10),
+              _PracticeActions(stacked: stackedCards, compact: compactPhone),
+              const SizedBox(height: 8),
+              _ValuesActions(stacked: stackedCards, compact: compactPhone),
+              const SizedBox(height: 8),
               const _ReviewCard(),
             ],
           ),
@@ -85,7 +91,7 @@ class _BrandHeader extends StatelessWidget {
       label: 'TrueGround',
       excludeSemantics: true,
       child: SizedBox(
-        height: 42,
+        height: 38,
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
@@ -93,16 +99,16 @@ class _BrandHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 SizedBox(
-                  width: 35,
-                  height: 35,
+                  width: 32,
+                  height: 32,
                   child: CustomPaint(painter: _LeafMarkPainter()),
                 ),
-                SizedBox(width: 7),
+                SizedBox(width: 6),
                 Text(
                   'TrueGround',
                   style: TextStyle(
                     fontFamily: 'serif',
-                    fontSize: 24,
+                    fontSize: 22,
                     height: 1,
                     fontWeight: FontWeight.w600,
                     color: TrueGroundColors.primary,
@@ -115,7 +121,7 @@ class _BrandHeader extends StatelessWidget {
               child: ExcludeSemantics(
                 child: Icon(
                   Icons.dark_mode_rounded,
-                  size: 23,
+                  size: 21,
                   color: TrueGroundColors.primary,
                 ),
               ),
@@ -128,8 +134,9 @@ class _BrandHeader extends StatelessWidget {
 }
 
 class _PrimaryActionCard extends StatelessWidget {
-  const _PrimaryActionCard({required this.onTap});
+  const _PrimaryActionCard({required this.compact, required this.onTap});
 
+  final bool compact;
   final VoidCallback onTap;
 
   @override
@@ -145,7 +152,7 @@ class _PrimaryActionCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Ink(
-            height: 124,
+            height: compact ? 110 : 112,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -163,14 +170,14 @@ class _PrimaryActionCard extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
+                    horizontal: 14,
+                    vertical: 13,
                   ),
                   child: Row(
                     children: <Widget>[
                       Container(
-                        width: 58,
-                        height: 58,
+                        width: 52,
+                        height: 52,
                         decoration: const BoxDecoration(
                           color: TrueGroundColors.heroIconBlue,
                           shape: BoxShape.circle,
@@ -178,10 +185,10 @@ class _PrimaryActionCard extends StatelessWidget {
                         child: const Icon(
                           Icons.keyboard_double_arrow_down_rounded,
                           color: Colors.white,
-                          size: 31,
+                          size: 28,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       const Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -191,30 +198,30 @@ class _PrimaryActionCard extends StatelessWidget {
                               "I'm stuck in a loop",
                               style: TextStyle(
                                 fontFamily: 'serif',
-                                fontSize: 22,
-                                height: 1.1,
+                                fontSize: 20,
+                                height: 1.08,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 7),
+                            SizedBox(height: 5),
                             Text(
                               'Notice the urge. Pause before the ritual.',
                               style: TextStyle(
-                                fontSize: 13,
-                                height: 1.25,
+                                fontSize: 11.5,
+                                height: 1.22,
                                 color: Colors.white,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       const ExcludeSemantics(
                         child: Icon(
                           Icons.chevron_right_rounded,
                           color: Colors.white,
-                          size: 28,
+                          size: 24,
                         ),
                       ),
                     ],
@@ -230,9 +237,10 @@ class _PrimaryActionCard extends StatelessWidget {
 }
 
 class _PracticeActions extends StatelessWidget {
-  const _PracticeActions({required this.stacked});
+  const _PracticeActions({required this.stacked, required this.compact});
 
   final bool stacked;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -241,18 +249,21 @@ class _PracticeActions extends StatelessWidget {
         icon: Icons.pause_rounded,
         title: 'Pause the ritual',
         description: 'Create space between the urge and the action.',
+        compact: compact,
         onTap: () => context.go('/practice'),
       ),
       _MiniActionCard(
         icon: Icons.eco_outlined,
         title: 'Practice uncertainty',
         description: 'Guided exercises to build tolerance, not certainty.',
+        compact: compact,
         onTap: () => context.go('/practice'),
       ),
       _MiniActionCard(
         icon: Icons.bar_chart_rounded,
         title: 'Continue planned practice',
         description: 'Return to your ERP exercises at your pace.',
+        compact: compact,
         onTap: () => context.go('/practice'),
       ),
     ];
@@ -266,7 +277,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: 188,
+      height: compact ? 184 : 182,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -276,22 +287,25 @@ class _PracticeActions extends StatelessWidget {
 }
 
 class _ValuesActions extends StatelessWidget {
-  const _ValuesActions({required this.stacked});
+  const _ValuesActions({required this.stacked, required this.compact});
 
   final bool stacked;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final cards = <Widget>[
-      const _DetailCard(
+      _DetailCard(
         icon: Icons.explore_outlined,
         title: 'Return to what matters',
         description: 'Work • Family • Rest • Faith • Friends',
+        compact: compact,
       ),
       _DetailCard(
         icon: Icons.groups_2_outlined,
         title: 'Need a person, not an answer?',
         description: 'Find support from a therapist or a trusted person.',
+        compact: compact,
         onTap: () => context.go('/support'),
       ),
     ];
@@ -305,7 +319,7 @@ class _ValuesActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.valuesGridKey,
-      height: 136,
+      height: compact ? 122 : 120,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -341,12 +355,14 @@ class _MiniActionCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.compact,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final bool compact;
   final VoidCallback onTap;
 
   @override
@@ -365,38 +381,42 @@ class _MiniActionCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(13, 12, 10, 10),
+            padding: EdgeInsets.fromLTRB(
+              compact ? 10 : 11,
+              10,
+              compact ? 7 : 9,
+              8,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _RoundIcon(icon: icon),
-                const SizedBox(height: 9),
+                _RoundIcon(icon: icon, compact: true),
+                const SizedBox(height: 7),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'serif',
-                    fontSize: 16,
-                    height: 1.08,
+                    fontSize: compact ? 14 : 14.5,
+                    height: 1.05,
                     fontWeight: FontWeight.w600,
                     color: TrueGroundColors.primary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Text(
-                    description,
-                    style: const TextStyle(
-                      fontSize: 11.2,
-                      height: 1.25,
-                      color: TrueGroundColors.inkMuted,
-                    ),
+                const SizedBox(height: 5),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: compact ? 9.4 : 9.8,
+                    height: 1.2,
+                    color: TrueGroundColors.inkMuted,
                   ),
                 ),
+                const Spacer(),
                 const Align(
                   alignment: Alignment.bottomLeft,
                   child: Icon(
                     Icons.chevron_right_rounded,
-                    size: 20,
+                    size: 18,
                     color: TrueGroundColors.inkMuted,
                   ),
                 ),
@@ -414,49 +434,51 @@ class _DetailCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.compact,
     this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final bool compact;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
+      padding: EdgeInsets.fromLTRB(compact ? 11 : 12, 9, 10, 9),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
             children: <Widget>[
-              _RoundIcon(icon: icon, small: true),
+              _RoundIcon(icon: icon, compact: true),
               const Spacer(),
               const Icon(
                 Icons.chevron_right_rounded,
-                size: 21,
+                size: 19,
                 color: TrueGroundColors.inkMuted,
               ),
             ],
           ),
-          const SizedBox(height: 7),
+          const SizedBox(height: 5),
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'serif',
-              fontSize: 15.5,
-              height: 1.08,
+              fontSize: compact ? 13.8 : 14.2,
+              height: 1.05,
               fontWeight: FontWeight.w600,
               color: TrueGroundColors.primary,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             description,
-            style: const TextStyle(
-              fontSize: 10.7,
-              height: 1.22,
+            style: TextStyle(
+              fontSize: compact ? 9.4 : 9.7,
+              height: 1.18,
               color: TrueGroundColors.inkMuted,
             ),
           ),
@@ -491,8 +513,8 @@ class _ReviewCard extends StatelessWidget {
           'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: Container(
-        constraints: const BoxConstraints(minHeight: 68),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: TrueGroundColors.surface,
           borderRadius: BorderRadius.circular(18),
@@ -506,8 +528,8 @@ class _ReviewCard extends StatelessWidget {
         ),
         child: const Row(
           children: <Widget>[
-            _RoundIcon(icon: Icons.bar_chart_rounded, small: true),
-            SizedBox(width: 12),
+            _RoundIcon(icon: Icons.bar_chart_rounded, compact: true),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -517,18 +539,18 @@ class _ReviewCard extends StatelessWidget {
                     'Review patterns when useful',
                     style: TextStyle(
                       fontFamily: 'serif',
-                      fontSize: 15.5,
-                      height: 1.1,
+                      fontSize: 14,
+                      height: 1.08,
                       fontWeight: FontWeight.w600,
                       color: TrueGroundColors.primary,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 3),
                   Text(
                     'Look at recurring themes, without judgment.',
                     style: TextStyle(
-                      fontSize: 10.8,
-                      height: 1.2,
+                      fontSize: 9.7,
+                      height: 1.16,
                       color: TrueGroundColors.inkMuted,
                     ),
                   ),
@@ -537,7 +559,7 @@ class _ReviewCard extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              size: 22,
+              size: 20,
               color: TrueGroundColors.inkMuted,
             ),
           ],
@@ -548,14 +570,19 @@ class _ReviewCard extends StatelessWidget {
 }
 
 class _RoundIcon extends StatelessWidget {
-  const _RoundIcon({required this.icon, this.small = false});
+  const _RoundIcon({
+    required this.icon,
+    this.small = false,
+    this.compact = false,
+  });
 
   final IconData icon;
   final bool small;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    final size = small ? 38.0 : 44.0;
+    final size = compact ? 38.0 : (small ? 38.0 : 44.0);
     return Container(
       width: size,
       height: size,
@@ -563,7 +590,11 @@ class _RoundIcon extends StatelessWidget {
         color: TrueGroundColors.iconWash,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, size: small ? 22 : 24, color: TrueGroundColors.teal),
+      child: Icon(
+        icon,
+        size: compact ? 21 : (small ? 22 : 24),
+        color: TrueGroundColors.teal,
+      ),
     );
   }
 }
