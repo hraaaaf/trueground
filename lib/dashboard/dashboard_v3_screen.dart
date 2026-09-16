@@ -144,6 +144,8 @@ class _PrimaryActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final allowsContentGrowth = MediaQuery.textScalerOf(context).scale(1) > 1.4;
+
     return Semantics(
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
@@ -155,7 +157,7 @@ class _PrimaryActionCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Ink(
-            height: compact ? 110 : 112,
+            height: allowsContentGrowth ? null : (compact ? 110 : 112),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -390,40 +392,47 @@ class _MiniActionCard extends StatelessWidget {
               compact ? 7 : 9,
               8,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _RoundIcon(icon: icon, compact: true),
-                const SizedBox(height: 7),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: compact ? 14 : 14.5,
-                    height: 1.05,
-                    fontWeight: FontWeight.w600,
-                    color: TrueGroundColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  description,
-                  style: TextStyle(
-                    fontSize: compact ? 9.4 : 9.8,
-                    height: 1.2,
-                    color: TrueGroundColors.inkMuted,
-                  ),
-                ),
-                const Spacer(),
-                const Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Icon(
-                    Icons.chevron_right_rounded,
-                    size: 18,
-                    color: TrueGroundColors.inkMuted,
-                  ),
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _RoundIcon(icon: icon, compact: true),
+                    const SizedBox(height: 7),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: compact ? 14 : 14.5,
+                        height: 1.05,
+                        fontWeight: FontWeight.w600,
+                        color: TrueGroundColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: compact ? 9.4 : 9.8,
+                        height: 1.2,
+                        color: TrueGroundColors.inkMuted,
+                      ),
+                    ),
+                    if (constraints.hasBoundedHeight)
+                      const Spacer()
+                    else
+                      const SizedBox(height: 8),
+                    const Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 18,
+                        color: TrueGroundColors.inkMuted,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
