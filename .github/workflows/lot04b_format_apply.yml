@@ -1,0 +1,44 @@
+name: LOT 04B Format Apply
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  format-apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+      - name: Apply canonical formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          dart format lib/dashboard/dashboard_v3_screen.dart
+          git diff --check
+          git diff -- lib/dashboard/dashboard_v3_screen.dart
+      - name: Commit formatter result
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- lib/dashboard/dashboard_v3_screen.dart; then
+            echo 'No formatter change required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add lib/dashboard/dashboard_v3_screen.dart
+          git commit -m 'style(lot04b): apply canonical dart formatting'
+          git push origin HEAD:${{ github.head_ref }}
