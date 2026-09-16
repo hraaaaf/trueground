@@ -25,6 +25,9 @@ jobs:
           channel: stable
           cache: false
 
+      - name: Resolve dependencies
+        run: flutter pub get
+
       - name: Apply exact formatter
         run: dart format lib/dashboard/dashboard_v3_screen.dart
 
