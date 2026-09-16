@@ -1,0 +1,74 @@
+name: LOT 04B visual probe
+
+on:
+  push:
+    branches:
+      - lot/04b-dashboard-v3-visual-fidelity
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Release web build
+        run: flutter build web --release
+
+      - name: Capture provisional LOT 04B renders
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 7357 --bind 127.0.0.1 --directory build/web > /tmp/trueground-web.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" >/dev/null 2>&1 || true' EXIT
+
+          booted=0
+          for _ in $(seq 1 30); do
+            if curl --fail --silent --show-error http://127.0.0.1:7357/ > /tmp/trueground-index.html; then
+              booted=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              cat /tmp/trueground-web.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          test "$booted" -eq 1
+          chrome_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_bin"
+          mkdir -p build/lot04b/screenshots
+
+          timeout 45s "$chrome_bin" --headless --disable-gpu --no-sandbox --hide-scrollbars --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=5000 --window-size=360,800 --screenshot=build/lot04b/screenshots/dashboard_360.png http://127.0.0.1:7357/
+          timeout 45s "$chrome_bin" --headless --disable-gpu --no-sandbox --hide-scrollbars --force-device-scale-factor=1 --run-all-compositor-stages-before-draw --virtual-time-budget=5000 --window-size=390,844 --screenshot=build/lot04b/screenshots/dashboard_390.png http://127.0.0.1:7357/
+
+          test -s build/lot04b/screenshots/dashboard_360.png
+          test -s build/lot04b/screenshots/dashboard_390.png
+          file build/lot04b/screenshots/dashboard_360.png build/lot04b/screenshots/dashboard_390.png
+          sha256sum build/lot04b/screenshots/dashboard_360.png build/lot04b/screenshots/dashboard_390.png
+
+      - name: Upload provisional LOT 04B visual evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot04b-provisional-visual-evidence
+          path: build/lot04b/screenshots/
+          if-no-files-found: error
+          retention-days: 2
