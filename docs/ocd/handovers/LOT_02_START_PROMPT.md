@@ -17,6 +17,12 @@ Previous lot inspection:
 Previous specialist review:
 `docs/ocd/reviews/LOT_01_SPECIALIST_REVIEW.md`
 
+Product-owner architecture decision recorded after LOT 01 closeout:
+
+> **OPTION A APPROVED** — TrueGround must use a **separate deployment/data plane** from the diabetes client while reusing shared/versioned IAmina Core code where justified by inspected evidence.
+
+This decision is a starting constraint for LOT 02. It does **not** authorize any merge, deployment, production mutation or IAmina Core change.
+
 Target lot:
 **LOT 02 — TrueGround client isolation + OCD capsule contract**
 
@@ -56,42 +62,35 @@ PROOF
 
 ## GOAL
 
-Define the smallest auditable architecture contract that allows TrueGround/OCD to reuse proven IAmina Core primitives while remaining a **separate client/product** from the diabetes client.
+Define the smallest auditable architecture contract that allows TrueGround/OCD to reuse proven IAmina Core primitives while remaining a **separate client/product** from the diabetes client, under the approved Option A boundary.
 
-## Mandatory decision
+## Approved architecture direction
 
-Resolve the architecture choice exposed by LOT 01:
+### OPTION A — APPROVED
 
-### OPTION A
 Separate TrueGround deployment/data plane using shared/versioned IAmina Core code.
 
-### OPTION B
-Shared IAmina runtime with a new first-class tenant/client isolation layer.
+LOT 02 must turn that decision into an explicit contract covering:
 
-For each option present:
+- which IAmina Core primitives are actually reused;
+- how shared Core code is versioned/consumed without creating runtime or data coupling;
+- which infrastructure is duplicated per client for isolation;
+- what must remain physically/logically separate between TrueGround and Diabetes;
+- how future Core changes avoid breaking either client.
 
-- architecture impact;
-- data/privacy impact;
-- Core changes required;
-- migration/non-regression risk to diabetes;
-- operational complexity;
-- scalability implications;
-- evidence from current code.
+### OPTION B — NOT SELECTED
 
-Then present:
+Do not introduce a shared multi-tenant IAmina runtime as part of LOT 02.
 
-RECOMMENDATION
-IMPACT
+If evidence discovered during inspection shows that Option A is materially unsafe or infeasible, stop and report the contradiction instead of silently switching to Option B.
 
-**Do not execute an irreversible architecture change until the product owner explicitly validates the option.**
-
-## If an architecture option is approved within this lot
+## Required architecture contract
 
 Document the OCD capsule contract precisely enough to define:
 
 - what remains generic IAmina Core;
 - what belongs exclusively to TrueGround/OCD;
-- client/tenant/deployment boundary;
+- deployment boundary;
 - auth/account boundary;
 - data/storage boundary;
 - memory/conversation boundary;
@@ -101,9 +100,11 @@ Document the OCD capsule contract precisely enough to define:
 - frontend packaging/branding boundary;
 - account deletion/export/retention responsibility;
 - forbidden dependency direction;
-- tests/static checks required to prevent OCD logic leaking into Core.
+- versioning/update strategy for shared Core code;
+- tests/static checks required to prevent OCD logic leaking into Core;
+- tests/static checks required to prevent cross-client data or configuration coupling.
 
-Do not design the Loop UI, Compulsion Firewall behavior, ERP behavior or database details beyond what is strictly needed to establish the architecture boundary.
+Do not design the Loop UI, Compulsion Firewall behavior, ERP behavior or detailed database schema beyond what is strictly needed to establish the architecture boundary.
 
 ## Mandatory specialist review
 
@@ -120,10 +121,12 @@ If the available environment cannot actually invoke an independent sub-agent, do
 
 - `READ → PLAN → EXECUTE → SPECIALIST REVIEW → VERIFY`
 - one window = LOT 02 only;
+- Option A is the approved architecture direction;
 - no invented files/routes/tables/interfaces;
 - inspect current IAmina source before describing existing capabilities;
 - no unrequested refactor or feature expansion;
 - no OCD-specific logic in generic IAmina Core;
+- no shared production DB, runtime memory, secrets or user data between Diabetes and TrueGround unless separately and explicitly approved in the future;
 - preserve diabetes behavior and prove non-regression if IAmina code is touched;
 - no merge without explicit product-owner approval;
 - no deployment, Vercel action, TestFlight, Play Store, production migration or real-data mutation without explicit approval.
