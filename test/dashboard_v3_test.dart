@@ -67,6 +67,28 @@ void main() {
     );
   }
 
+  testWidgets('final Dashboard V3 content remains reachable at 360 px', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(360, 800));
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+
+    final lastCard = find.text('Review patterns when useful');
+    expect(lastCard, findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      lastCard,
+      180,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
+    expect(lastCard.hitTestable(), findsOneWidget);
+    expect(find.text('Profile'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('primary loop CTA uses the existing Loop placeholder route', (
     tester,
   ) async {
