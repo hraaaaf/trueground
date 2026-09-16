@@ -22,6 +22,8 @@ jobs:
           flutter-version: 3.47.2
           channel: stable
           cache: false
+      - name: Resolve dependencies
+        run: flutter pub get
       - name: Apply canonical formatter
         shell: bash
         run: |
@@ -40,5 +42,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add lib/dashboard/dashboard_v3_screen.dart
-          git commit -m 'style(lot04b): apply canonical dart formatting'
+          git commit -m 'style(lot04b): apply project-resolved dart formatting'
           git push origin HEAD:${{ github.head_ref }}
