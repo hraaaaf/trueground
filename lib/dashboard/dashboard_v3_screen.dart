@@ -573,19 +573,14 @@ class _ReviewCard extends StatelessWidget {
 }
 
 class _RoundIcon extends StatelessWidget {
-  const _RoundIcon({
-    required this.icon,
-    this.small = false,
-    this.compact = false,
-  });
+  const _RoundIcon({required this.icon, this.compact = false});
 
   final IconData icon;
-  final bool small;
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 38.0 : (small ? 38.0 : 44.0);
+    final size = compact ? 38.0 : 44.0;
     return Container(
       width: size,
       height: size,
@@ -593,11 +588,7 @@ class _RoundIcon extends StatelessWidget {
         color: TrueGroundColors.iconWash,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        size: compact ? 21 : (small ? 22 : 24),
-        color: TrueGroundColors.teal,
-      ),
+      child: Icon(icon, size: compact ? 21 : 24, color: TrueGroundColors.teal),
     );
   }
 }
