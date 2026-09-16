@@ -239,19 +239,19 @@ class _PracticeActions extends StatelessWidget {
     final cards = <Widget>[
       _MiniActionCard(
         icon: Icons.pause_rounded,
-        title: 'Pause\nthe ritual',
+        title: 'Pause the ritual',
         description: 'Create space between the urge and the action.',
         onTap: () => context.go('/practice'),
       ),
       _MiniActionCard(
         icon: Icons.eco_outlined,
-        title: 'Practice\nuncertainty',
+        title: 'Practice uncertainty',
         description: 'Guided exercises to build tolerance, not certainty.',
         onTap: () => context.go('/practice'),
       ),
       _MiniActionCard(
         icon: Icons.bar_chart_rounded,
-        title: 'Continue\nplanned practice',
+        title: 'Continue planned practice',
         description: 'Return to your ERP exercises at your pace.',
         onTap: () => context.go('/practice'),
       ),
@@ -290,7 +290,7 @@ class _ValuesActions extends StatelessWidget {
       ),
       _DetailCard(
         icon: Icons.groups_2_outlined,
-        title: 'Need a person,\nnot an answer?',
+        title: 'Need a person, not an answer?',
         description: 'Find support from a therapist or a trusted person.',
         onTap: () => context.go('/support'),
       ),
@@ -562,11 +562,7 @@ class _RoundIcon extends StatelessWidget {
         color: TrueGroundColors.iconWash,
         shape: BoxShape.circle,
       ),
-      child: Icon(
-        icon,
-        size: small ? 22 : 24,
-        color: TrueGroundColors.teal,
-      ),
+      child: Icon(icon, size: small ? 22 : 24, color: TrueGroundColors.teal),
     );
   }
 }
