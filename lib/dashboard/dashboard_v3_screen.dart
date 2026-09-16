@@ -512,7 +512,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
+      label:
+          'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: Container(
         constraints: const BoxConstraints(minHeight: 60),
