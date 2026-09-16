@@ -1,6 +1,7 @@
 name: LOT 04 target asset diagnostic
 
 on:
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -63,10 +64,7 @@ jobs:
                   width = int.from_bytes(data[idx+7:idx+9], 'big')
                   print(f'{marker_name}_segment_length={seglen} precision={precision} width={width} height={height}')
 
-          if data.startswith(b'\xff\xd8'):
-              print('jpeg_soi_at_start=true')
-          else:
-              print('jpeg_soi_at_start=false')
+          print(f'jpeg_soi_at_start={data.startswith(bytes.fromhex("ffd8"))}')
           print(f'ends_with_eoi={data.endswith(bytes.fromhex("ffd9"))}')
           PY
           file /tmp/dashboard_target_v3.decoded || true
