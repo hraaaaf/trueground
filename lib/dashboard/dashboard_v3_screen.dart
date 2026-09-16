@@ -36,7 +36,7 @@ class DashboardV3Screen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-              const Semantics(
+              Semantics(
                 header: true,
                 child: Text(
                   'Choose your next move.',
