@@ -35,7 +35,7 @@ class AppShell extends StatelessWidget {
             container: true,
             label: 'TrueGround primary navigation',
             child: NavigationBar(
-              height: usesLargeTextLayout ? 82 : null,
+              height: usesLargeTextLayout ? 96 : null,
               selectedIndex: navigationShell.currentIndex,
               labelBehavior: labelBehavior,
               onDestinationSelected: _selectDestination,
