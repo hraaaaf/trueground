@@ -208,9 +208,15 @@ The next window MUST re-check all of these values live.
 
 Roadmap next phase is LOT 04 / Phase 3 — static Dashboard V3 reproduction.
 
-However, no LOT 04 start prompt is created by this handover because explicit product-owner authorization to start LOT 04 has not been recorded in this LOT 03 closeout.
+At the original LOT 03 handover snapshot, LOT 04 had not yet been explicitly authorized. Product-owner authorization was subsequently recorded on 2026-09-16.
 
-Do not start LOT 04 from this window.
+The authorized fresh-window starter prompt now exists at:
+
+`docs/ocd/handovers/LOT_04_START_PROMPT.md`
+
+LOT 04 authorization is limited to that prompt's scope. It does not authorize merge, deployment, production mutation, IAmina Core changes, or LOT 05 execution.
+
+Do not start LOT 04 in this LOT 03 window.
 
 ## CLOSEOUT
 
@@ -220,19 +226,19 @@ Gate 2 requirements are verified on the reviewed implementation/evidence HEAD: i
 
 ### Modifications
 
-Small isolated Flutter shell + tests/CI only, followed by specialist review and this handover. No clinical/data/backend feature work.
+Small isolated Flutter shell + tests/CI only, followed by specialist review and this handover. LOT 04 authorization later added only the fresh-window starter prompt; LOT 04 implementation has not started.
 
 ### Tests
 
-Full run #8 succeeded, including format, analyze, isolation, widget/accessibility tests, release build, local smoke and visual capture.
+Full run #8 succeeded, including format, analyze, isolation, widget/accessibility tests, release build, local smoke and visual capture. Later closeout runs also revalidated the unchanged runtime after documentation-only commits.
 
 ### Non-régression
 
-No existing runtime existed to regress; existing documentation/base history was preserved, no base file removed/modified by implementation, and Core/Diabetes boundaries stayed intact.
+No existing runtime existed to regress; existing documentation/base history was preserved, no base runtime file removed by implementation, and Core/Diabetes boundaries stayed intact.
 
 ### Preuves
 
-PR #5, implementation/evidence SHA `cc60b560...`, CI run `35087067936`, artifact `10442394444`, screenshot hashes and specialist review artifact.
+PR #5, implementation/evidence SHA `cc60b560...`, closeout evidence through final documentation commits, CI evidence, screenshot artifacts/hashes and specialist review artifact.
 
 ### Risques
 
@@ -244,4 +250,4 @@ Dashboard remains placeholder; native-device and real screen-reader validation r
 
 ### Prochaine étape
 
-Wait for explicit product-owner decision on whether to authorize LOT 04 in a fresh window; do not merge or deploy from this handover.
+Start LOT 04 only in a fresh window using `docs/ocd/handovers/LOT_04_START_PROMPT.md`. Re-check repository truth first. Do not merge or deploy without separate explicit product-owner approval.
