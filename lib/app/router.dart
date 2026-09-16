@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../dashboard/dashboard_v3_screen.dart';
 import '../shell/app_shell.dart';
 import '../shell/shell_placeholder_screen.dart';
 
@@ -18,12 +19,7 @@ GoRouter createTrueGroundRouter() {
               GoRoute(
                 path: '/',
                 name: 'home',
-                builder: (context, state) => const ShellPlaceholderScreen(
-                  key: ValueKey('screen-home'),
-                  title: 'Home',
-                  description:
-                      'Application shell ready. Dashboard content is intentionally deferred to LOT 04.',
-                ),
+                builder: (context, state) => const DashboardV3Screen(),
               ),
             ],
           ),
