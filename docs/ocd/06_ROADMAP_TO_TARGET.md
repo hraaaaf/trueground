@@ -1,32 +1,42 @@
 # 06 — ROADMAP TO TARGET
 
 Status: DRAFT FOR REVIEW
-Date: 2026-09-15
+Date: 2026-09-16
 
 ## GOAL
 
 Define the ordered execution path from project foundation to the approved OCD V1 target without allowing product, architecture, safety, privacy or UX work to drift from the canonical documents.
 
-This roadmap is sequence-driven, not date-driven. A phase advances only when its acceptance gate in `07_ACCEPTANCE_GATES.md` is satisfied.
+This roadmap is sequence-driven, not date-driven. A phase advances only when its acceptance gate in `07_ACCEPTANCE_GATES.md` is satisfied and its scoring requirements in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` are met.
 
 ## Global execution rule
 
 Every phase follows:
 
-`READ → PLAN → EXECUTE → VERIFY`
+`READ → PLAN → EXECUTE → SCORE → SPECIALIST REVIEW → ADVERSARIAL RE-SCORE → PERFECT WITHIN SCOPE → VERIFY`
 
 Each significant phase must state:
 
 - GOAL
 - SUCCESS
 - PROOF
+- planned material stages and score weights
+- mandatory specialist reviewers
+- minimum verification threshold
 
-No phase is complete merely because code compiles or CI is green.
+Every material stage must receive:
+
+1. an execution score `/10`;
+2. an adversarial double-check score `/10`;
+3. a final stage score using the lower justified score;
+4. a perfection pass when required by `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
+
+No phase is complete merely because code compiles, CI is green, or one reviewer returns `PASS`.
 
 ## PHASE 0 — Canonical foundation
 
 ### Goal
-Freeze product, safety, architecture, privacy and acceptance criteria before implementation.
+Freeze product, safety, architecture, privacy, acceptance criteria and quality-governance rules before implementation.
 
 ### Required outputs
 - `00_README.md`
@@ -37,13 +47,16 @@ Freeze product, safety, architecture, privacy and acceptance criteria before imp
 - `05_DATA_PRIVACY_SECURITY.md`
 - `06_ROADMAP_TO_TARGET.md`
 - `07_ACCEPTANCE_GATES.md`
+- `08_SPECIALIST_REVIEW_MATRIX.md`
+- `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`
+- `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`
 - approved Dashboard V3 reference
 
 ### Success
-No material contradiction remains between product hierarchy, navigation, safety rules and Core/capsule separation.
+No material contradiction remains between product hierarchy, navigation, safety rules, Core/capsule separation, verification gates, specialist reviews, handover rules and scoring governance.
 
 ### Proof
-Document review + branch diff + explicit product-owner approval.
+Document review + branch diff + strict scorecard + explicit product-owner approval.
 
 ## PHASE 1 — Existing-system inspection and architecture contract
 
@@ -265,25 +278,26 @@ Prove the V1 can be safely reviewed as a coherent product candidate.
 - offline/degraded behavior where relevant;
 - non-regression suite;
 - release notes and known risks;
-- explicit list of unimplemented/out-of-scope features.
+- explicit list of unimplemented/out-of-scope features;
+- complete strict scorecards for all material phases and the assembled product.
 
 ### Success
-All mandatory V1 gates are VERIFIED or explicitly blocked with documented risk ownership.
+All mandatory V1 gates are VERIFIED or explicitly blocked with documented risk ownership, and the final severe product score meets the threshold in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 ### Proof
-Beta readiness report referencing `07_ACCEPTANCE_GATES.md`.
+Beta readiness report referencing `07_ACCEPTANCE_GATES.md` and `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 ## PHASE 12 — Release decision
 
 ### Goal
 Separate technical readiness from authorization to release.
 
-Even if every test passes, release requires explicit product-owner approval.
+Even if every test passes and every score is high, release requires explicit product-owner approval.
 
-No merge, public deployment, TestFlight, Play Store, Vercel production, real-user migration or production-data change is authorized by this roadmap.
+No merge, public deployment, TestFlight, Play Store, Vercel production, real-user migration or production-data change is authorized by this roadmap or by any score.
 
 ## Scope discipline
 
 Future ideas such as clinician dashboards, communities, medication features, wearables, family plans, additional conditions, autonomous advanced ERP, social features or broad mental-health coaching are separate roadmap decisions.
 
-They must not be inserted into V1 merely because the architecture could support them.
+They must not be inserted into V1 merely because the architecture could support them or because a score-chasing perfection pass suggests them.
