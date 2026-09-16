@@ -61,7 +61,7 @@ Historical LOT 03 facts to use only as cross-checks, never as assumptions:
 
 - LOT 03 branch: `lot/03-app-shell-design-foundation`;
 - PR #5 was OPEN / DRAFT / NOT MERGED at closeout;
-- final closeout HEAD before this prompt was created: `54b5cd1d8d939b4621a62b5d071d2fdd789e0ddc`;
+- final closeout HEAD before LOT 04 authorization docs were added: `54b5cd1d8d939b4621a62b5d071d2fdd789e0ddc`;
 - CI run #9 / id `35087630958` was SUCCESS on that HEAD;
 - final LOT 03 visual artifact id was `10443370515`;
 - LOT 03 Gate 2 was technically VERIFIED;
@@ -154,7 +154,7 @@ If a material visual choice is genuinely ambiguous and changes product meaning, 
 
 OPTION A
 OPTION B
-RECOMMENDATION
+RECOMMANDATION
 IMPACT
 
 and wait for product-owner validation before implementing that decision.
