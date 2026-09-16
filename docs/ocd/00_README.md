@@ -30,6 +30,7 @@ Templates:
 
 - `templates/LOT_HANDOVER_TEMPLATE.md`
 - `templates/LOT_START_PROMPT_TEMPLATE.md`
+- `templates/STRICT_SCORECARD_TEMPLATE.md`
 
 ## Source-of-truth precedence
 
