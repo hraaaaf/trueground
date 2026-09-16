@@ -89,7 +89,8 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeTextLayout = MediaQuery.textScalerOf(context).scale(1) > 1.4;
+    final usesLargeTextLayout =
+        MediaQuery.textScalerOf(context).scale(1) > 1.4;
 
     const mark = SizedBox(
       width: 32,
