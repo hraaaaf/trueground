@@ -54,7 +54,7 @@ void main() {
 
     var retryPressed = false;
     await tester.pumpWidget(_gallery(onRetry: () => retryPressed = true));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.text('Loading'), findsOneWidget);
     expect(find.text('Nothing here yet'), findsOneWidget);
