@@ -107,6 +107,8 @@ If the difference between the two scores is greater than `0.5`, investigate the 
 
 If no separate reviewer runtime is available and the same agent performs the adversarial pass, that limitation must be disclosed. The pass must still be separated in reasoning and evidence and must not be described as independent human validation.
 
+For any material stage or lot where the same agent performs both the execution score and adversarial re-score and no independent reviewer/human validation is available, the authoritative score is capped at `9.4`. A score of `9.5+` requires genuinely independent review plus direct evidence.
+
 ## Hard score caps
 
 The following caps are automatic and override any optimistic weighted calculation:
@@ -120,6 +122,7 @@ The following caps are automatic and override any optimistic weighted calculatio
 - observed non-regression failure → maximum `6.9`;
 - material safety/privacy/security/data-integrity blocker → maximum `5.9` and `BLOCKED`;
 - unsupported medical/clinical claim or unapproved treatment-like behavior → maximum `5.9` and `BLOCKED` until the required validation exists;
+- same-agent execution + adversarial review with no independent review available → maximum `9.4`;
 - claim not backed by inspected evidence → deduct and do not score that claim as verified.
 
 A product-owner risk acceptance may change execution status, but it must not falsify the score. Accepted debt remains a deduction.
@@ -140,12 +143,16 @@ For critical safety, privacy/security, data integrity, architecture-boundary or 
 
 ## Perfection pass
 
-Any stage scoring `8.5–8.9` must receive a focused perfection pass before lot closeout.
+Every lot receives a final perfection pass, regardless of its current numerical score.
+
+Any material stage scoring `8.5–8.9` requires remediation before lot closeout unless the remaining deduction is explicitly deferred because it needs a new product/architecture decision or a separate lot.
+
+For stages already scoring `>=9.0`, the perfection pass must still inspect the largest deductions and implement any meaningful, low-risk, in-scope improvement whose benefit is supported by evidence. If no such improvement should be made, record why rather than silently skipping the pass.
 
 The perfection pass must:
 
 1. list the three largest evidence-backed deductions;
-2. fix the highest-impact deduction that is inside the approved scope;
+2. fix the highest-impact deduction that is inside the approved scope and proportionate to risk;
 3. rerun the affected tests/evidence;
 4. repeat the adversarial re-score;
 5. continue only while improvements remain in scope and proportionate.
@@ -201,6 +208,8 @@ The authoritative lot score is:
 
 Round downward to one decimal place. Never round upward.
 
+Apply all hard caps after the mathematical calculation. A cap can only lower the authoritative score.
+
 ## Lot verification threshold
 
 A lot may be called `VERIFIED` only when all existing acceptance-gate requirements pass AND:
@@ -211,12 +220,13 @@ A lot may be called `VERIFIED` only when all existing acceptance-gate requiremen
 - no mandatory reviewer is missing;
 - no unresolved `CHANGES_REQUIRED` or `BLOCKED` verdict remains;
 - required non-regression evidence exists;
-- required rendered/behavioral evidence has actually been inspected.
+- required rendered/behavioral evidence has actually been inspected;
+- the final perfection pass has been completed and documented.
 
 If `FINAL_LOT_SCORE` is:
 
-- `9.0–10.0` → eligible for `VERIFIED`, subject to all binary gates;
-- `8.5–8.9` → `READY FOR REVIEW`, mandatory perfection pass;
+- `9.0–10.0` → eligible for `VERIFIED`, subject to all binary gates and hard caps;
+- `8.5–8.9` → `READY FOR REVIEW`, mandatory perfection pass/remediation;
 - `<8.5` → `CHANGES_REQUIRED` or `BLOCKED` depending on the defect.
 
 A score never authorizes merge or deployment.
@@ -236,7 +246,7 @@ It must answer:
 7. Is any risk being disguised as a non-blocking note?
 8. What can still be improved inside the current lot without architectural or product expansion?
 
-After answering, re-score the lot and use the lower justified score.
+After answering, perform the final perfection pass, rerun affected evidence, re-score the lot, and use the lower justified score.
 
 ## Required closeout output
 
@@ -251,6 +261,7 @@ Every significant lot handover must include a `STRICT SCORECARD` containing:
 - top five deductions;
 - perfection fixes completed;
 - remaining improvement delta to `10.0`;
+- independence limitation/cap if applicable;
 - explicit statement of whether the `>=9.0` verification threshold is met.
 
 The normal chantier closeout must also report the score under `Résultat` and `État`.
@@ -267,7 +278,9 @@ Forbidden scoring behaviors:
 - hiding a blocker inside `PASS_WITH_NOTES`;
 - treating a product-owner acceptance of debt as proof that the debt disappeared;
 - scoring visual fidelity from source code without inspecting the render;
-- scoring AI/OCD behavior from a few cherry-picked prompts instead of the required eval set.
+- scoring AI/OCD behavior from a few cherry-picked prompts instead of the required eval set;
+- calling a same-agent self-check independent validation;
+- skipping the final perfection pass because the score already exceeds `9.0`.
 
 ## Final principle
 
