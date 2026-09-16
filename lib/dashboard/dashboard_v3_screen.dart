@@ -89,49 +89,63 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usesLargeTextLayout = MediaQuery.textScalerOf(context).scale(1) > 1.4;
+
+    const mark = SizedBox(
+      width: 32,
+      height: 32,
+      child: CustomPaint(painter: _LeafMarkPainter()),
+    );
+    const wordmark = Text(
+      'TrueGround',
+      style: TextStyle(
+        fontFamily: 'serif',
+        fontSize: 22,
+        height: 1,
+        fontWeight: FontWeight.w600,
+        color: TrueGroundColors.primary,
+      ),
+    );
+    const themeIcon = ExcludeSemantics(
+      child: Icon(
+        Icons.dark_mode_rounded,
+        size: 21,
+        color: TrueGroundColors.primary,
+      ),
+    );
+
     return Semantics(
       container: true,
       label: 'TrueGround',
       excludeSemantics: true,
-      child: SizedBox(
-        height: 38,
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            const Row(
-              mainAxisSize: MainAxisSize.min,
+      child: usesLargeTextLayout
+          ? const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  width: 32,
-                  height: 32,
-                  child: CustomPaint(painter: _LeafMarkPainter()),
-                ),
+                mark,
                 SizedBox(width: 6),
-                Text(
-                  'TrueGround',
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: 22,
-                    height: 1,
-                    fontWeight: FontWeight.w600,
-                    color: TrueGroundColors.primary,
-                  ),
-                ),
+                Expanded(child: wordmark),
+                SizedBox(width: 8),
+                themeIcon,
               ],
-            ),
-            const Align(
-              alignment: Alignment.centerRight,
-              child: ExcludeSemantics(
-                child: Icon(
-                  Icons.dark_mode_rounded,
-                  size: 21,
-                  color: TrueGroundColors.primary,
-                ),
+            )
+          : const SizedBox(
+              height: 38,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      mark,
+                      SizedBox(width: 6),
+                      wordmark,
+                    ],
+                  ),
+                  Align(alignment: Alignment.centerRight, child: themeIcon),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -144,8 +158,6 @@ class _PrimaryActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final allowsContentGrowth = MediaQuery.textScalerOf(context).scale(1) > 1.4;
-
     return Semantics(
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
@@ -156,83 +168,85 @@ class _PrimaryActionCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          child: Ink(
-            height: allowsContentGrowth ? null : (compact ? 110 : 112),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: <Color>[
-                  TrueGroundColors.primary,
-                  TrueGroundColors.heroBlue,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: compact ? 118 : 118),
+            child: Ink(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    TrueGroundColors.primary,
+                    TrueGroundColors.heroBlue,
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: <Widget>[
+                  const Positioned.fill(
+                    child: CustomPaint(painter: _HeroBackdropPainter()),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: const BoxDecoration(
+                            color: TrueGroundColors.heroIconBlue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.keyboard_double_arrow_down_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "I'm stuck in a loop",
+                                style: TextStyle(
+                                  fontFamily: 'serif',
+                                  fontSize: 20,
+                                  height: 1.08,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                'Notice the urge. Pause before the ritual.',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  height: 1.22,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const ExcludeSemantics(
+                          child: Icon(
+                            Icons.chevron_right_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-            child: Stack(
-              children: <Widget>[
-                const Positioned.fill(
-                  child: CustomPaint(painter: _HeroBackdropPainter()),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 13,
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 52,
-                        height: 52,
-                        decoration: const BoxDecoration(
-                          color: TrueGroundColors.heroIconBlue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.keyboard_double_arrow_down_rounded,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "I'm stuck in a loop",
-                              style: TextStyle(
-                                fontFamily: 'serif',
-                                fontSize: 20,
-                                height: 1.08,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Notice the urge. Pause before the ritual.',
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                height: 1.22,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      const ExcludeSemantics(
-                        child: Icon(
-                          Icons.chevron_right_rounded,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
             ),
           ),
         ),
@@ -282,7 +296,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: compact ? 184 : 182,
+      height: compact ? 250 : 232,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -324,7 +338,7 @@ class _ValuesActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.valuesGridKey,
-      height: compact ? 122 : 120,
+      height: compact ? 182 : 172,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
