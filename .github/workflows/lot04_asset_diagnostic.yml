@@ -10,89 +10,72 @@ permissions:
 jobs:
   inspect-target:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
 
-      - name: Recover canonical Dashboard V3 asset by expected SHA
+      - name: Inspect surviving JPEG structure
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64, hashlib
+          import base64
           from pathlib import Path
 
-          expected = '117f1121fa2cec0d3319d5e2c93cf514ec5f40be3a05950ed7b8b89db97210a5'
-          alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-          path = Path('docs/ocd/assets/dashboard_target_v3.jpg.b64')
-          text = ''.join(path.read_text(encoding='utf-8').split())
+          text = ''.join(Path('docs/ocd/assets/dashboard_target_v3.jpg.b64').read_text(encoding='utf-8').split())
           print(f'encoded_chars={len(text)}')
-          print(f'endswith_padding={text[-4:]}')
-
-          try:
-              raw = base64.b64decode(text, validate=True)
-          except Exception as exc:
-              print(f'current_decode_error={exc}')
-          else:
-              print(f'current_sha256={hashlib.sha256(raw).hexdigest()}')
-              if hashlib.sha256(raw).hexdigest() == expected:
-                  Path('build/lot04').mkdir(parents=True, exist_ok=True)
-                  Path('build/lot04/dashboard_target_v3.jpg').write_bytes(raw)
-                  Path('build/lot04/dashboard_target_v3.jpg.b64').write_text(text + '\n', encoding='utf-8')
-                  raise SystemExit(0)
-
+          print(f'tail={text[-12:]}')
           if not text.endswith('=='):
-              raise SystemExit('Expected the corrupted payload to retain == padding; refusing heuristic repair.')
+              raise SystemExit('unexpected padding')
 
           data_part = text[:-2]
-          if len(data_part) % 4 != 1:
-              raise SystemExit(f'Unexpected data length modulo 4: {len(data_part) % 4}')
+          print(f'data_chars={len(data_part)} mod4={len(data_part)%4}')
 
-          print(f'data_chars={len(data_part)}; attempting exact single-character recovery')
-          found = None
-          checked = 0
-          for pos in range(len(data_part) + 1):
-              prefix = data_part[:pos]
-              suffix = data_part[pos:]
-              for ch in alphabet:
-                  candidate = prefix + ch + suffix + '=='
-                  checked += 1
-                  try:
-                      raw = base64.b64decode(candidate, validate=True)
-                  except Exception:
-                      continue
-                  if hashlib.sha256(raw).hexdigest() == expected:
-                      found = (pos, ch, candidate, raw)
-                      break
-              if found:
-                  break
-              if pos and pos % 2500 == 0:
-                  print(f'progress_positions={pos} candidates={checked}')
+          probes = []
+          for ch in 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/':
+              candidate = data_part + ch + '=='
+              try:
+                  raw = base64.b64decode(candidate, validate=True)
+              except Exception:
+                  continue
+              probes.append((ch, raw))
 
-          if not found:
-              raise SystemExit(f'No exact one-character recovery matched expected SHA after {checked} candidates.')
+          if not probes:
+              raise SystemExit('no decodable single-char tail completion')
 
-          pos, ch, candidate, raw = found
-          out = Path('build/lot04')
-          out.mkdir(parents=True, exist_ok=True)
-          (out / 'dashboard_target_v3.jpg.b64').write_text(candidate + '\n', encoding='utf-8')
-          (out / 'dashboard_target_v3.jpg').write_bytes(raw)
-          print(f'RECOVERED position={pos} char={ch!r} candidates={checked}')
-          print(f'recovered_bytes={len(raw)}')
-          print(f'recovered_sha256={hashlib.sha256(raw).hexdigest()}')
-          print(f'first16={raw[:16].hex()}')
-          print(f'last16={raw[-16:].hex()}')
+          ch, raw = probes[0]
+          print(f'probe_char={ch} decoded_bytes={len(raw)}')
+          print(f'first64={raw[:64].hex()}')
+          print(f'last64={raw[-64:].hex()}')
+
+          markers = {
+              'SOI': b'\xff\xd8',
+              'EOI': b'\xff\xd9',
+              'SOF0': b'\xff\xc0',
+              'SOF2': b'\xff\xc2',
+              'SOS': b'\xff\xda',
+              'DQT': b'\xff\xdb',
+              'DHT': b'\xff\xc4',
+              'APP0': b'\xff\xe0',
+              'APP1': b'\xff\xe1',
+          }
+          for name, marker in markers.items():
+              positions=[]
+              start=0
+              while True:
+                  i=raw.find(marker,start)
+                  if i<0: break
+                  positions.append(i)
+                  start=i+1
+              print(f'{name}: count={len(positions)} first={positions[:12]}')
+
+          # Entropy-coded JPEG data commonly contains byte-stuffed FF00 sequences.
+          ff00=[]
+          start=0
+          while True:
+              i=raw.find(b'\xff\x00',start)
+              if i<0: break
+              ff00.append(i)
+              start=i+1
+          print(f'FF00_stuffed_count={len(ff00)} first={ff00[:20]}')
           PY
-
-          file build/lot04/dashboard_target_v3.jpg
-          identify build/lot04/dashboard_target_v3.jpg || true
-
-      - name: Upload recovered canonical target
-        if: success()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: lot04-recovered-dashboard-target
-          path: build/lot04/
-          if-no-files-found: error
-          retention-days: 14
