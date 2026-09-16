@@ -105,6 +105,7 @@ class _BrandHeader extends StatelessWidget {
     return Semantics(
       container: true,
       label: 'TrueGround. Less checking. More living.',
+      excludeSemantics: true,
       child: Row(
         children: <Widget>[
           Container(
@@ -157,6 +158,7 @@ class _PrimaryActionCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
+      excludeSemantics: true,
       child: Material(
         color: TrueGroundColors.primary,
         borderRadius: BorderRadius.circular(TrueGroundRadii.card),
@@ -239,6 +241,7 @@ class _ActionCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: title,
+      excludeSemantics: true,
       child: Material(
         color: background,
         borderRadius: BorderRadius.circular(TrueGroundRadii.control),
