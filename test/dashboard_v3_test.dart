@@ -9,7 +9,7 @@ Future<void> _useSurface(WidgetTester tester, Size size) async {
 }
 
 void main() {
-  testWidgets('Dashboard V3 contains the canonical static hierarchy', (
+  testWidgets('Dashboard V3 contains the LOT 04B target hierarchy', (
     tester,
   ) async {
     await _useSurface(tester, const Size(390, 844));
@@ -19,9 +19,9 @@ void main() {
     expect(find.byKey(DashboardV3Screen.screenKey), findsOneWidget);
 
     for (final text in <String>[
-      'Less checking. More living.',
+      'Good evening',
       'Choose your next move.',
-      'Make room for uncertainty. Choose what matters.',
+      'Make room for uncertainty.\nChoose what matters.',
       "I'm stuck in a loop",
       'Notice the urge. Pause before the ritual.',
       'Pause the ritual',
@@ -34,7 +34,7 @@ void main() {
       expect(
         find.text(text),
         findsOneWidget,
-        reason: 'Missing canonical copy: $text',
+        reason: 'Missing LOT 04B target copy: $text',
       );
     }
 
@@ -54,7 +54,7 @@ void main() {
 
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets(
-      'Dashboard V3 renders without framework exceptions at ${size.width.toInt()} px',
+      'Dashboard V3 renders target grid without framework exceptions at ${size.width.toInt()} px',
       (tester) async {
         await _useSurface(tester, size);
         await tester.pumpWidget(const TrueGroundApp());
@@ -62,6 +62,10 @@ void main() {
 
         expect(find.byKey(DashboardV3Screen.screenKey), findsOneWidget);
         expect(find.text('Choose your next move.'), findsOneWidget);
+        expect(find.byKey(DashboardV3Screen.practiceGridKey), findsOneWidget);
+        expect(find.byKey(DashboardV3Screen.valuesGridKey), findsOneWidget);
+        expect(find.text('Practice uncertainty'), findsOneWidget);
+        expect(find.text('Continue planned practice'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -79,7 +83,7 @@ void main() {
 
     await tester.scrollUntilVisible(
       lastCard,
-      180,
+      120,
       scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
@@ -119,6 +123,7 @@ void main() {
 
     expect(find.byKey(DashboardV3Screen.screenKey), findsOneWidget);
     expect(find.text('Choose your next move.'), findsOneWidget);
+    expect(find.text('Practice uncertainty'), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
