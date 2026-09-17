@@ -25,9 +25,9 @@ class DashboardV3Screen extends StatelessWidget {
           key: screenKey,
           padding: EdgeInsets.fromLTRB(
             compactPhone ? 16 : 18,
-            8,
+            10,
             compactPhone ? 16 : 18,
-            12,
+            14,
           ),
           child: Center(
             child: ConstrainedBox(
@@ -36,12 +36,12 @@ class DashboardV3Screen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   const _BrandHeader(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 13),
                   const Text(
                     'Good evening',
                     style: TextStyle(
                       fontFamily: 'serif',
-                      fontSize: 13.5,
+                      fontSize: 15.5,
                       height: 1.15,
                       color: TrueGroundColors.primary,
                     ),
@@ -53,7 +53,7 @@ class DashboardV3Screen extends StatelessWidget {
                       'Choose your next move.',
                       style: TextStyle(
                         fontFamily: 'serif',
-                        fontSize: compactPhone ? 28 : 29,
+                        fontSize: compactPhone ? 29 : 32,
                         height: 1.02,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.55,
@@ -65,12 +65,12 @@ class DashboardV3Screen extends StatelessWidget {
                   const Text(
                     'Make room for uncertainty.\nChoose what matters.',
                     style: TextStyle(
-                      fontSize: 14,
-                      height: 1.25,
+                      fontSize: 16,
+                      height: 1.22,
                       color: TrueGroundColors.inkMuted,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 15),
                   _PrimaryActionCard(
                     compact: compactPhone,
                     onTap: () => context.go('/loop'),
@@ -102,15 +102,15 @@ class _BrandHeader extends StatelessWidget {
     final usesLargeTextLayout = MediaQuery.textScalerOf(context).scale(1) > 1.4;
 
     const mark = SizedBox(
-      width: 32,
-      height: 32,
+      width: 34,
+      height: 34,
       child: CustomPaint(painter: _LeafMarkPainter()),
     );
     const wordmark = Text(
       'TrueGround',
       style: TextStyle(
         fontFamily: 'serif',
-        fontSize: 22,
+        fontSize: 26,
         height: 1,
         fontWeight: FontWeight.w600,
         color: TrueGroundColors.primary,
@@ -119,7 +119,7 @@ class _BrandHeader extends StatelessWidget {
     const themeIcon = ExcludeSemantics(
       child: Icon(
         Icons.dark_mode_rounded,
-        size: 21,
+        size: 23,
         color: TrueGroundColors.primary,
       ),
     );
@@ -140,7 +140,7 @@ class _BrandHeader extends StatelessWidget {
               ],
             )
           : const SizedBox(
-              height: 38,
+              height: 44,
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
@@ -186,7 +186,7 @@ class _PrimaryActionCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: compact ? 118 : 118),
+              constraints: BoxConstraints(minHeight: compact ? 126 : 132),
               child: Ink(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
@@ -237,14 +237,14 @@ class _PrimaryActionCard extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 13,
+                        horizontal: 16,
+                        vertical: 15,
                       ),
                       child: Row(
                         children: <Widget>[
                           Container(
-                            width: 52,
-                            height: 52,
+                            width: 58,
+                            height: 58,
                             decoration: BoxDecoration(
                               color: TrueGroundColors.heroIconBlue.withValues(
                                 alpha: 0.94,
@@ -264,10 +264,10 @@ class _PrimaryActionCard extends StatelessWidget {
                             child: const Icon(
                               Icons.keyboard_double_arrow_down_rounded,
                               color: Colors.white,
-                              size: 28,
+                              size: 30,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 14),
                           const Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -277,7 +277,7 @@ class _PrimaryActionCard extends StatelessWidget {
                                   "I'm stuck in a loop",
                                   style: TextStyle(
                                     fontFamily: 'serif',
-                                    fontSize: 20,
+                                    fontSize: 22.5,
                                     height: 1.08,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
@@ -287,7 +287,7 @@ class _PrimaryActionCard extends StatelessWidget {
                                 Text(
                                   'Notice the urge. Pause before the ritual.',
                                   style: TextStyle(
-                                    fontSize: 11.5,
+                                    fontSize: 13.2,
                                     height: 1.22,
                                     color: Colors.white,
                                   ),
@@ -300,7 +300,7 @@ class _PrimaryActionCard extends StatelessWidget {
                             child: Icon(
                               Icons.chevron_right_rounded,
                               color: Colors.white,
-                              size: 24,
+                              size: 26,
                             ),
                           ),
                         ],
@@ -358,7 +358,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: compact ? 220 : 214,
+      height: compact ? 206 : 196,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -400,7 +400,7 @@ class _ValuesActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.valuesGridKey,
-      height: compact ? 154 : 156,
+      height: compact ? 154 : 158,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -454,10 +454,10 @@ class _MiniActionCard extends StatelessWidget {
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            compact ? 10 : 12,
+            compact ? 11 : 13,
+            compact ? 12 : 13,
+            compact ? 9 : 11,
             compact ? 10 : 11,
-            compact ? 8 : 10,
-            compact ? 9 : 10,
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -465,7 +465,7 @@ class _MiniActionCard extends StatelessWidget {
                 this.title,
                 style: TextStyle(
                   fontFamily: 'serif',
-                  fontSize: compact ? 13.1 : 14.5,
+                  fontSize: compact ? 14.5 : 16.5,
                   height: 1.05,
                   fontWeight: FontWeight.w600,
                   color: TrueGroundColors.primary,
@@ -474,7 +474,7 @@ class _MiniActionCard extends StatelessWidget {
               final description = Text(
                 this.description,
                 style: TextStyle(
-                  fontSize: compact ? 9.1 : 9.8,
+                  fontSize: compact ? 10.4 : 11.5,
                   height: 1.2,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -486,7 +486,7 @@ class _MiniActionCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   if (constraints.hasBoundedHeight)
                     SizedBox(
-                      height: compact ? 44 : 48,
+                      height: compact ? 50 : 52,
                       child: Align(alignment: Alignment.topLeft, child: title),
                     )
                   else
@@ -494,7 +494,7 @@ class _MiniActionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   if (constraints.hasBoundedHeight)
                     SizedBox(
-                      height: compact ? 46 : 42,
+                      height: compact ? 54 : 48,
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: description,
@@ -510,7 +510,7 @@ class _MiniActionCard extends StatelessWidget {
                     alignment: Alignment.bottomLeft,
                     child: Icon(
                       Icons.chevron_right_rounded,
-                      size: 18,
+                      size: 19,
                       color: TrueGroundColors.inkMuted,
                     ),
                   ),
@@ -545,7 +545,7 @@ class _DetailCard extends StatelessWidget {
           this.title,
           style: TextStyle(
             fontFamily: 'serif',
-            fontSize: compact ? 12.9 : 14.2,
+            fontSize: compact ? 14.2 : 16.5,
             height: 1.05,
             fontWeight: FontWeight.w600,
             color: TrueGroundColors.primary,
@@ -554,17 +554,17 @@ class _DetailCard extends StatelessWidget {
         final description = Text(
           this.description,
           style: TextStyle(
-            fontSize: compact ? 9.0 : 9.7,
+            fontSize: compact ? 10.2 : 11.5,
             height: 1.18,
             color: TrueGroundColors.inkMuted,
           ),
         );
         return Padding(
           padding: EdgeInsets.fromLTRB(
+            compact ? 11 : 13,
             compact ? 10 : 11,
-            compact ? 9 : 10,
+            compact ? 11 : 13,
             compact ? 10 : 11,
-            compact ? 9 : 10,
           ),
           child: Column(
             mainAxisAlignment: constraints.hasBoundedHeight
@@ -586,7 +586,7 @@ class _DetailCard extends StatelessWidget {
               const SizedBox(height: 6),
               if (constraints.hasBoundedHeight)
                 SizedBox(
-                  height: compact ? 28 : 32,
+                  height: compact ? 34 : 38,
                   child: Align(alignment: Alignment.topLeft, child: title),
                 )
               else
@@ -594,7 +594,7 @@ class _DetailCard extends StatelessWidget {
               const SizedBox(height: 4),
               if (constraints.hasBoundedHeight)
                 SizedBox(
-                  height: compact ? 34 : 36,
+                  height: compact ? 40 : 42,
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: description,
@@ -626,13 +626,13 @@ class _ReviewCard extends StatelessWidget {
       excludeSemantics: true,
       child: _GlassPanel(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 60),
+          constraints: const BoxConstraints(minHeight: 68),
           child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               children: <Widget>[
                 _RoundIcon(icon: Icons.bar_chart_rounded, compact: true),
-                SizedBox(width: 10),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -642,7 +642,7 @@ class _ReviewCard extends StatelessWidget {
                         'Review patterns when useful',
                         style: TextStyle(
                           fontFamily: 'serif',
-                          fontSize: 14,
+                          fontSize: 15.5,
                           height: 1.08,
                           fontWeight: FontWeight.w600,
                           color: TrueGroundColors.primary,
@@ -652,7 +652,7 @@ class _ReviewCard extends StatelessWidget {
                       Text(
                         'Look at recurring themes, without judgment.',
                         style: TextStyle(
-                          fontSize: 9.7,
+                          fontSize: 11,
                           height: 1.16,
                           color: TrueGroundColors.inkMuted,
                         ),
@@ -680,7 +680,7 @@ class _GlassPanel extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(18);
+    final borderRadius = BorderRadius.circular(20);
     final materialChild = Material(
       type: MaterialType.transparency,
       child: onTap == null ? child : InkWell(onTap: onTap, child: child),
@@ -755,7 +755,7 @@ class _RoundIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = compact ? 38.0 : 44.0;
+    final size = compact ? 42.0 : 46.0;
     return Container(
       width: size,
       height: size,

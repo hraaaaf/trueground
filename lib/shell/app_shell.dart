@@ -44,7 +44,10 @@ class AppShell extends StatelessWidget {
           child: Semantics(
             container: true,
             label: 'TrueGround primary navigation',
-            child: ClipRect(
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(22),
+              ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: DecoratedBox(
@@ -65,7 +68,7 @@ class AppShell extends StatelessWidget {
                     ],
                   ),
                   child: NavigationBar(
-                    height: usesLargeTextLayout ? 96 : null,
+                    height: usesLargeTextLayout ? 100 : null,
                     backgroundColor: Colors.transparent,
                     selectedIndex: navigationShell.currentIndex,
                     labelBehavior: labelBehavior,
