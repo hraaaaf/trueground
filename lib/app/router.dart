@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../dashboard/dashboard_v3_screen.dart';
+import '../loop/loop_flow_screen.dart';
 import '../shell/app_shell.dart';
 import '../shell/shell_placeholder_screen.dart';
 
