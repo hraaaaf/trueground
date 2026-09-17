@@ -49,18 +49,18 @@ class AppShell extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.58),
+                    color: Colors.white.withValues(alpha: 0.48),
                     border: Border(
                       top: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.92),
-                        width: 1,
+                        color: Colors.white.withValues(alpha: 0.96),
+                        width: 1.2,
                       ),
                     ),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
-                        color: TrueGroundColors.primary.withValues(alpha: 0.10),
-                        blurRadius: 24,
-                        offset: const Offset(0, -6),
+                        color: TrueGroundColors.primary.withValues(alpha: 0.12),
+                        blurRadius: 28,
+                        offset: const Offset(0, -8),
                       ),
                     ],
                   ),
@@ -123,52 +123,66 @@ class _HomeGlassBackdrop extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: <Color>[
-                  Color(0xFFF7F4F2),
-                  Color(0xFFE9F2F5),
-                  Color(0xFFF8F3EF),
+                  Color(0xFFF8F5F2),
+                  Color(0xFFE4F0F4),
+                  Color(0xFFF7EFE9),
                 ],
-                stops: <double>[0, 0.50, 1],
+                stops: <double>[0, 0.48, 1],
               ),
             ),
           ),
           Positioned(
-            top: -54,
-            right: -64,
+            top: -34,
+            right: -42,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+              imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
               child: _GlowOrb(
-                size: 230,
+                size: 220,
                 colors: <Color>[
-                  const Color(0xFF7CBFD3).withValues(alpha: 0.36),
-                  const Color(0xFF7CBFD3).withValues(alpha: 0.02),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 300,
-            left: -92,
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 26, sigmaY: 26),
-              child: _GlowOrb(
-                size: 250,
-                colors: <Color>[
-                  const Color(0xFFBFD8C7).withValues(alpha: 0.30),
-                  const Color(0xFFBFD8C7).withValues(alpha: 0.01),
+                  const Color(0xFF68B6D0).withValues(alpha: 0.46),
+                  const Color(0xFF68B6D0).withValues(alpha: 0.02),
                 ],
               ),
             ),
           ),
           Positioned(
-            bottom: 40,
-            right: -86,
+            top: 250,
+            left: -70,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+              imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
               child: _GlowOrb(
-                size: 270,
+                size: 210,
                 colors: <Color>[
-                  const Color(0xFFE0C8B5).withValues(alpha: 0.28),
-                  const Color(0xFFE0C8B5).withValues(alpha: 0.01),
+                  const Color(0xFF9CCDBD).withValues(alpha: 0.40),
+                  const Color(0xFF9CCDBD).withValues(alpha: 0.02),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            top: 390,
+            right: -58,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 17, sigmaY: 17),
+              child: _GlowOrb(
+                size: 205,
+                colors: <Color>[
+                  const Color(0xFFE4C5AE).withValues(alpha: 0.36),
+                  const Color(0xFFE4C5AE).withValues(alpha: 0.02),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 96,
+            left: -24,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: _GlowOrb(
+                size: 190,
+                colors: <Color>[
+                  const Color(0xFF87BFD6).withValues(alpha: 0.28),
+                  const Color(0xFF87BFD6).withValues(alpha: 0.01),
                 ],
               ),
             ),
