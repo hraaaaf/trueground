@@ -20,7 +20,7 @@ LOT 05 deliberately avoids unrestricted free text and provider generation. The u
 | Retrospective certainty seeking | I want certainty | Same bounded certainty policy; no historical proof |
 | Repeated what-if / yes-no pressure | I want certainty | No free-text channel for repeated certainty interrogation |
 | Intrusive thought/image | Intrusive thought or image | Does not infer intent or diagnose from the thought |
-| Genuine immediate-safety concern | Safety boundary | Leaves Loop and routes to Support; no claim that help/person was contacted |
+| Genuine acute-risk disclosure | BLOCKED for production | No free-text risk assessment exists in LOT 05; persistent Support escape hatch remains visible, but a dedicated reviewed crisis policy is required before release |
 | Unsupported medical/diagnostic request | UI boundary | No open text/chat channel exists; no diagnostic answer surface |
 | Provider failure | NOT_APPLICABLE | LOT 05 has no provider dependency |
 | Persistence/memory failure | NOT_APPLICABLE | LOT 05 stores no longitudinal content |
@@ -31,5 +31,6 @@ LOT 05 deliberately avoids unrestricted free text and provider generation. The u
 - It does not detect paraphrased repeats.
 - It does not classify raw user text.
 - It does not provide regional crisis instructions.
+- It does not claim to assess acute risk; production crisis/acute-risk handling remains blocked pending the dedicated reviewed policy.
 - It does not diagnose OCD or infer intent.
 - Support is a navigation boundary, not proof that a person or emergency service was contacted.
