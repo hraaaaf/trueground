@@ -97,8 +97,8 @@ loopActionContent = <LoopNextAction, LoopActionContent>{
   ),
 };
 
-const String loopSafetyBoundary =
-    'This short tool is for loops and urges. If you may be in immediate danger or unable to stay safe, use Support instead.';
+const String loopSupportTitle = 'Need a person, not an answer?';
+const String loopSupportHelper = 'Therapist or trusted person.';
 
 const String loopBoundedNotice =
     'This is a bounded check-in, not an open chat. Choose the closest fit. No need to explain every detail.';
@@ -107,7 +107,8 @@ const String loopCompletionCopy =
     'Your next move is set. You can end this check-in here instead of reopening the question.';
 
 Iterable<String> get allLoopPolicyCopy sync* {
-  yield loopSafetyBoundary;
+  yield loopSupportTitle;
+  yield loopSupportHelper;
   yield loopBoundedNotice;
   yield loopCompletionCopy;
   for (final item in loopPatternContent.values) {
