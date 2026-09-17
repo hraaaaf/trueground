@@ -23,13 +23,27 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+
           p = Path('lib/dashboard/dashboard_v3_screen.dart')
           s = p.read_text()
-          replacements = [
+
+          def patch_section(text, start, end, replacements):
+              before, rest = text.split(start, 1)
+              body, after = rest.split(end, 1)
+              for old, new in replacements:
+                  if old not in body:
+                      raise SystemExit(f'Missing scoped match in {start}: {old!r}')
+                  body = body.replace(old, new, 1)
+              return before + start + body + end + after
+
+          s = patch_section(s, 'class _TargetDashboard extends StatelessWidget {', 'class _AccessibleDashboard extends StatelessWidget {', [
               ('top: 160,\n                        height: 122,', 'top: 150,\n                        height: 102,'),
               ('top: 294,\n                        height: 198,', 'top: 272,\n                        height: 166,'),
               ('top: 504,\n                        height: 144,', 'top: 458,\n                        height: 119,'),
               ('top: 660,\n                        height: 68,', 'top: 597,\n                        height: 61,'),
+          ])
+
+          s = patch_section(s, 'class _HeroCard extends StatelessWidget {', 'class _TargetCard extends StatelessWidget {', [
               ('horizontal: 14,\n                    vertical: 14,', 'horizontal: 14,\n                    vertical: 10,'),
               ('width: 54,\n                        height: 54,', 'width: 48,\n                        height: 48,'),
               ('size: 31,', 'size: 27,'),
@@ -38,17 +52,27 @@ jobs:
               ('SizedBox(height: 7),', 'SizedBox(height: 5),'),
               ('fontSize: 12.7,', 'fontSize: 11.3,'),
               ('size: 28,\n                      ),', 'size: 24,\n                      ),'),
+          ])
+
+          s = patch_section(s, 'class _TargetCard extends StatelessWidget {', 'class _WideCard extends StatelessWidget {', [
               ('left: 12,\n              top: 13,\n              child: _RoundIcon(icon: icon, size: 44),', 'left: 12,\n              top: 10,\n              child: _RoundIcon(icon: icon, size: 36),'),
               ('top: 68,\n              height: 52,', 'top: 55,\n              height: 43,'),
               ('fontSize: 15.8,', 'fontSize: 13.2,'),
               ('top: 126,\n              height: 40,', 'top: 102,\n              height: 39,'),
               ('fontSize: 10.3,', 'fontSize: 9.8,'),
               ('bottom: 7,\n              child: Icon(\n                Icons.chevron_right_rounded,\n                size: 20,', 'bottom: 8,\n              child: Icon(\n                Icons.chevron_right_rounded,\n                size: 18,'),
+          ])
+
+          s = patch_section(s, 'class _WideCard extends StatelessWidget {', 'class _ReviewCard extends StatelessWidget {', [
               ('left: 12,\n              top: 12,\n              child: _RoundIcon(icon: icon, size: 42),', 'left: 12,\n              top: 10,\n              child: _RoundIcon(icon: icon, size: 35),'),
               ('right: 10,\n              top: 22,\n              child: Icon(\n                Icons.chevron_right_rounded,\n                size: 21,', 'right: 10,\n              top: 15,\n              child: Icon(\n                Icons.chevron_right_rounded,\n                size: 19,'),
               ('top: 62,\n              height: 38,', 'top: 52,\n              height: 30,'),
               ('fontSize: 15.2,', 'fontSize: 13.2,'),
               ('top: 105,\n              height: 30,', 'top: 84,\n              height: 28,'),
+              ('fontSize: 10.3,', 'fontSize: 9.8,'),
+          ])
+
+          s = patch_section(s, 'class _ReviewCard extends StatelessWidget {', 'class _AccessibleCard extends StatelessWidget {', [
               ('padding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),', 'padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),'),
               ('_RoundIcon(icon: Icons.bar_chart_rounded, size: 46),', '_RoundIcon(icon: Icons.bar_chart_rounded, size: 36),'),
               ('SizedBox(width: 12),', 'SizedBox(width: 10),'),
@@ -56,12 +80,8 @@ jobs:
               ('SizedBox(height: 5),', 'SizedBox(height: 3),'),
               ('fontSize: 11.6,', 'fontSize: 9.8,'),
               ('size: 21,\n                color: TrueGroundColors.inkMuted,', 'size: 19,\n                color: TrueGroundColors.inkMuted,'),
-          ]
-          for old, new in replacements:
-              count = s.count(old)
-              if count != 1:
-                  raise SystemExit(f'Expected exactly one match for {old!r}, found {count}')
-              s = s.replace(old, new, 1)
+          ])
+
           p.write_text(s)
           PY
           git diff --check
