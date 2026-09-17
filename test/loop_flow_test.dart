@@ -67,18 +67,17 @@ void main() {
     });
   }
 
-  testWidgets('immediate-safety boundary routes out to Support', (
+  testWidgets('canonical human-support escape hatch routes to Support', (
     tester,
   ) async {
     await _useSurface(tester, const Size(390, 844));
     await _openLoop(tester);
 
-    expect(
-      find.textContaining('immediate danger or unable to stay safe'),
-      findsOneWidget,
-    );
+    expect(find.text('Need a person, not an answer?'), findsOneWidget);
+    expect(find.text('Therapist or trusted person.'), findsOneWidget);
+    expect(find.textContaining('immediate danger'), findsNothing);
 
-    await tester.tap(find.byKey(LoopFlowScreen.safetySupportKey));
+    await tester.tap(find.byKey(LoopFlowScreen.supportEscapeKey));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const ValueKey('screen-support')), findsOneWidget);
@@ -166,7 +165,7 @@ void main() {
     await _openLoop(tester);
 
     expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
-    expect(find.byKey(LoopFlowScreen.safetySupportKey), findsOneWidget);
+    expect(find.byKey(LoopFlowScreen.supportEscapeKey), findsOneWidget);
 
     final other = find.byKey(const ValueKey('loop-pattern-other'));
     await tester.scrollUntilVisible(
