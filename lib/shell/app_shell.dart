@@ -27,79 +27,84 @@ class AppShell extends StatelessWidget {
         ? NavigationDestinationLabelBehavior.onlyShowSelected
         : NavigationDestinationLabelBehavior.alwaysShow;
     final onHome = navigationShell.currentIndex == 0;
-    final homeBody = Stack(
-      fit: StackFit.expand,
-      children: <Widget>[const _HomeGlassBackdrop(), navigationShell],
-    );
 
     return RepaintBoundary(
       key: captureKey,
       child: Scaffold(
-        backgroundColor: onHome
-            ? Colors.transparent
-            : TrueGroundColors.background,
-        body: SafeArea(child: onHome ? homeBody : navigationShell),
+        backgroundColor: onHome ? Colors.transparent : TrueGroundColors.background,
+        body: SafeArea(
+          child: onHome
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    const _HomeGlassBackdrop(),
+                    navigationShell,
+                  ],
+                )
+              : navigationShell,
+        ),
         bottomNavigationBar: SafeArea(
           top: false,
           child: Semantics(
             container: true,
             label: 'TrueGround primary navigation',
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(22),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.48),
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.96),
-                        width: 1.2,
+            child: SizedBox(
+              height: usesLargeTextLayout ? 100 : 84,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.72),
+                      border: Border(
+                        top: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.98),
+                          width: 1.4,
+                        ),
                       ),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: TrueGroundColors.primary.withValues(alpha: 0.08),
+                          blurRadius: 24,
+                          offset: const Offset(0, -7),
+                        ),
+                      ],
                     ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: TrueGroundColors.primary.withValues(alpha: 0.12),
-                        blurRadius: 28,
-                        offset: const Offset(0, -8),
-                      ),
-                    ],
-                  ),
-                  child: NavigationBar(
-                    height: usesLargeTextLayout ? 100 : null,
-                    backgroundColor: Colors.transparent,
-                    selectedIndex: navigationShell.currentIndex,
-                    labelBehavior: labelBehavior,
-                    onDestinationSelected: _selectDestination,
-                    destinations: const <NavigationDestination>[
-                      NavigationDestination(
-                        icon: Icon(TrueGroundIcons.home),
-                        selectedIcon: Icon(TrueGroundIcons.homeSelected),
-                        label: 'Home',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(TrueGroundIcons.loop),
-                        selectedIcon: Icon(TrueGroundIcons.loop),
-                        label: 'Loop',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(TrueGroundIcons.practice),
-                        selectedIcon: Icon(TrueGroundIcons.practiceSelected),
-                        label: 'Practice',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(TrueGroundIcons.support),
-                        selectedIcon: Icon(TrueGroundIcons.supportSelected),
-                        label: 'Support',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(TrueGroundIcons.profile),
-                        selectedIcon: Icon(TrueGroundIcons.profileSelected),
-                        label: 'Profile',
-                      ),
-                    ],
+                    child: NavigationBar(
+                      height: usesLargeTextLayout ? 100 : 84,
+                      backgroundColor: Colors.transparent,
+                      selectedIndex: navigationShell.currentIndex,
+                      labelBehavior: labelBehavior,
+                      onDestinationSelected: _selectDestination,
+                      destinations: const <NavigationDestination>[
+                        NavigationDestination(
+                          icon: Icon(TrueGroundIcons.home),
+                          selectedIcon: Icon(TrueGroundIcons.homeSelected),
+                          label: 'Home',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(TrueGroundIcons.loop),
+                          selectedIcon: Icon(TrueGroundIcons.loop),
+                          label: 'Loop',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(TrueGroundIcons.practice),
+                          selectedIcon: Icon(TrueGroundIcons.practiceSelected),
+                          label: 'Practice',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(TrueGroundIcons.support),
+                          selectedIcon: Icon(TrueGroundIcons.supportSelected),
+                          label: 'Support',
+                        ),
+                        NavigationDestination(
+                          icon: Icon(TrueGroundIcons.profile),
+                          selectedIcon: Icon(TrueGroundIcons.profileSelected),
+                          label: 'Profile',
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -126,66 +131,52 @@ class _HomeGlassBackdrop extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: <Color>[
-                  Color(0xFFF8F5F2),
-                  Color(0xFFE4F0F4),
-                  Color(0xFFF7EFE9),
+                  Color(0xFFF8F6F3),
+                  Color(0xFFF1F5F4),
+                  Color(0xFFF8F4F0),
                 ],
-                stops: <double>[0, 0.48, 1],
+                stops: <double>[0, 0.52, 1],
               ),
             ),
           ),
           Positioned(
-            top: -34,
-            right: -42,
+            top: -55,
+            right: -65,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              imageFilter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
               child: _GlowOrb(
                 size: 220,
                 colors: <Color>[
-                  const Color(0xFF68B6D0).withValues(alpha: 0.46),
-                  const Color(0xFF68B6D0).withValues(alpha: 0.02),
+                  const Color(0xFF74B8CE).withValues(alpha: 0.19),
+                  const Color(0xFF74B8CE).withValues(alpha: 0.01),
                 ],
               ),
             ),
           ),
           Positioned(
             top: 250,
-            left: -70,
+            left: -90,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+              imageFilter: ImageFilter.blur(sigmaX: 34, sigmaY: 34),
               child: _GlowOrb(
-                size: 210,
+                size: 230,
                 colors: <Color>[
-                  const Color(0xFF9CCDBD).withValues(alpha: 0.40),
-                  const Color(0xFF9CCDBD).withValues(alpha: 0.02),
+                  const Color(0xFF9CCDBD).withValues(alpha: 0.16),
+                  const Color(0xFF9CCDBD).withValues(alpha: 0.01),
                 ],
               ),
             ),
           ),
           Positioned(
-            top: 390,
-            right: -58,
+            top: 430,
+            right: -82,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 17, sigmaY: 17),
+              imageFilter: ImageFilter.blur(sigmaX: 34, sigmaY: 34),
               child: _GlowOrb(
-                size: 205,
+                size: 220,
                 colors: <Color>[
-                  const Color(0xFFE4C5AE).withValues(alpha: 0.36),
-                  const Color(0xFFE4C5AE).withValues(alpha: 0.02),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 96,
-            left: -24,
-            child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: _GlowOrb(
-                size: 190,
-                colors: <Color>[
-                  const Color(0xFF87BFD6).withValues(alpha: 0.28),
-                  const Color(0xFF87BFD6).withValues(alpha: 0.01),
+                  const Color(0xFFE7C8B2).withValues(alpha: 0.15),
+                  const Color(0xFFE7C8B2).withValues(alpha: 0.01),
                 ],
               ),
             ),
