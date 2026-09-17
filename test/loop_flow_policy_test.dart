@@ -20,7 +20,7 @@ void main() {
       loopPatternContent[LoopPattern.intrusive]!.framing,
       contains('will not infer intent'),
     );
-    expect(loopSafetyBoundary, contains('use Support instead'));
+    expect(loopSupportTitle, 'Need a person, not an answer?');
   });
 
   test('LOT 05 policy exposes only the approved bounded action set', () {
@@ -30,6 +30,11 @@ void main() {
       LoopNextAction.humanSupport,
     ]);
     expect(loopActionContent.length, 3);
+  });
+
+  test('LOT 05 keeps the canonical human-support escape hatch', () {
+    expect(loopSupportHelper, 'Therapist or trusted person.');
+    expect(allLoopPolicyCopy, contains(loopSupportTitle));
   });
 
   test('LOT 05 policy has no user-entered free-text model', () {
