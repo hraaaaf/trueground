@@ -86,17 +86,27 @@ abstract final class TrueGroundTheme {
           color: TrueGroundColors.inkMuted,
         ),
       ),
-      navigationBarTheme: const NavigationBarThemeData(
-        height: 64,
-        backgroundColor: TrueGroundColors.surface,
+      navigationBarTheme: NavigationBarThemeData(
+        height: 84,
+        backgroundColor: Colors.transparent,
         indicatorColor: Colors.transparent,
         elevation: 0,
-        labelTextStyle: WidgetStatePropertyAll(
-          TextStyle(fontSize: 11.5, color: TrueGroundColors.primary),
-        ),
-        iconTheme: WidgetStatePropertyAll(
-          IconThemeData(size: 22, color: TrueGroundColors.primary),
-        ),
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12.5,
+            height: 1,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+            color: TrueGroundColors.primary,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            size: selected ? 26 : 24,
+            color: TrueGroundColors.primary,
+          );
+        }),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: TrueGroundColors.primary,
