@@ -1,4 +1,4 @@
-name: TEMP formatter capture
+name: TEMP formatter apply
 
 on:
   pull_request:
@@ -6,14 +6,16 @@ on:
       - lot/04-dashboard-v3-static
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  format-capture:
+  format-apply:
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
+      - name: Checkout head branch
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: Set up Flutter 3.47.2
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
@@ -21,13 +23,16 @@ jobs:
           channel: stable
       - name: Resolve dependencies
         run: flutter pub get
-      - name: Format target files
+      - name: Apply Dart formatter
         run: dart format lib/dashboard/dashboard_v3_screen.dart lib/shell/app_shell.dart
-      - name: Upload formatted sources
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: temp-formatted-sources
-          path: |
-            lib/dashboard/dashboard_v3_screen.dart
-            lib/shell/app_shell.dart
-          retention-days: 1
+      - name: Commit formatted sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add lib/dashboard/dashboard_v3_screen.dart lib/shell/app_shell.dart
+          if git diff --cached --quiet; then
+            echo "No formatting changes to commit"
+          else
+            git commit -m "style: apply Dart formatter to LOT04C"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
