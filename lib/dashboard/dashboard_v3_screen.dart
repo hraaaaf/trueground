@@ -29,153 +29,158 @@ class _TargetDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Center(
-          child: FittedBox(
-            alignment: Alignment.topCenter,
-            fit: BoxFit.contain,
-            child: SizedBox(
-              key: DashboardV3Screen.screenKey,
-              width: _designWidth,
-              height: _designHeight,
-              child: Stack(
-                children: <Widget>[
-                  const Positioned(
-                    left: 19,
-                    right: 19,
-                    top: 10,
-                    height: 38,
-                    child: _BrandHeader(),
-                  ),
-                  const Positioned(
-                    left: 20,
-                    top: 58,
-                    child: Text(
-                      'Good evening',
-                      style: TextStyle(
-                        fontSize: 14.2,
-                        height: 1,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.15,
-                        color: TrueGroundColors.inkMuted,
+        return SingleChildScrollView(
+          child: SizedBox(
+            height: constraints.maxHeight,
+            child: Center(
+              child: FittedBox(
+                alignment: Alignment.topCenter,
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  key: DashboardV3Screen.screenKey,
+                  width: _designWidth,
+                  height: _designHeight,
+                  child: Stack(
+                    children: <Widget>[
+                      const Positioned(
+                        left: 19,
+                        right: 19,
+                        top: 10,
+                        height: 38,
+                        child: _BrandHeader(),
                       ),
-                    ),
-                  ),
-                  const Positioned(
-                    left: 19,
-                    right: 19,
-                    top: 78,
-                    child: Text(
-                      'Choose your next move.',
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 28.5,
-                        height: 1,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.65,
-                        color: TrueGroundColors.primary,
+                      const Positioned(
+                        left: 20,
+                        top: 58,
+                        child: Text(
+                          'Good evening',
+                          style: TextStyle(
+                            fontSize: 14.2,
+                            height: 1,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.15,
+                            color: TrueGroundColors.inkMuted,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const Positioned(
-                    left: 20,
-                    right: 19,
-                    top: 112,
-                    child: Text(
-                      'Make room for uncertainty.\nChoose what matters.',
-                      style: TextStyle(
-                        fontSize: 15.6,
-                        height: 1.25,
-                        fontWeight: FontWeight.w400,
-                        color: TrueGroundColors.inkMuted,
+                      const Positioned(
+                        left: 19,
+                        right: 19,
+                        top: 78,
+                        child: Text(
+                          'Choose your next move.',
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 28.5,
+                            height: 1,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.65,
+                            color: TrueGroundColors.primary,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 19,
-                    right: 19,
-                    top: 160,
-                    height: 122,
-                    child: _HeroCard(onTap: () => context.go('/loop')),
-                  ),
-                  Positioned(
-                    key: DashboardV3Screen.practiceGridKey,
-                    left: 19,
-                    right: 19,
-                    top: 294,
-                    height: 198,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Expanded(
-                          child: _TargetCard(
-                            icon: Icons.pause_rounded,
-                            title: 'Pause the ritual',
-                            description:
-                                'Create space\nbetween the urge\nand the action.',
-                            onTap: () => context.go('/practice'),
+                      const Positioned(
+                        left: 20,
+                        right: 19,
+                        top: 112,
+                        child: Text(
+                          'Make room for uncertainty.\nChoose what matters.',
+                          style: TextStyle(
+                            fontSize: 15.6,
+                            height: 1.25,
+                            fontWeight: FontWeight.w400,
+                            color: TrueGroundColors.inkMuted,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _TargetCard(
-                            icon: Icons.eco_outlined,
-                            title: 'Practice uncertainty',
-                            description:
-                                'Guided exercises to\nbuild tolerance, not\ncertainty.',
-                            onTap: () => context.go('/practice'),
-                          ),
+                      ),
+                      Positioned(
+                        left: 19,
+                        right: 19,
+                        top: 160,
+                        height: 122,
+                        child: _HeroCard(onTap: () => context.go('/loop')),
+                      ),
+                      Positioned(
+                        key: DashboardV3Screen.practiceGridKey,
+                        left: 19,
+                        right: 19,
+                        top: 294,
+                        height: 198,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Expanded(
+                              child: _TargetCard(
+                                icon: Icons.pause_rounded,
+                                title: 'Pause the ritual',
+                                description:
+                                    'Create space\nbetween the urge\nand the action.',
+                                onTap: () => context.go('/practice'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _TargetCard(
+                                icon: Icons.eco_outlined,
+                                title: 'Practice uncertainty',
+                                description:
+                                    'Guided exercises to\nbuild tolerance, not\ncertainty.',
+                                onTap: () => context.go('/practice'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _TargetCard(
+                                icon: Icons.bar_chart_rounded,
+                                title: 'Continue planned practice',
+                                description:
+                                    'Return to your ERP\nexercises at your\npace.',
+                                onTap: () => context.go('/practice'),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _TargetCard(
-                            icon: Icons.bar_chart_rounded,
-                            title: 'Continue planned practice',
-                            description:
-                                'Return to your ERP\nexercises at your\npace.',
-                            onTap: () => context.go('/practice'),
-                          ),
+                      ),
+                      Positioned(
+                        key: DashboardV3Screen.valuesGridKey,
+                        left: 19,
+                        right: 19,
+                        top: 504,
+                        height: 144,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            const Expanded(
+                              child: _WideCard(
+                                icon: Icons.explore_outlined,
+                                title: 'Return to what matters',
+                                description:
+                                    'Work • Family • Rest • Faith •\nFriends',
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _WideCard(
+                                icon: Icons.groups_2_outlined,
+                                title: 'Need a person, not an answer?',
+                                description:
+                                    'Find support from a therapist or\na trusted person.',
+                                onTap: () => context.go('/support'),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const Positioned(
+                        left: 19,
+                        right: 19,
+                        top: 660,
+                        height: 68,
+                        child: _ReviewCard(),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    key: DashboardV3Screen.valuesGridKey,
-                    left: 19,
-                    right: 19,
-                    top: 504,
-                    height: 144,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        const Expanded(
-                          child: _WideCard(
-                            icon: Icons.explore_outlined,
-                            title: 'Return to what matters',
-                            description:
-                                'Work • Family • Rest • Faith •\nFriends',
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: _WideCard(
-                            icon: Icons.groups_2_outlined,
-                            title: 'Need a person, not an answer?',
-                            description:
-                                'Find support from a therapist or\na trusted person.',
-                            onTap: () => context.go('/support'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Positioned(
-                    left: 19,
-                    right: 19,
-                    top: 660,
-                    height: 68,
-                    child: _ReviewCard(),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -302,6 +307,7 @@ class _BrandHeader extends StatelessWidget {
                 SizedBox(width: 7),
                 Text(
                   'TrueGround',
+                  textScaler: TextScaler.noScaling,
                   style: TextStyle(
                     fontSize: 25.5,
                     height: 1,
@@ -488,40 +494,57 @@ class _TargetCard extends StatelessWidget {
       excludeSemantics: true,
       child: _GlassPanel(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 13, 10, 11),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _RoundIcon(icon: icon, size: 44),
-              const SizedBox(height: 10),
-              Text(
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              left: 12,
+              top: 13,
+              child: _RoundIcon(icon: icon, size: 44),
+            ),
+            Positioned(
+              left: 12,
+              right: 8,
+              top: 68,
+              height: 52,
+              child: Text(
                 title,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 17.4,
-                  height: 1.03,
+                  fontSize: 15.8,
+                  height: 1.04,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.25,
+                  letterSpacing: -0.22,
                   color: TrueGroundColors.primary,
                 ),
               ),
-              const Spacer(),
-              Text(
+            ),
+            Positioned(
+              left: 12,
+              right: 6,
+              top: 126,
+              height: 40,
+              child: Text(
                 description,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 12.1,
+                  fontSize: 10.3,
                   height: 1.18,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
-              const SizedBox(height: 7),
-              const Icon(
+            ),
+            const Positioned(
+              left: 10,
+              bottom: 7,
+              child: Icon(
                 Icons.chevron_right_rounded,
                 size: 20,
                 color: TrueGroundColors.inkMuted,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -550,44 +573,57 @@ class _WideCard extends StatelessWidget {
       excludeSemantics: true,
       child: _GlassPanel(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 12, 11, 11),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  _RoundIcon(icon: icon, size: 42),
-                  const Spacer(),
-                  const Icon(
-                    Icons.chevron_right_rounded,
-                    size: 21,
-                    color: TrueGroundColors.inkMuted,
-                  ),
-                ],
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              left: 12,
+              top: 12,
+              child: _RoundIcon(icon: icon, size: 42),
+            ),
+            const Positioned(
+              right: 10,
+              top: 22,
+              child: Icon(
+                Icons.chevron_right_rounded,
+                size: 21,
+                color: TrueGroundColors.inkMuted,
               ),
-              const SizedBox(height: 8),
-              Text(
+            ),
+            Positioned(
+              left: 12,
+              right: 10,
+              top: 62,
+              height: 38,
+              child: Text(
                 title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 17.1,
+                  fontSize: 15.2,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
+                  letterSpacing: -0.18,
                   color: TrueGroundColors.primary,
                 ),
               ),
-              const Spacer(),
-              Text(
+            ),
+            Positioned(
+              left: 12,
+              right: 10,
+              top: 105,
+              height: 30,
+              child: Text(
                 description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 11.9,
-                  height: 1.18,
+                  fontSize: 10.3,
+                  height: 1.16,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
