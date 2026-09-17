@@ -36,7 +36,9 @@ class AppShell extends StatelessWidget {
       key: captureKey,
       child: Scaffold(
         body: SafeArea(
-          child: navigationShell.currentIndex == 0 ? homeBody : navigationShell,
+          child: navigationShell.currentIndex == 0
+              ? homeBody
+              : navigationShell,
         ),
         bottomNavigationBar: SafeArea(
           top: false,
