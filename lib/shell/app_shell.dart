@@ -26,19 +26,14 @@ class AppShell extends StatelessWidget {
         : NavigationDestinationLabelBehavior.alwaysShow;
     final homeBody = Stack(
       fit: StackFit.expand,
-      children: <Widget>[
-        const _HomeGlassBackdrop(),
-        navigationShell,
-      ],
+      children: <Widget>[const _HomeGlassBackdrop(), navigationShell],
     );
 
     return RepaintBoundary(
       key: captureKey,
       child: Scaffold(
         body: SafeArea(
-          child: navigationShell.currentIndex == 0
-              ? homeBody
-              : navigationShell,
+          child: navigationShell.currentIndex == 0 ? homeBody : navigationShell,
         ),
         bottomNavigationBar: SafeArea(
           top: false,
