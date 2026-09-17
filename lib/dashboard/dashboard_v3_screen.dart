@@ -166,90 +166,128 @@ class _PrimaryActionCard extends StatelessWidget {
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
       excludeSemantics: true,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: compact ? 118 : 118),
-            child: Ink(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    TrueGroundColors.primary,
-                    TrueGroundColors.heroBlue,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: TrueGroundColors.heroBlue.withValues(alpha: 0.18),
+              blurRadius: 18,
+              offset: const Offset(0, 7),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: compact ? 118 : 118),
+              child: Ink(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[
+                      TrueGroundColors.primary,
+                      TrueGroundColors.heroBlue,
+                    ],
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.48),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Stack(
+                  children: <Widget>[
+                    const Positioned.fill(
+                      child: CustomPaint(painter: _HeroBackdropPainter()),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 18,
+                      right: 18,
+                      child: Container(
+                        height: 1,
+                        color: Colors.white.withValues(alpha: 0.4),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 13,
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: TrueGroundColors.heroIconBlue.withValues(
+                                alpha: 0.94,
+                              ),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.18),
+                              ),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                  blurRadius: 9,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.keyboard_double_arrow_down_rounded,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  "I'm stuck in a loop",
+                                  style: TextStyle(
+                                    fontFamily: 'serif',
+                                    fontSize: 20,
+                                    height: 1.08,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  'Notice the urge. Pause before the ritual.',
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    height: 1.22,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const ExcludeSemantics(
+                            child: Icon(
+                              Icons.chevron_right_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              child: Stack(
-                children: <Widget>[
-                  const Positioned.fill(
-                    child: CustomPaint(painter: _HeroBackdropPainter()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 13,
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Container(
-                          width: 52,
-                          height: 52,
-                          decoration: const BoxDecoration(
-                            color: TrueGroundColors.heroIconBlue,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.keyboard_double_arrow_down_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                "I'm stuck in a loop",
-                                style: TextStyle(
-                                  fontFamily: 'serif',
-                                  fontSize: 20,
-                                  height: 1.08,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                'Notice the urge. Pause before the ritual.',
-                                style: TextStyle(
-                                  fontSize: 11.5,
-                                  height: 1.22,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const ExcludeSemantics(
-                          child: Icon(
-                            Icons.chevron_right_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
@@ -390,88 +428,112 @@ class _MiniActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(18);
+
     return Semantics(
       button: true,
       label: '$title. $description',
       excludeSemantics: true,
-      child: Material(
-        color: TrueGroundColors.surface,
-        elevation: 1,
-        shadowColor: TrueGroundColors.primary.withValues(alpha: 0.12),
-        surfaceTintColor: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              compact ? 10 : 12,
-              compact ? 10 : 11,
-              compact ? 8 : 10,
-              compact ? 9 : 10,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: TrueGroundColors.primary.withValues(alpha: 0.09),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final title = Text(
-                  this.title,
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: compact ? 13.1 : 14.5,
-                    height: 1.05,
-                    fontWeight: FontWeight.w600,
-                    color: TrueGroundColors.primary,
-                  ),
-                );
-                final description = Text(
-                  this.description,
-                  style: TextStyle(
-                    fontSize: compact ? 9.1 : 9.8,
-                    height: 1.2,
-                    color: TrueGroundColors.inkMuted,
-                  ),
-                );
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _RoundIcon(icon: icon, compact: true),
-                    const SizedBox(height: 8),
-                    if (constraints.hasBoundedHeight)
-                      SizedBox(
-                        height: compact ? 44 : 48,
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: title,
-                        ),
-                      )
-                    else
-                      title,
-                    const SizedBox(height: 4),
-                    if (constraints.hasBoundedHeight)
-                      SizedBox(
-                        height: compact ? 46 : 42,
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: description,
-                        ),
-                      )
-                    else
-                      description,
-                    if (constraints.hasBoundedHeight)
-                      const Spacer()
-                    else
-                      const SizedBox(height: 8),
-                    const Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Icon(
-                        Icons.chevron_right_rounded,
-                        size: 18,
-                        color: TrueGroundColors.inkMuted,
-                      ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.54),
+              blurRadius: 5,
+              offset: const Offset(-1, -1),
+            ),
+          ],
+        ),
+        child: Material(
+          color: TrueGroundColors.surface.withValues(alpha: 0.82),
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius,
+            side: BorderSide(
+              color: Colors.white.withValues(alpha: 0.82),
+              width: 1,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                compact ? 10 : 12,
+                compact ? 10 : 11,
+                compact ? 8 : 10,
+                compact ? 9 : 10,
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final title = Text(
+                    this.title,
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: compact ? 13.1 : 14.5,
+                      height: 1.05,
+                      fontWeight: FontWeight.w600,
+                      color: TrueGroundColors.primary,
                     ),
-                  ],
-                );
-              },
+                  );
+                  final description = Text(
+                    this.description,
+                    style: TextStyle(
+                      fontSize: compact ? 9.1 : 9.8,
+                      height: 1.2,
+                      color: TrueGroundColors.inkMuted,
+                    ),
+                  );
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _RoundIcon(icon: icon, compact: true),
+                      const SizedBox(height: 8),
+                      if (constraints.hasBoundedHeight)
+                        SizedBox(
+                          height: compact ? 44 : 48,
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: title,
+                          ),
+                        )
+                      else
+                        title,
+                      const SizedBox(height: 4),
+                      if (constraints.hasBoundedHeight)
+                        SizedBox(
+                          height: compact ? 46 : 42,
+                          child: Align(
+                            alignment: Alignment.topLeft,
+                            child: description,
+                          ),
+                        )
+                      else
+                        description,
+                      if (constraints.hasBoundedHeight)
+                        const Spacer()
+                      else
+                        const SizedBox(height: 8),
+                      const Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Icon(
+                          Icons.chevron_right_rounded,
+                          size: 18,
+                          color: TrueGroundColors.inkMuted,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -497,6 +559,7 @@ class _DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(18);
     final content = LayoutBuilder(
       builder: (context, constraints) {
         final title = Text(
@@ -571,14 +634,36 @@ class _DetailCard extends StatelessWidget {
       button: onTap != null,
       label: '$title. $description',
       excludeSemantics: true,
-      child: Material(
-        color: TrueGroundColors.surface,
-        elevation: 1,
-        shadowColor: TrueGroundColors.primary.withValues(alpha: 0.1),
-        surfaceTintColor: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        clipBehavior: Clip.antiAlias,
-        child: onTap == null ? content : InkWell(onTap: onTap, child: content),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: TrueGroundColors.primary.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.5),
+              blurRadius: 5,
+              offset: const Offset(-1, -1),
+            ),
+          ],
+        ),
+        child: Material(
+          color: TrueGroundColors.surface.withValues(alpha: 0.82),
+          elevation: 0,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius,
+            side: BorderSide(
+              color: Colors.white.withValues(alpha: 0.82),
+              width: 1,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: onTap == null ? content : InkWell(onTap: onTap, child: content),
+        ),
       ),
     );
   }
@@ -597,13 +682,22 @@ class _ReviewCard extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 60),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: TrueGroundColors.surface,
+          color: TrueGroundColors.surface.withValues(alpha: 0.82),
           borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.82),
+            width: 1,
+          ),
           boxShadow: <BoxShadow>[
             BoxShadow(
               color: TrueGroundColors.primary.withValues(alpha: 0.08),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.5),
+              blurRadius: 5,
+              offset: const Offset(-1, -1),
             ),
           ],
         ),
@@ -662,9 +756,13 @@ class _RoundIcon extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
-        color: TrueGroundColors.iconWash,
+      decoration: BoxDecoration(
+        color: TrueGroundColors.iconWash.withValues(alpha: 0.76),
         shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.64),
+          width: 0.8,
+        ),
       ),
       child: Icon(icon, size: compact ? 21 : 24, color: TrueGroundColors.teal),
     );
