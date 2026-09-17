@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   dashboard-v3:
@@ -15,9 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 2
 
       - name: Set up Flutter 3.47.2
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
@@ -29,21 +26,22 @@ jobs:
       - name: Resolve dependencies
         run: flutter pub get
 
-      - name: Canonical Dart format repair
-        if: github.event_name == 'pull_request'
+      - name: Produce canonical formatted sources
         shell: bash
         run: |
           set -euo pipefail
           dart format lib/dashboard/dashboard_v3_screen.dart lib/shell/app_shell.dart
-          git checkout HEAD^ -- .github/workflows/lot04_dashboard_v3.yml
-          if git diff --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add lib/dashboard/dashboard_v3_screen.dart lib/shell/app_shell.dart .github/workflows/lot04_dashboard_v3.yml
-          git commit -m "style(lot04d): apply canonical Dart formatter"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          mkdir -p build/formatter
+          cp lib/dashboard/dashboard_v3_screen.dart build/formatter/dashboard_v3_screen.dart
+          cp lib/shell/app_shell.dart build/formatter/app_shell.dart
+
+      - name: Upload canonical formatted sources
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot04d-canonical-format
+          path: build/formatter/
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Format check
         run: dart format --output=none --set-exit-if-changed lib test
