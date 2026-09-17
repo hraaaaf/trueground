@@ -300,7 +300,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: compact ? 270 : 232,
+      height: compact ? 238 : 232,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -342,7 +342,7 @@ class _ValuesActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.valuesGridKey,
-      height: compact ? 192 : 172,
+      height: compact ? 164 : 172,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -405,10 +405,10 @@ class _MiniActionCard extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              compact ? 10 : 11,
-              10,
-              compact ? 7 : 9,
-              8,
+              compact ? 9 : 11,
+              compact ? 9 : 10,
+              compact ? 6 : 9,
+              compact ? 7 : 8,
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -421,7 +421,7 @@ class _MiniActionCard extends StatelessWidget {
                       title,
                       style: TextStyle(
                         fontFamily: 'serif',
-                        fontSize: compact ? 14 : 14.5,
+                        fontSize: compact ? 12.8 : 14.5,
                         height: 1.05,
                         fontWeight: FontWeight.w600,
                         color: TrueGroundColors.primary,
@@ -431,7 +431,7 @@ class _MiniActionCard extends StatelessWidget {
                     Text(
                       description,
                       style: TextStyle(
-                        fontSize: compact ? 9.4 : 9.8,
+                        fontSize: compact ? 8.8 : 9.8,
                         height: 1.2,
                         color: TrueGroundColors.inkMuted,
                       ),
@@ -477,7 +477,12 @@ class _DetailCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: EdgeInsets.fromLTRB(compact ? 11 : 12, 9, 10, 9),
+      padding: EdgeInsets.fromLTRB(
+        compact ? 10 : 12,
+        compact ? 8 : 9,
+        compact ? 9 : 10,
+        compact ? 8 : 9,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -497,7 +502,7 @@ class _DetailCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontFamily: 'serif',
-              fontSize: compact ? 13.8 : 14.2,
+              fontSize: compact ? 12.6 : 14.2,
               height: 1.05,
               fontWeight: FontWeight.w600,
               color: TrueGroundColors.primary,
@@ -507,7 +512,7 @@ class _DetailCard extends StatelessWidget {
           Text(
             description,
             style: TextStyle(
-              fontSize: compact ? 9.4 : 9.7,
+              fontSize: compact ? 8.8 : 9.7,
               height: 1.18,
               color: TrueGroundColors.inkMuted,
             ),
