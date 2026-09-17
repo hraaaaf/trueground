@@ -93,9 +93,16 @@ void main() {
 
     await tester.tap(find.byKey(const ValueKey('loop-pattern-certainty')));
     await tester.pumpAndSettle();
-    await tester.tap(
-      find.byKey(const ValueKey('loop-action-practiceUncertainty')),
+    final practice = find.byKey(
+      const ValueKey('loop-action-practiceUncertainty'),
     );
+    await tester.scrollUntilVisible(
+      practice,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(practice);
     await tester.pumpAndSettle();
 
     expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
