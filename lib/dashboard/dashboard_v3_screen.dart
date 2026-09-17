@@ -546,10 +546,7 @@ class _DetailCard extends StatelessWidget {
               if (constraints.hasBoundedHeight)
                 SizedBox(
                   height: compact ? 28 : 32,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: title,
-                  ),
+                  child: Align(alignment: Alignment.topLeft, child: title),
                 )
               else
                 title,
