@@ -89,8 +89,7 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final usesLargeTextLayout =
-        MediaQuery.textScalerOf(context).scale(1) > 1.4;
+    final usesLargeTextLayout = MediaQuery.textScalerOf(context).scale(1) > 1.4;
 
     const mark = SizedBox(
       width: 32,
@@ -137,11 +136,7 @@ class _BrandHeader extends StatelessWidget {
                 children: <Widget>[
                   Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      mark,
-                      SizedBox(width: 6),
-                      wordmark,
-                    ],
+                    children: <Widget>[mark, SizedBox(width: 6), wordmark],
                   ),
                   Align(alignment: Alignment.centerRight, child: themeIcon),
                 ],
@@ -536,8 +531,7 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label:
-          'Review patterns when useful. Look at recurring themes, without judgment.',
+      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: Container(
         constraints: const BoxConstraints(minHeight: 60),
