@@ -109,7 +109,7 @@ class _TargetDashboard extends StatelessWidget {
                         Expanded(
                           child: _TargetCard(
                             icon: Icons.pause_rounded,
-                            title: 'Pause the\nritual',
+                            title: 'Pause the ritual',
                             description:
                                 'Create space\nbetween the urge\nand the action.',
                             onTap: () => context.go('/practice'),
@@ -119,7 +119,7 @@ class _TargetDashboard extends StatelessWidget {
                         Expanded(
                           child: _TargetCard(
                             icon: Icons.eco_outlined,
-                            title: 'Practice\nuncertainty',
+                            title: 'Practice uncertainty',
                             description:
                                 'Guided exercises to\nbuild tolerance, not\ncertainty.',
                             onTap: () => context.go('/practice'),
@@ -129,7 +129,7 @@ class _TargetDashboard extends StatelessWidget {
                         Expanded(
                           child: _TargetCard(
                             icon: Icons.bar_chart_rounded,
-                            title: 'Continue\nplanned\npractice',
+                            title: 'Continue planned practice',
                             description:
                                 'Return to your ERP\nexercises at your\npace.',
                             onTap: () => context.go('/practice'),
@@ -159,7 +159,7 @@ class _TargetDashboard extends StatelessWidget {
                         Expanded(
                           child: _WideCard(
                             icon: Icons.groups_2_outlined,
-                            title: 'Need a person, not an\nanswer?',
+                            title: 'Need a person, not an answer?',
                             description:
                                 'Find support from a therapist or\na trusted person.',
                             onTap: () => context.go('/support'),
@@ -198,7 +198,10 @@ class _AccessibleDashboard extends StatelessWidget {
         children: <Widget>[
           const _BrandHeader(),
           const SizedBox(height: 16),
-          const Text('Good evening', style: TextStyle(color: TrueGroundColors.inkMuted)),
+          const Text(
+            'Good evening',
+            style: TextStyle(color: TrueGroundColors.inkMuted),
+          ),
           const SizedBox(height: 6),
           const Text(
             'Choose your next move.',
@@ -212,7 +215,11 @@ class _AccessibleDashboard extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             'Make room for uncertainty.\nChoose what matters.',
-            style: TextStyle(fontSize: 16, height: 1.3, color: TrueGroundColors.inkMuted),
+            style: TextStyle(
+              fontSize: 16,
+              height: 1.3,
+              color: TrueGroundColors.inkMuted,
+            ),
           ),
           const SizedBox(height: 16),
           _HeroCard(onTap: () => context.go('/loop')),
@@ -230,7 +237,8 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.eco_outlined,
                 title: 'Practice uncertainty',
-                description: 'Guided exercises to build tolerance, not certainty.',
+                description:
+                    'Guided exercises to build tolerance, not certainty.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: 8),
@@ -255,7 +263,8 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.groups_2_outlined,
                 title: 'Need a person, not an answer?',
-                description: 'Find support from a therapist or a trusted person.',
+                description:
+                    'Find support from a therapist or a trusted person.',
                 onTap: () => context.go('/support'),
               ),
             ],
@@ -285,7 +294,11 @@ class _BrandHeader extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(width: 28, height: 28, child: CustomPaint(painter: _LeafMarkPainter())),
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CustomPaint(painter: _LeafMarkPainter()),
+                ),
                 SizedBox(width: 7),
                 Text(
                   'TrueGround',
@@ -302,7 +315,11 @@ class _BrandHeader extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: ExcludeSemantics(
-                child: Icon(Icons.dark_mode_rounded, size: 21, color: TrueGroundColors.primary),
+                child: Icon(
+                  Icons.dark_mode_rounded,
+                  size: 21,
+                  color: TrueGroundColors.primary,
+                ),
               ),
             ),
           ],
@@ -336,7 +353,11 @@ class _HeroCard extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: <Color>[Color(0xFF0B4A85), Color(0xFF1A64A2), Color(0xFF3094D0)],
+                colors: <Color>[
+                  Color(0xFF0B4A85),
+                  Color(0xFF1A64A2),
+                  Color(0xFF3094D0),
+                ],
               ),
               boxShadow: <BoxShadow>[
                 BoxShadow(
@@ -348,7 +369,9 @@ class _HeroCard extends StatelessWidget {
             ),
             child: Stack(
               children: <Widget>[
-                const Positioned.fill(child: CustomPaint(painter: _HeroBackdropPainter())),
+                const Positioned.fill(
+                  child: CustomPaint(painter: _HeroBackdropPainter()),
+                ),
                 Positioned.fill(
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -366,7 +389,10 @@ class _HeroCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
                   child: Row(
                     children: <Widget>[
                       Container(
@@ -375,7 +401,9 @@ class _HeroCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: const Color(0xFF258DDB),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.18),
+                          ),
                           boxShadow: <BoxShadow>[
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.12),
@@ -384,7 +412,11 @@ class _HeroCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.keyboard_double_arrow_down_rounded, color: Colors.white, size: 31),
+                        child: const Icon(
+                          Icons.keyboard_double_arrow_down_rounded,
+                          color: Colors.white,
+                          size: 31,
+                        ),
                       ),
                       const SizedBox(width: 13),
                       const Expanded(
@@ -407,13 +439,21 @@ class _HeroCard extends StatelessWidget {
                             Text(
                               'Notice the urge. Pause before the ritual.',
                               maxLines: 2,
-                              style: TextStyle(fontSize: 12.7, height: 1.2, color: Colors.white),
+                              style: TextStyle(
+                                fontSize: 12.7,
+                                height: 1.2,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 6),
-                      const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 28),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ],
                   ),
                 ),
@@ -427,7 +467,12 @@ class _HeroCard extends StatelessWidget {
 }
 
 class _TargetCard extends StatelessWidget {
-  const _TargetCard({required this.icon, required this.title, required this.description, required this.onTap});
+  const _TargetCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String title;
@@ -438,7 +483,8 @@ class _TargetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label:
+          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
         onTap: onTap,
@@ -462,10 +508,18 @@ class _TargetCard extends StatelessWidget {
               const Spacer(),
               Text(
                 description,
-                style: const TextStyle(fontSize: 12.1, height: 1.18, color: TrueGroundColors.inkMuted),
+                style: const TextStyle(
+                  fontSize: 12.1,
+                  height: 1.18,
+                  color: TrueGroundColors.inkMuted,
+                ),
               ),
               const SizedBox(height: 7),
-              const Icon(Icons.chevron_right_rounded, size: 20, color: TrueGroundColors.inkMuted),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: TrueGroundColors.inkMuted,
+              ),
             ],
           ),
         ),
@@ -475,7 +529,12 @@ class _TargetCard extends StatelessWidget {
 }
 
 class _WideCard extends StatelessWidget {
-  const _WideCard({required this.icon, required this.title, required this.description, this.onTap});
+  const _WideCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.onTap,
+  });
 
   final IconData icon;
   final String title;
@@ -486,7 +545,8 @@ class _WideCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: onTap != null,
-      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label:
+          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
         onTap: onTap,
@@ -499,7 +559,11 @@ class _WideCard extends StatelessWidget {
                 children: <Widget>[
                   _RoundIcon(icon: icon, size: 42),
                   const Spacer(),
-                  const Icon(Icons.chevron_right_rounded, size: 21, color: TrueGroundColors.inkMuted),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 21,
+                    color: TrueGroundColors.inkMuted,
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -516,7 +580,11 @@ class _WideCard extends StatelessWidget {
               const Spacer(),
               Text(
                 description,
-                style: const TextStyle(fontSize: 11.9, height: 1.18, color: TrueGroundColors.inkMuted),
+                style: const TextStyle(
+                  fontSize: 11.9,
+                  height: 1.18,
+                  color: TrueGroundColors.inkMuted,
+                ),
               ),
             ],
           ),
@@ -532,7 +600,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
+      label:
+          'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: _GlassPanel(
         child: const Padding(
@@ -561,12 +630,20 @@ class _ReviewCard extends StatelessWidget {
                     Text(
                       'Look at recurring themes, without judgment.',
                       maxLines: 1,
-                      style: TextStyle(fontSize: 11.6, height: 1.1, color: TrueGroundColors.inkMuted),
+                      style: TextStyle(
+                        fontSize: 11.6,
+                        height: 1.1,
+                        color: TrueGroundColors.inkMuted,
+                      ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, size: 21, color: TrueGroundColors.inkMuted),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 21,
+                color: TrueGroundColors.inkMuted,
+              ),
             ],
           ),
         ),
@@ -576,7 +653,12 @@ class _ReviewCard extends StatelessWidget {
 }
 
 class _AccessibleCard extends StatelessWidget {
-  const _AccessibleCard({required this.icon, required this.title, required this.description, this.onTap});
+  const _AccessibleCard({
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.onTap,
+  });
 
   final IconData icon;
   final String title;
@@ -598,13 +680,30 @@ class _AccessibleCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: TrueGroundColors.primary)),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: TrueGroundColors.primary,
+                    ),
+                  ),
                   const SizedBox(height: 6),
-                  Text(description, style: const TextStyle(fontSize: 15, height: 1.3, color: TrueGroundColors.inkMuted)),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      height: 1.3,
+                      color: TrueGroundColors.inkMuted,
+                    ),
+                  ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: TrueGroundColors.inkMuted),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: TrueGroundColors.inkMuted,
+            ),
           ],
         ),
       ),
@@ -653,7 +752,10 @@ class _GlassPanel extends StatelessWidget {
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: radius,
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.96), width: 1.45),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.96),
+                      width: 1.45,
+                    ),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -671,7 +773,10 @@ class _GlassPanel extends StatelessWidget {
                 left: 14,
                 right: 14,
                 child: IgnorePointer(
-                  child: Container(height: 1, color: Colors.white.withValues(alpha: 0.96)),
+                  child: Container(
+                    height: 1,
+                    color: Colors.white.withValues(alpha: 0.96),
+                  ),
                 ),
               ),
             ],
@@ -696,7 +801,10 @@ class _RoundIcon extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: const Color(0xFFDDEFF2).withValues(alpha: 0.72),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.92), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.92),
+          width: 1,
+        ),
       ),
       child: Icon(icon, size: size * 0.49, color: const Color(0xFF2C8E9E)),
     );
@@ -713,14 +821,42 @@ class _LeafMarkPainter extends CustomPainter {
 
     final left = Path()
       ..moveTo(size.width * 0.48, size.height * 0.82)
-      ..cubicTo(size.width * 0.10, size.height * 0.70, size.width * 0.10, size.height * 0.25, size.width * 0.18, size.height * 0.18)
-      ..cubicTo(size.width * 0.42, size.height * 0.20, size.width * 0.56, size.height * 0.42, size.width * 0.48, size.height * 0.82)
+      ..cubicTo(
+        size.width * 0.10,
+        size.height * 0.70,
+        size.width * 0.10,
+        size.height * 0.25,
+        size.width * 0.18,
+        size.height * 0.18,
+      )
+      ..cubicTo(
+        size.width * 0.42,
+        size.height * 0.20,
+        size.width * 0.56,
+        size.height * 0.42,
+        size.width * 0.48,
+        size.height * 0.82,
+      )
       ..close();
 
     final right = Path()
       ..moveTo(size.width * 0.50, size.height * 0.82)
-      ..cubicTo(size.width * 0.48, size.height * 0.42, size.width * 0.70, size.height * 0.15, size.width * 0.90, size.height * 0.12)
-      ..cubicTo(size.width * 0.94, size.height * 0.40, size.width * 0.78, size.height * 0.68, size.width * 0.50, size.height * 0.82)
+      ..cubicTo(
+        size.width * 0.48,
+        size.height * 0.42,
+        size.width * 0.70,
+        size.height * 0.15,
+        size.width * 0.90,
+        size.height * 0.12,
+      )
+      ..cubicTo(
+        size.width * 0.94,
+        size.height * 0.40,
+        size.width * 0.78,
+        size.height * 0.68,
+        size.width * 0.50,
+        size.height * 0.82,
+      )
       ..close();
 
     canvas.drawPath(left, teal);
