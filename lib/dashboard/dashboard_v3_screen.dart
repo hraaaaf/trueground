@@ -38,7 +38,7 @@ class DashboardV3Screen extends StatelessWidget {
                   const Text(
                     'Good evening',
                     style: TextStyle(
-                      fontFamily: 'serif',
+                      fontFamily: 'Georgia',
                       fontSize: 13.5,
                       height: 1.15,
                       color: TrueGroundColors.primary,
@@ -50,7 +50,7 @@ class DashboardV3Screen extends StatelessWidget {
                     child: Text(
                       'Choose your next move.',
                       style: TextStyle(
-                        fontFamily: 'serif',
+                        fontFamily: 'Georgia',
                         fontSize: compactPhone ? 28 : 29,
                         height: 1.02,
                         fontWeight: FontWeight.w700,
@@ -107,7 +107,7 @@ class _BrandHeader extends StatelessWidget {
     const wordmark = Text(
       'TrueGround',
       style: TextStyle(
-        fontFamily: 'serif',
+        fontFamily: 'Georgia',
         fontSize: 22,
         height: 1,
         fontWeight: FontWeight.w600,
@@ -219,7 +219,7 @@ class _PrimaryActionCard extends StatelessWidget {
                               Text(
                                 "I'm stuck in a loop",
                                 style: TextStyle(
-                                  fontFamily: 'serif',
+                                  fontFamily: 'Georgia',
                                   fontSize: 20,
                                   height: 1.08,
                                   fontWeight: FontWeight.w600,
@@ -420,7 +420,7 @@ class _MiniActionCard extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontFamily: 'serif',
+                        fontFamily: 'Georgia',
                         fontSize: compact ? 12.8 : 14.5,
                         height: 1.05,
                         fontWeight: FontWeight.w600,
@@ -501,7 +501,7 @@ class _DetailCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontFamily: 'serif',
+              fontFamily: 'Georgia',
               fontSize: compact ? 12.6 : 14.2,
               height: 1.05,
               fontWeight: FontWeight.w600,
@@ -573,7 +573,7 @@ class _ReviewCard extends StatelessWidget {
                   Text(
                     'Review patterns when useful',
                     style: TextStyle(
-                      fontFamily: 'serif',
+                      fontFamily: 'Georgia',
                       fontSize: 14,
                       height: 1.08,
                       fontWeight: FontWeight.w600,
