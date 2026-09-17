@@ -13,73 +13,81 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScale = MediaQuery.textScalerOf(context).scale(1);
-    final compactPhone = MediaQuery.sizeOf(context).width <= 370;
     final stackedCards = textScale > 1.4;
 
-    return SingleChildScrollView(
-      key: screenKey,
-      padding: EdgeInsets.fromLTRB(
-        compactPhone ? 16 : 18,
-        8,
-        compactPhone ? 16 : 18,
-        12,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const _BrandHeader(),
-              const SizedBox(height: 10),
-              const Text(
-                'Good evening',
-                style: TextStyle(
-                  fontFamily: 'serif',
-                  fontSize: 13.5,
-                  height: 1.15,
-                  color: TrueGroundColors.primary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Semantics(
-                header: true,
-                child: Text(
-                  'Choose your next move.',
-                  style: TextStyle(
-                    fontFamily: 'serif',
-                    fontSize: compactPhone ? 28 : 29,
-                    height: 1.02,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.55,
-                    color: TrueGroundColors.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                'Make room for uncertainty.\nChoose what matters.',
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.25,
-                  color: TrueGroundColors.inkMuted,
-                ),
-              ),
-              const SizedBox(height: 14),
-              _PrimaryActionCard(
-                compact: compactPhone,
-                onTap: () => context.go('/loop'),
-              ),
-              const SizedBox(height: 10),
-              _PracticeActions(stacked: stackedCards, compact: compactPhone),
-              const SizedBox(height: 8),
-              _ValuesActions(stacked: stackedCards, compact: compactPhone),
-              const SizedBox(height: 8),
-              const _ReviewCard(),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compactPhone = constraints.maxWidth <= 370;
+
+        return SingleChildScrollView(
+          key: screenKey,
+          padding: EdgeInsets.fromLTRB(
+            compactPhone ? 16 : 18,
+            8,
+            compactPhone ? 16 : 18,
+            12,
           ),
-        ),
-      ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  const _BrandHeader(),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Good evening',
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: 13.5,
+                      height: 1.15,
+                      color: TrueGroundColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      'Choose your next move.',
+                      style: TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: compactPhone ? 28 : 29,
+                        height: 1.02,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.55,
+                        color: TrueGroundColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Make room for uncertainty.\nChoose what matters.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.25,
+                      color: TrueGroundColors.inkMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _PrimaryActionCard(
+                    compact: compactPhone,
+                    onTap: () => context.go('/loop'),
+                  ),
+                  const SizedBox(height: 10),
+                  _PracticeActions(
+                    stacked: stackedCards,
+                    compact: compactPhone,
+                  ),
+                  const SizedBox(height: 8),
+                  _ValuesActions(stacked: stackedCards, compact: compactPhone),
+                  const SizedBox(height: 8),
+                  const _ReviewCard(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
