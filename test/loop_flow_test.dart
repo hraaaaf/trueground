@@ -48,7 +48,14 @@ void main() {
       await _useSurface(tester, const Size(390, 844));
       await _openLoop(tester);
 
-      await tester.tap(find.byKey(ValueKey('loop-pattern-${entry.key}')));
+      final pattern = find.byKey(ValueKey('loop-pattern-${entry.key}'));
+      await tester.scrollUntilVisible(
+        pattern,
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(pattern);
       await tester.pumpAndSettle();
 
       expect(find.byKey(LoopFlowScreen.actionStepKey), findsOneWidget);
