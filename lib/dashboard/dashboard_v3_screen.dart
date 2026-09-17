@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -171,9 +173,9 @@ class _PrimaryActionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: <BoxShadow>[
             BoxShadow(
-              color: TrueGroundColors.heroBlue.withValues(alpha: 0.18),
-              blurRadius: 18,
-              offset: const Offset(0, 7),
+              color: TrueGroundColors.heroBlue.withValues(alpha: 0.26),
+              blurRadius: 22,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -196,8 +198,8 @@ class _PrimaryActionCard extends StatelessWidget {
                     ],
                   ),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.48),
-                    width: 1,
+                    color: Colors.white.withValues(alpha: 0.72),
+                    width: 1.2,
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -206,13 +208,31 @@ class _PrimaryActionCard extends StatelessWidget {
                     const Positioned.fill(
                       child: CustomPaint(painter: _HeroBackdropPainter()),
                     ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: <Color>[
+                                Colors.white.withValues(alpha: 0.16),
+                                Colors.white.withValues(alpha: 0.02),
+                                Colors.white.withValues(alpha: 0.08),
+                              ],
+                              stops: const <double>[0, 0.52, 1],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Positioned(
                       top: 0,
                       left: 18,
                       right: 18,
                       child: Container(
                         height: 1,
-                        color: Colors.white.withValues(alpha: 0.4),
+                        color: Colors.white.withValues(alpha: 0.58),
                       ),
                     ),
                     Padding(
@@ -419,122 +439,84 @@ class _MiniActionCard extends StatelessWidget {
     required this.compact,
     required this.onTap,
   });
-
   final IconData icon;
   final String title;
   final String description;
   final bool compact;
   final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(18);
-
     return Semantics(
       button: true,
       label: '$title. $description',
       excludeSemantics: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: TrueGroundColors.primary.withValues(alpha: 0.09),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: Colors.white.withValues(alpha: 0.54),
-              blurRadius: 5,
-              offset: const Offset(-1, -1),
-            ),
-          ],
-        ),
-        child: Material(
-          color: TrueGroundColors.surface.withValues(alpha: 0.82),
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius,
-            side: BorderSide(
-              color: Colors.white.withValues(alpha: 0.82),
-              width: 1,
-            ),
+      child: _GlassPanel(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            compact ? 10 : 12,
+            compact ? 10 : 11,
+            compact ? 8 : 10,
+            compact ? 9 : 10,
           ),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                compact ? 10 : 12,
-                compact ? 10 : 11,
-                compact ? 8 : 10,
-                compact ? 9 : 10,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final title = Text(
-                    this.title,
-                    style: TextStyle(
-                      fontFamily: 'serif',
-                      fontSize: compact ? 13.1 : 14.5,
-                      height: 1.05,
-                      fontWeight: FontWeight.w600,
-                      color: TrueGroundColors.primary,
-                    ),
-                  );
-                  final description = Text(
-                    this.description,
-                    style: TextStyle(
-                      fontSize: compact ? 9.1 : 9.8,
-                      height: 1.2,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final title = Text(
+                this.title,
+                style: TextStyle(
+                  fontFamily: 'serif',
+                  fontSize: compact ? 13.1 : 14.5,
+                  height: 1.05,
+                  fontWeight: FontWeight.w600,
+                  color: TrueGroundColors.primary,
+                ),
+              );
+              final description = Text(
+                this.description,
+                style: TextStyle(
+                  fontSize: compact ? 9.1 : 9.8,
+                  height: 1.2,
+                  color: TrueGroundColors.inkMuted,
+                ),
+              );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _RoundIcon(icon: icon, compact: true),
+                  const SizedBox(height: 8),
+                  if (constraints.hasBoundedHeight)
+                    SizedBox(
+                      height: compact ? 44 : 48,
+                      child: Align(alignment: Alignment.topLeft, child: title),
+                    )
+                  else
+                    title,
+                  const SizedBox(height: 4),
+                  if (constraints.hasBoundedHeight)
+                    SizedBox(
+                      height: compact ? 46 : 42,
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: description,
+                      ),
+                    )
+                  else
+                    description,
+                  if (constraints.hasBoundedHeight)
+                    const Spacer()
+                  else
+                    const SizedBox(height: 8),
+                  const Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      size: 18,
                       color: TrueGroundColors.inkMuted,
                     ),
-                  );
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _RoundIcon(icon: icon, compact: true),
-                      const SizedBox(height: 8),
-                      if (constraints.hasBoundedHeight)
-                        SizedBox(
-                          height: compact ? 44 : 48,
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: title,
-                          ),
-                        )
-                      else
-                        title,
-                      const SizedBox(height: 4),
-                      if (constraints.hasBoundedHeight)
-                        SizedBox(
-                          height: compact ? 46 : 42,
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: description,
-                          ),
-                        )
-                      else
-                        description,
-                      if (constraints.hasBoundedHeight)
-                        const Spacer()
-                      else
-                        const SizedBox(height: 8),
-                      const Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Icon(
-                          Icons.chevron_right_rounded,
-                          size: 18,
-                          color: TrueGroundColors.inkMuted,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -550,16 +532,13 @@ class _DetailCard extends StatelessWidget {
     required this.compact,
     this.onTap,
   });
-
   final IconData icon;
   final String title;
   final String description;
   final bool compact;
   final VoidCallback? onTap;
-
   @override
   Widget build(BuildContext context) {
-    final borderRadius = BorderRadius.circular(18);
     final content = LayoutBuilder(
       builder: (context, constraints) {
         final title = Text(
@@ -580,7 +559,6 @@ class _DetailCard extends StatelessWidget {
             color: TrueGroundColors.inkMuted,
           ),
         );
-
         return Padding(
           padding: EdgeInsets.fromLTRB(
             compact ? 10 : 11,
@@ -629,117 +607,140 @@ class _DetailCard extends StatelessWidget {
         );
       },
     );
-
     return Semantics(
       button: onTap != null,
       label: '$title. $description',
       excludeSemantics: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: TrueGroundColors.primary.withValues(alpha: 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: Colors.white.withValues(alpha: 0.5),
-              blurRadius: 5,
-              offset: const Offset(-1, -1),
-            ),
-          ],
-        ),
-        child: Material(
-          color: TrueGroundColors.surface.withValues(alpha: 0.82),
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius,
-            side: BorderSide(
-              color: Colors.white.withValues(alpha: 0.82),
-              width: 1,
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: onTap == null
-              ? content
-              : InkWell(onTap: onTap, child: content),
-        ),
-      ),
+      child: _GlassPanel(onTap: onTap, child: content),
     );
   }
 }
 
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard();
-
   @override
   Widget build(BuildContext context) {
     return Semantics(
       label:
           'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 60),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: TrueGroundColors.surface.withValues(alpha: 0.82),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.82),
-            width: 1,
+      child: _GlassPanel(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 60),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              children: <Widget>[
+                _RoundIcon(icon: Icons.bar_chart_rounded, compact: true),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Review patterns when useful',
+                        style: TextStyle(
+                          fontFamily: 'serif',
+                          fontSize: 14,
+                          height: 1.08,
+                          fontWeight: FontWeight.w600,
+                          color: TrueGroundColors.primary,
+                        ),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        'Look at recurring themes, without judgment.',
+                        style: TextStyle(
+                          fontSize: 9.7,
+                          height: 1.16,
+                          color: TrueGroundColors.inkMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: TrueGroundColors.inkMuted,
+                ),
+              ],
+            ),
           ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: TrueGroundColors.primary.withValues(alpha: 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: Colors.white.withValues(alpha: 0.5),
-              blurRadius: 5,
-              offset: const Offset(-1, -1),
-            ),
-          ],
         ),
-        child: const Row(
-          children: <Widget>[
-            _RoundIcon(icon: Icons.bar_chart_rounded, compact: true),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Review patterns when useful',
-                    style: TextStyle(
-                      fontFamily: 'serif',
-                      fontSize: 14,
-                      height: 1.08,
-                      fontWeight: FontWeight.w600,
-                      color: TrueGroundColors.primary,
+      ),
+    );
+  }
+}
+
+class _GlassPanel extends StatelessWidget {
+  const _GlassPanel({required this.child, this.onTap});
+  final Widget child;
+  final VoidCallback? onTap;
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(18);
+    final materialChild = Material(
+      type: MaterialType.transparency,
+      child: onTap == null ? child : InkWell(onTap: onTap, child: child),
+    );
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: TrueGroundColors.primary.withValues(alpha: 0.13),
+            blurRadius: 22,
+            offset: const Offset(0, 9),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.68),
+            blurRadius: 8,
+            offset: const Offset(-2, -2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: Stack(
+            fit: StackFit.passthrough,
+            children: <Widget>[
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[
+                        Colors.white.withValues(alpha: 0.72),
+                        Colors.white.withValues(alpha: 0.48),
+                      ],
+                    ),
+                    borderRadius: borderRadius,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.94),
+                      width: 1.2,
                     ),
                   ),
-                  SizedBox(height: 3),
-                  Text(
-                    'Look at recurring themes, without judgment.',
-                    style: TextStyle(
-                      fontSize: 9.7,
-                      height: 1.16,
-                      color: TrueGroundColors.inkMuted,
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 20,
-              color: TrueGroundColors.inkMuted,
-            ),
-          ],
+              materialChild,
+              Positioned(
+                top: 1,
+                left: 14,
+                right: 14,
+                child: IgnorePointer(
+                  child: Container(
+                    height: 1,
+                    color: Colors.white.withValues(alpha: 0.88),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -759,11 +760,11 @@ class _RoundIcon extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: TrueGroundColors.iconWash.withValues(alpha: 0.76),
+        color: Colors.white.withValues(alpha: 0.52),
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.64),
-          width: 0.8,
+          color: Colors.white.withValues(alpha: 0.86),
+          width: 1,
         ),
       ),
       child: Icon(icon, size: compact ? 21 : 24, color: TrueGroundColors.teal),

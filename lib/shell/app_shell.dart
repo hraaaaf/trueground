@@ -35,7 +35,9 @@ class AppShell extends StatelessWidget {
     return RepaintBoundary(
       key: captureKey,
       child: Scaffold(
-        backgroundColor: onHome ? Colors.transparent : TrueGroundColors.background,
+        backgroundColor: onHome
+            ? Colors.transparent
+            : TrueGroundColors.background,
         body: SafeArea(child: onHome ? homeBody : navigationShell),
         bottomNavigationBar: SafeArea(
           top: false,
