@@ -104,7 +104,7 @@ class _TargetDashboard extends StatelessWidget {
                         key: DashboardV3Screen.practiceGridKey,
                         left: 19,
                         right: 19,
-                        top: 272,
+                        top: 280,
                         height: 166,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -145,7 +145,7 @@ class _TargetDashboard extends StatelessWidget {
                         key: DashboardV3Screen.valuesGridKey,
                         left: 19,
                         right: 19,
-                        top: 458,
+                        top: 478,
                         height: 119,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,7 +174,7 @@ class _TargetDashboard extends StatelessWidget {
                       const Positioned(
                         left: 19,
                         right: 19,
-                        top: 597,
+                        top: 629,
                         height: 61,
                         child: _ReviewCard(),
                       ),
@@ -511,7 +511,7 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 13.2,
+                  fontSize: 13.8,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.22,
@@ -529,7 +529,7 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 9.8,
+                  fontSize: 10.8,
                   height: 1.18,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -617,7 +617,7 @@ class _WideCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 9.8,
+                  fontSize: 10.8,
                   height: 1.16,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -667,7 +667,7 @@ class _ReviewCard extends StatelessWidget {
                       'Look at recurring themes, without judgment.',
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 9.8,
+                        fontSize: 10.5,
                         height: 1.1,
                         color: TrueGroundColors.inkMuted,
                       ),
