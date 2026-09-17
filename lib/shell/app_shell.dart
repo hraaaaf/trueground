@@ -31,7 +31,9 @@ class AppShell extends StatelessWidget {
     return RepaintBoundary(
       key: captureKey,
       child: Scaffold(
-        backgroundColor: onHome ? Colors.transparent : TrueGroundColors.background,
+        backgroundColor: onHome
+            ? Colors.transparent
+            : TrueGroundColors.background,
         body: SafeArea(
           child: onHome
               ? Stack(
@@ -51,7 +53,9 @@ class AppShell extends StatelessWidget {
             child: SizedBox(
               height: usesLargeTextLayout ? 100 : 84,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(26),
+                ),
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
                   child: DecoratedBox(
@@ -73,12 +77,16 @@ class AppShell extends StatelessWidget {
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: const Color(0xFF0A456C).withValues(alpha: 0.12),
+                          color: const Color(0xFF0A456C).withValues(
+                            alpha: 0.12,
+                          ),
                           blurRadius: 28,
                           offset: const Offset(0, -7),
                         ),
                         BoxShadow(
-                          color: const Color(0xFF57B9C7).withValues(alpha: 0.08),
+                          color: const Color(0xFF57B9C7).withValues(
+                            alpha: 0.08,
+                          ),
                           blurRadius: 22,
                           offset: const Offset(0, -4),
                         ),
