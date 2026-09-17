@@ -1,3 +1,4 @@
+# Target-ratio execution workflow; remove after the product patch lands.
 name: LOT04D target ratio pass
 
 on:
