@@ -503,7 +503,7 @@ class _TargetCard extends StatelessWidget {
             ),
             Positioned(
               left: 12,
-              right: 8,
+              right: 16,
               top: 55,
               height: 43,
               child: Text(
@@ -529,7 +529,7 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.8,
+                  fontSize: 10.3,
                   height: 1.18,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -617,7 +617,7 @@ class _WideCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.8,
+                  fontSize: 9.8,
                   height: 1.16,
                   color: TrueGroundColors.inkMuted,
                 ),
