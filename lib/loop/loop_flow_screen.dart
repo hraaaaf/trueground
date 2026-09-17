@@ -51,10 +51,13 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
     switch (_action) {
       case LoopNextAction.practiceUncertainty:
         context.go('/practice');
+        return;
       case LoopNextAction.returnHome:
         context.go('/');
+        return;
       case LoopNextAction.humanSupport:
         context.go('/support');
+        return;
       case null:
         return;
     }
