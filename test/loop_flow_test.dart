@@ -175,6 +175,29 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(other.hitTestable(), findsOneWidget);
+    await tester.tap(other);
+    await tester.pumpAndSettle();
+
+    final returnHome = find.byKey(const ValueKey('loop-action-returnHome'));
+    await tester.scrollUntilVisible(
+      returnHome,
+      160,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(returnHome.hitTestable(), findsOneWidget);
+    await tester.tap(returnHome);
+    await tester.pumpAndSettle();
+
+    final continueAction = find.byKey(const ValueKey('loop-continue-action'));
+    await tester.scrollUntilVisible(
+      continueAction,
+      160,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    expect(continueAction.hitTestable(), findsOneWidget);
+    expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
