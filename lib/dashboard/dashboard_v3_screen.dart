@@ -38,7 +38,7 @@ class DashboardV3Screen extends StatelessWidget {
                   const Text(
                     'Good evening',
                     style: TextStyle(
-                      fontFamily: 'Georgia',
+                      fontFamily: 'serif',
                       fontSize: 13.5,
                       height: 1.15,
                       color: TrueGroundColors.primary,
@@ -50,7 +50,7 @@ class DashboardV3Screen extends StatelessWidget {
                     child: Text(
                       'Choose your next move.',
                       style: TextStyle(
-                        fontFamily: 'Georgia',
+                        fontFamily: 'serif',
                         fontSize: compactPhone ? 28 : 29,
                         height: 1.02,
                         fontWeight: FontWeight.w700,
@@ -107,7 +107,7 @@ class _BrandHeader extends StatelessWidget {
     const wordmark = Text(
       'TrueGround',
       style: TextStyle(
-        fontFamily: 'Georgia',
+        fontFamily: 'serif',
         fontSize: 22,
         height: 1,
         fontWeight: FontWeight.w600,
@@ -219,7 +219,7 @@ class _PrimaryActionCard extends StatelessWidget {
                               Text(
                                 "I'm stuck in a loop",
                                 style: TextStyle(
-                                  fontFamily: 'Georgia',
+                                  fontFamily: 'serif',
                                   fontSize: 20,
                                   height: 1.08,
                                   fontWeight: FontWeight.w600,
@@ -420,8 +420,8 @@ class _MiniActionCard extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontFamily: 'Georgia',
-                        fontSize: compact ? 12.8 : 14.5,
+                        fontFamily: 'serif',
+                        fontSize: compact ? 13.1 : 14.5,
                         height: 1.05,
                         fontWeight: FontWeight.w600,
                         color: TrueGroundColors.primary,
@@ -431,7 +431,7 @@ class _MiniActionCard extends StatelessWidget {
                     Text(
                       description,
                       style: TextStyle(
-                        fontSize: compact ? 8.8 : 9.8,
+                        fontSize: compact ? 9.1 : 9.8,
                         height: 1.2,
                         color: TrueGroundColors.inkMuted,
                       ),
@@ -501,8 +501,8 @@ class _DetailCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontFamily: 'Georgia',
-              fontSize: compact ? 12.6 : 14.2,
+              fontFamily: 'serif',
+              fontSize: compact ? 12.9 : 14.2,
               height: 1.05,
               fontWeight: FontWeight.w600,
               color: TrueGroundColors.primary,
@@ -512,7 +512,7 @@ class _DetailCard extends StatelessWidget {
           Text(
             description,
             style: TextStyle(
-              fontSize: compact ? 8.8 : 9.7,
+              fontSize: compact ? 9.0 : 9.7,
               height: 1.18,
               color: TrueGroundColors.inkMuted,
             ),
@@ -573,7 +573,7 @@ class _ReviewCard extends StatelessWidget {
                   Text(
                     'Review patterns when useful',
                     style: TextStyle(
-                      fontFamily: 'Georgia',
+                      fontFamily: 'serif',
                       fontSize: 14,
                       height: 1.08,
                       fontWeight: FontWeight.w600,
