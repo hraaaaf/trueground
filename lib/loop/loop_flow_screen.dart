@@ -102,14 +102,14 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
               switch (_stage) {
                 _LoopStage.pattern => _PatternStep(onSelected: _selectPattern),
                 _LoopStage.action => _ActionStep(
-                    pattern: _pattern!,
-                    onSelected: _selectAction,
-                    onBack: _returnToPatterns,
-                  ),
+                  pattern: _pattern!,
+                  onSelected: _selectAction,
+                  onBack: _returnToPatterns,
+                ),
                 _LoopStage.complete => _CompleteStep(
-                    action: _action!,
-                    onContinue: () => _continueSelectedAction(context),
-                  ),
+                  action: _action!,
+                  onContinue: () => _continueSelectedAction(context),
+                ),
               },
             ],
           ),
@@ -275,10 +275,7 @@ class _ActionStep extends StatelessWidget {
 }
 
 class _CompleteStep extends StatelessWidget {
-  const _CompleteStep({
-    required this.action,
-    required this.onContinue,
-  });
+  const _CompleteStep({required this.action, required this.onContinue});
 
   final LoopNextAction action;
   final VoidCallback onContinue;
@@ -303,9 +300,7 @@ class _CompleteStep extends StatelessWidget {
         FilledButton(
           key: const ValueKey('loop-continue-action'),
           onPressed: onContinue,
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(52),
-          ),
+          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: Text(content.continueLabel),
         ),
         const SizedBox(height: 10),
@@ -388,10 +383,7 @@ class _ChoiceCard extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 64),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: <Widget>[
                   Expanded(
