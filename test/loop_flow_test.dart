@@ -114,7 +114,14 @@ void main() {
     await _useSurface(tester, const Size(390, 844));
     await _openLoop(tester);
 
-    await tester.tap(find.byKey(const ValueKey('loop-pattern-other')));
+    final other = find.byKey(const ValueKey('loop-pattern-other'));
+    await tester.scrollUntilVisible(
+      other,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(other);
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('loop-action-returnHome')));
     await tester.pumpAndSettle();
