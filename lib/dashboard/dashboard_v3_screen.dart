@@ -113,7 +113,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _TargetCard(
                                 icon: Icons.pause_rounded,
                                 title: 'Pause the ritual',
-                                description: 'Create space\nbetween urge\nand action.',
+                                description:
+                                    'Create space\nbetween urge\nand action.',
                                 accent: const Color(0xFF48AAB5),
                                 onTap: () => context.go('/practice'),
                               ),
@@ -133,7 +134,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _TargetCard(
                                 icon: Icons.bar_chart_rounded,
                                 title: 'Continue planned practice',
-                                description: 'Return to planned\npractice at your\npace.',
+                                description:
+                                    'Return to planned\npractice at your\npace.',
                                 accent: const Color(0xFF4F9FC4),
                                 onTap: () => context.go('/practice'),
                               ),
@@ -154,7 +156,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _WideCard(
                                 icon: Icons.explore_outlined,
                                 title: 'Return to what matters',
-                                description: 'Work • Family • Rest\nFaith • Friends',
+                                description:
+                                    'Work • Family • Rest\nFaith • Friends',
                                 accent: Color(0xFF6AAFA5),
                               ),
                             ),
@@ -242,7 +245,8 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.eco_outlined,
                 title: 'Practice uncertainty',
-                description: 'Guided exercises to build tolerance, not certainty.',
+                description:
+                    'Guided exercises to build tolerance, not certainty.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: 8),
@@ -267,7 +271,8 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.groups_2_outlined,
                 title: 'Need a person, not an answer?',
-                description: 'Find support from a therapist or a trusted person.',
+                description:
+                    'Find support from a therapist or a trusted person.',
                 onTap: () => context.go('/support'),
               ),
             ],
@@ -417,14 +422,19 @@ class _HeroCard extends StatelessWidget {
                           height: 110,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFFA6ECFF).withValues(alpha: 0.16),
+                            color: const Color(0xFFA6ECFF).withValues(
+                              alpha: 0.16,
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     child: Row(
                       children: <Widget>[
                         Container(
@@ -526,7 +536,8 @@ class _TargetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label:
+          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
         accent: accent,
@@ -608,7 +619,8 @@ class _WideCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: onTap != null,
-      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label:
+          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
         accent: accent,
@@ -676,7 +688,8 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
+      label:
+          'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: _GlassPanel(
         accent: const Color(0xFF62A8B8),
@@ -940,7 +953,11 @@ class _RoundIcon extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(icon, size: size * 0.49, color: const Color(0xFF238A9A)),
+      child: Icon(
+        icon,
+        size: size * 0.49,
+        color: const Color(0xFF238A9A),
+      ),
     );
   }
 }
