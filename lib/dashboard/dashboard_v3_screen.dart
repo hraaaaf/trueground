@@ -358,7 +358,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: compact ? 206 : 196,
+      height: compact ? 206 : 198,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
