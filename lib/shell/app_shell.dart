@@ -20,7 +20,8 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scaledLabelSize = MediaQuery.textScalerOf(context).scale(12);
-    final labelBehavior = scaledLabelSize > 18
+    final usesLargeTextLayout = scaledLabelSize > 18;
+    final labelBehavior = usesLargeTextLayout
         ? NavigationDestinationLabelBehavior.onlyShowSelected
         : NavigationDestinationLabelBehavior.alwaysShow;
 
@@ -34,6 +35,7 @@ class AppShell extends StatelessWidget {
             container: true,
             label: 'TrueGround primary navigation',
             child: NavigationBar(
+              height: usesLargeTextLayout ? 96 : null,
               selectedIndex: navigationShell.currentIndex,
               labelBehavior: labelBehavior,
               onDestinationSelected: _selectDestination,

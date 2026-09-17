@@ -7,90 +7,87 @@ class DashboardV3Screen extends StatelessWidget {
   const DashboardV3Screen({super.key});
 
   static const screenKey = ValueKey('screen-home-dashboard-v3');
+  static const practiceGridKey = ValueKey('dashboard-practice-grid');
+  static const valuesGridKey = ValueKey('dashboard-values-grid');
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final stackedCards = textScale > 1.4;
 
-    return SingleChildScrollView(
-      key: screenKey,
-      padding: const EdgeInsets.fromLTRB(
-        TrueGroundSpacing.md,
-        TrueGroundSpacing.md,
-        TrueGroundSpacing.md,
-        TrueGroundSpacing.xl,
-      ),
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const _BrandHeader(),
-              const SizedBox(height: TrueGroundSpacing.lg),
-              Text(
-                'Welcome.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: TrueGroundColors.inkMuted,
-                ),
-              ),
-              const SizedBox(height: TrueGroundSpacing.xs),
-              Semantics(
-                header: true,
-                child: Text(
-                  'Choose your next move.',
-                  style: theme.textTheme.headlineSmall,
-                ),
-              ),
-              const SizedBox(height: TrueGroundSpacing.sm),
-              Text(
-                'Make room for uncertainty. Choose what matters.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: TrueGroundColors.inkMuted,
-                ),
-              ),
-              const SizedBox(height: TrueGroundSpacing.lg),
-              _PrimaryActionCard(onTap: () => context.go('/loop')),
-              const SizedBox(height: TrueGroundSpacing.md),
-              _ActionCard(
-                icon: Icons.pause_circle_outline_rounded,
-                title: 'Pause the ritual',
-                onTap: () => context.go('/practice'),
-              ),
-              const SizedBox(height: TrueGroundSpacing.sm),
-              _ActionCard(
-                icon: Icons.waves_rounded,
-                title: 'Practice uncertainty',
-                onTap: () => context.go('/practice'),
-              ),
-              const SizedBox(height: TrueGroundSpacing.sm),
-              _ActionCard(
-                icon: Icons.play_circle_outline_rounded,
-                title: 'Continue planned practice',
-                onTap: () => context.go('/practice'),
-              ),
-              const SizedBox(height: TrueGroundSpacing.md),
-              const _StaticCard(
-                icon: Icons.favorite_outline_rounded,
-                title: 'Return to what matters',
-              ),
-              const SizedBox(height: TrueGroundSpacing.sm),
-              _ActionCard(
-                icon: Icons.people_outline_rounded,
-                title: 'Need a person, not an answer?',
-                onTap: () => context.go('/support'),
-                quiet: true,
-              ),
-              const SizedBox(height: TrueGroundSpacing.md),
-              const _StaticCard(
-                icon: Icons.history_rounded,
-                title: 'Review patterns when useful',
-                muted: true,
-              ),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compactPhone = constraints.maxWidth <= 370;
+
+        return SingleChildScrollView(
+          key: screenKey,
+          padding: EdgeInsets.fromLTRB(
+            compactPhone ? 16 : 18,
+            8,
+            compactPhone ? 16 : 18,
+            12,
           ),
-        ),
-      ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  const _BrandHeader(),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Good evening',
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: 13.5,
+                      height: 1.15,
+                      color: TrueGroundColors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      'Choose your next move.',
+                      style: TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: compactPhone ? 28 : 29,
+                        height: 1.02,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.55,
+                        color: TrueGroundColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Make room for uncertainty.\nChoose what matters.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.25,
+                      color: TrueGroundColors.inkMuted,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  _PrimaryActionCard(
+                    compact: compactPhone,
+                    onTap: () => context.go('/loop'),
+                  ),
+                  const SizedBox(height: 10),
+                  _PracticeActions(
+                    stacked: stackedCards,
+                    compact: compactPhone,
+                  ),
+                  const SizedBox(height: 8),
+                  _ValuesActions(stacked: stackedCards, compact: compactPhone),
+                  const SizedBox(height: 8),
+                  const _ReviewCard(),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -100,117 +97,160 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final usesLargeTextLayout = MediaQuery.textScalerOf(context).scale(1) > 1.4;
+
+    const mark = SizedBox(
+      width: 32,
+      height: 32,
+      child: CustomPaint(painter: _LeafMarkPainter()),
+    );
+    const wordmark = Text(
+      'TrueGround',
+      style: TextStyle(
+        fontFamily: 'serif',
+        fontSize: 22,
+        height: 1,
+        fontWeight: FontWeight.w600,
+        color: TrueGroundColors.primary,
+      ),
+    );
+    const themeIcon = ExcludeSemantics(
+      child: Icon(
+        Icons.dark_mode_rounded,
+        size: 21,
+        color: TrueGroundColors.primary,
+      ),
+    );
 
     return Semantics(
       container: true,
-      label: 'TrueGround. Less checking. More living.',
+      label: 'TrueGround',
       excludeSemantics: true,
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 40,
-            height: 40,
-            decoration: const BoxDecoration(
-              color: TrueGroundColors.primaryContainer,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.landscape_rounded,
-              color: TrueGroundColors.primary,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: TrueGroundSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: usesLargeTextLayout
+          ? const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  'TrueGround',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: TrueGroundColors.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  'Less checking. More living.',
-                  style: theme.textTheme.bodyMedium,
-                ),
+                mark,
+                SizedBox(width: 6),
+                Expanded(child: wordmark),
+                SizedBox(width: 8),
+                themeIcon,
               ],
+            )
+          : const SizedBox(
+              height: 38,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[mark, SizedBox(width: 6), wordmark],
+                  ),
+                  Align(alignment: Alignment.centerRight, child: themeIcon),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
     );
   }
 }
 
 class _PrimaryActionCard extends StatelessWidget {
-  const _PrimaryActionCard({required this.onTap});
+  const _PrimaryActionCard({required this.compact, required this.onTap});
 
+  final bool compact;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Semantics(
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
       excludeSemantics: true,
       child: Material(
-        color: TrueGroundColors.primary,
-        borderRadius: BorderRadius.circular(TrueGroundRadii.card),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(TrueGroundRadii.card),
-          child: Padding(
-            padding: const EdgeInsets.all(TrueGroundSpacing.lg),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(
-                      TrueGroundRadii.control,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: compact ? 118 : 118),
+            child: Ink(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    TrueGroundColors.primary,
+                    TrueGroundColors.heroBlue,
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: <Widget>[
+                  const Positioned.fill(
+                    child: CustomPaint(painter: _HeroBackdropPainter()),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 13,
+                    ),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 52,
+                          height: 52,
+                          decoration: const BoxDecoration(
+                            color: TrueGroundColors.heroIconBlue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.keyboard_double_arrow_down_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "I'm stuck in a loop",
+                                style: TextStyle(
+                                  fontFamily: 'serif',
+                                  fontSize: 20,
+                                  height: 1.08,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                'Notice the urge. Pause before the ritual.',
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  height: 1.22,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const ExcludeSemantics(
+                          child: Icon(
+                            Icons.chevron_right_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: const Icon(
-                    Icons.refresh_rounded,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-                ),
-                const SizedBox(width: TrueGroundSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        "I'm stuck in a loop",
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: TrueGroundSpacing.xs),
-                      Text(
-                        'Notice the urge. Pause before the ritual.',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: TrueGroundSpacing.sm),
-                const ExcludeSemantics(
-                  child: Icon(Icons.arrow_forward_rounded, color: Colors.white),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -219,68 +259,198 @@ class _PrimaryActionCard extends StatelessWidget {
   }
 }
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
+class _PracticeActions extends StatelessWidget {
+  const _PracticeActions({required this.stacked, required this.compact});
+
+  final bool stacked;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = <Widget>[
+      _MiniActionCard(
+        icon: Icons.pause_rounded,
+        title: 'Pause the ritual',
+        description: 'Create space between the urge and the action.',
+        compact: compact,
+        onTap: () => context.go('/practice'),
+      ),
+      _MiniActionCard(
+        icon: Icons.eco_outlined,
+        title: 'Practice uncertainty',
+        description: 'Guided exercises to build tolerance, not certainty.',
+        compact: compact,
+        onTap: () => context.go('/practice'),
+      ),
+      _MiniActionCard(
+        icon: Icons.bar_chart_rounded,
+        title: 'Continue planned practice',
+        description: 'Return to your ERP exercises at your pace.',
+        compact: compact,
+        onTap: () => context.go('/practice'),
+      ),
+    ];
+
+    if (stacked) {
+      return Column(
+        key: DashboardV3Screen.practiceGridKey,
+        children: _withVerticalGaps(cards),
+      );
+    }
+
+    return SizedBox(
+      key: DashboardV3Screen.practiceGridKey,
+      height: compact ? 238 : 232,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _withHorizontalGaps(cards),
+      ),
+    );
+  }
+}
+
+class _ValuesActions extends StatelessWidget {
+  const _ValuesActions({required this.stacked, required this.compact});
+
+  final bool stacked;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = <Widget>[
+      _DetailCard(
+        icon: Icons.explore_outlined,
+        title: 'Return to what matters',
+        description: 'Work • Family • Rest • Faith • Friends',
+        compact: compact,
+      ),
+      _DetailCard(
+        icon: Icons.groups_2_outlined,
+        title: 'Need a person, not an answer?',
+        description: 'Find support from a therapist or a trusted person.',
+        compact: compact,
+        onTap: () => context.go('/support'),
+      ),
+    ];
+
+    if (stacked) {
+      return Column(
+        key: DashboardV3Screen.valuesGridKey,
+        children: _withVerticalGaps(cards),
+      );
+    }
+
+    return SizedBox(
+      key: DashboardV3Screen.valuesGridKey,
+      height: compact ? 164 : 172,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: _withHorizontalGaps(cards),
+      ),
+    );
+  }
+}
+
+List<Widget> _withHorizontalGaps(List<Widget> children) {
+  final result = <Widget>[];
+  for (var index = 0; index < children.length; index += 1) {
+    if (index > 0) {
+      result.add(const SizedBox(width: 8));
+    }
+    result.add(Expanded(child: children[index]));
+  }
+  return result;
+}
+
+List<Widget> _withVerticalGaps(List<Widget> children) {
+  final result = <Widget>[];
+  for (var index = 0; index < children.length; index += 1) {
+    if (index > 0) {
+      result.add(const SizedBox(height: 8));
+    }
+    result.add(children[index]);
+  }
+  return result;
+}
+
+class _MiniActionCard extends StatelessWidget {
+  const _MiniActionCard({
     required this.icon,
     required this.title,
+    required this.description,
+    required this.compact,
     required this.onTap,
-    this.quiet = false,
   });
 
   final IconData icon;
   final String title;
+  final String description;
+  final bool compact;
   final VoidCallback onTap;
-  final bool quiet;
 
   @override
   Widget build(BuildContext context) {
-    final background = quiet
-        ? TrueGroundColors.surface
-        : TrueGroundColors.primaryContainer;
-
     return Semantics(
       button: true,
-      label: title,
+      label: '$title. $description',
       excludeSemantics: true,
       child: Material(
-        color: background,
-        borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+        color: TrueGroundColors.surface,
+        elevation: 1,
+        shadowColor: TrueGroundColors.primary.withValues(alpha: 0.12),
+        surfaceTintColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(TrueGroundRadii.control),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 64),
-            padding: const EdgeInsets.symmetric(
-              horizontal: TrueGroundSpacing.md,
-              vertical: TrueGroundSpacing.md,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              compact ? 9 : 11,
+              compact ? 9 : 10,
+              compact ? 6 : 9,
+              compact ? 7 : 8,
             ),
-            decoration: quiet
-                ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                      TrueGroundRadii.control,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _RoundIcon(icon: icon, compact: true),
+                    const SizedBox(height: 7),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: compact ? 13.1 : 14.5,
+                        height: 1.05,
+                        fontWeight: FontWeight.w600,
+                        color: TrueGroundColors.primary,
+                      ),
                     ),
-                    border: Border.all(color: TrueGroundColors.outline),
-                  )
-                : null,
-            child: Row(
-              children: <Widget>[
-                Icon(icon, color: TrueGroundColors.primary, size: 24),
-                const SizedBox(width: TrueGroundSpacing.md),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-                const SizedBox(width: TrueGroundSpacing.sm),
-                const ExcludeSemantics(
-                  child: Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 16,
-                    color: TrueGroundColors.inkMuted,
-                  ),
-                ),
-              ],
+                    const SizedBox(height: 5),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: compact ? 9.1 : 9.8,
+                        height: 1.2,
+                        color: TrueGroundColors.inkMuted,
+                      ),
+                    ),
+                    if (constraints.hasBoundedHeight)
+                      const Spacer()
+                    else
+                      const SizedBox(height: 8),
+                    const Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Icon(
+                        Icons.chevron_right_rounded,
+                        size: 18,
+                        color: TrueGroundColors.inkMuted,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -289,43 +459,264 @@ class _ActionCard extends StatelessWidget {
   }
 }
 
-class _StaticCard extends StatelessWidget {
-  const _StaticCard({
+class _DetailCard extends StatelessWidget {
+  const _DetailCard({
     required this.icon,
     required this.title,
-    this.muted = false,
+    required this.description,
+    required this.compact,
+    this.onTap,
   });
 
   final IconData icon;
   final String title;
-  final bool muted;
+  final String description;
+  final bool compact;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(minHeight: 64),
-      padding: const EdgeInsets.symmetric(
-        horizontal: TrueGroundSpacing.md,
-        vertical: TrueGroundSpacing.md,
+    final content = Padding(
+      padding: EdgeInsets.fromLTRB(
+        compact ? 10 : 12,
+        compact ? 8 : 9,
+        compact ? 9 : 10,
+        compact ? 8 : 9,
       ),
-      decoration: BoxDecoration(
-        color: muted ? TrueGroundColors.surfaceMuted : TrueGroundColors.surface,
-        borderRadius: BorderRadius.circular(TrueGroundRadii.control),
-        border: muted ? null : Border.all(color: TrueGroundColors.outline),
-      ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Icon(
-            icon,
-            color: muted ? TrueGroundColors.inkMuted : TrueGroundColors.primary,
-            size: 24,
+          Row(
+            children: <Widget>[
+              _RoundIcon(icon: icon, compact: true),
+              const Spacer(),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 19,
+                color: TrueGroundColors.inkMuted,
+              ),
+            ],
           ),
-          const SizedBox(width: TrueGroundSpacing.md),
-          Expanded(
-            child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'serif',
+              fontSize: compact ? 12.9 : 14.2,
+              height: 1.05,
+              fontWeight: FontWeight.w600,
+              color: TrueGroundColors.primary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            description,
+            style: TextStyle(
+              fontSize: compact ? 9.0 : 9.7,
+              height: 1.18,
+              color: TrueGroundColors.inkMuted,
+            ),
           ),
         ],
       ),
     );
+
+    return Semantics(
+      button: onTap != null,
+      label: '$title. $description',
+      excludeSemantics: true,
+      child: Material(
+        color: TrueGroundColors.surface,
+        elevation: 1,
+        shadowColor: TrueGroundColors.primary.withValues(alpha: 0.1),
+        surfaceTintColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: onTap == null ? content : InkWell(onTap: onTap, child: content),
+      ),
+    );
   }
+}
+
+class _ReviewCard extends StatelessWidget {
+  const _ReviewCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label:
+          'Review patterns when useful. Look at recurring themes, without judgment.',
+      excludeSemantics: true,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 60),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: TrueGroundColors.surface,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: TrueGroundColors.primary.withValues(alpha: 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Row(
+          children: <Widget>[
+            _RoundIcon(icon: Icons.bar_chart_rounded, compact: true),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Review patterns when useful',
+                    style: TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: 14,
+                      height: 1.08,
+                      fontWeight: FontWeight.w600,
+                      color: TrueGroundColors.primary,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Look at recurring themes, without judgment.',
+                    style: TextStyle(
+                      fontSize: 9.7,
+                      height: 1.16,
+                      color: TrueGroundColors.inkMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: TrueGroundColors.inkMuted,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RoundIcon extends StatelessWidget {
+  const _RoundIcon({required this.icon, this.compact = false});
+
+  final IconData icon;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = compact ? 38.0 : 44.0;
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        color: TrueGroundColors.iconWash,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: compact ? 21 : 24, color: TrueGroundColors.teal),
+    );
+  }
+}
+
+class _LeafMarkPainter extends CustomPainter {
+  const _LeafMarkPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final navy = Paint()..color = TrueGroundColors.primary;
+    final teal = Paint()..color = TrueGroundColors.teal;
+
+    final left = Path()
+      ..moveTo(size.width * 0.48, size.height * 0.82)
+      ..cubicTo(
+        size.width * 0.10,
+        size.height * 0.70,
+        size.width * 0.10,
+        size.height * 0.25,
+        size.width * 0.18,
+        size.height * 0.18,
+      )
+      ..cubicTo(
+        size.width * 0.42,
+        size.height * 0.20,
+        size.width * 0.56,
+        size.height * 0.42,
+        size.width * 0.48,
+        size.height * 0.82,
+      )
+      ..close();
+
+    final right = Path()
+      ..moveTo(size.width * 0.50, size.height * 0.82)
+      ..cubicTo(
+        size.width * 0.48,
+        size.height * 0.42,
+        size.width * 0.70,
+        size.height * 0.15,
+        size.width * 0.90,
+        size.height * 0.12,
+      )
+      ..cubicTo(
+        size.width * 0.94,
+        size.height * 0.40,
+        size.width * 0.78,
+        size.height * 0.68,
+        size.width * 0.50,
+        size.height * 0.82,
+      )
+      ..close();
+
+    canvas.drawPath(left, teal);
+    canvas.drawPath(right, navy);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _HeroBackdropPainter extends CustomPainter {
+  const _HeroBackdropPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final fill = Paint()..color = Colors.white.withValues(alpha: 0.055);
+    final line = Paint()
+      ..color = Colors.white.withValues(alpha: 0.09)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final ridge = Path()
+      ..moveTo(0, size.height * 0.88)
+      ..lineTo(size.width * 0.18, size.height * 0.74)
+      ..lineTo(size.width * 0.28, size.height * 0.82)
+      ..lineTo(size.width * 0.43, size.height * 0.66)
+      ..lineTo(size.width * 0.58, size.height * 0.80)
+      ..lineTo(size.width * 0.72, size.height * 0.70)
+      ..lineTo(size.width, size.height * 0.84)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(ridge, fill);
+
+    final ridgeLine = Path()
+      ..moveTo(0, size.height * 0.88)
+      ..lineTo(size.width * 0.18, size.height * 0.74)
+      ..lineTo(size.width * 0.28, size.height * 0.82)
+      ..lineTo(size.width * 0.43, size.height * 0.66)
+      ..lineTo(size.width * 0.58, size.height * 0.80)
+      ..lineTo(size.width * 0.72, size.height * 0.70)
+      ..lineTo(size.width, size.height * 0.84);
+    canvas.drawPath(ridgeLine, line);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
