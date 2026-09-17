@@ -286,8 +286,8 @@ Gate 4 is not fully verified; Support and Practice remain placeholders; dedicate
 
 ### État
 
-`RUNTIME VERIFIED / DOCUMENTATION CLOSEOUT PENDING EXACT-HEAD CI / NOT MERGED / NOT DEPLOYED`
+`RUNTIME VERIFIED / DOCUMENTATION CLOSEOUT COMMITTED / NOT MERGED / NOT DEPLOYED`
 
 ### Prochaine étape
 
-Run exact-head CI after this documentation closeout. If it remains green and repository truth is unchanged, LOT 05 can be marked `GATE 5 — LOOP_FLOW_VERIFIED` and presented for explicit product-owner merge authorization. Do not merge, deploy or start LOT 06 without explicit approval.
+Before any merge decision, re-read the live exact-head CI for the current PR head. This handover does not pin a future documentation-only run ID. If live exact-head CI is green and repository truth is unchanged, LOT 05 supports `GATE 5 — LOOP_FLOW_VERIFIED` and may be presented for explicit product-owner merge authorization. Do not merge, deploy or start LOT 06 without explicit approval.
