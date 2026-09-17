@@ -141,10 +141,7 @@ class _SupportEscapeHatch extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               children: <Widget>[
-                Icon(
-                  Icons.groups_2_outlined,
-                  color: TrueGroundColors.primary,
-                ),
+                Icon(Icons.groups_2_outlined, color: TrueGroundColors.primary),
                 SizedBox(width: 10),
                 Expanded(
                   child: Column(
