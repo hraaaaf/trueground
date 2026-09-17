@@ -28,12 +28,7 @@ GoRouter createTrueGroundRouter() {
               GoRoute(
                 path: '/loop',
                 name: 'loop',
-                builder: (context, state) => const ShellPlaceholderScreen(
-                  key: ValueKey('screen-loop'),
-                  title: 'Loop',
-                  description:
-                      'Loop behavior is intentionally not implemented in this lot.',
-                ),
+                builder: (context, state) => const LoopFlowScreen(),
               ),
             ],
           ),
