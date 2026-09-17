@@ -1,19 +1,21 @@
 # 08 — SPECIALIST REVIEW MATRIX
 
 Status: DRAFT FOR REVIEW
-Date: 2026-09-15
+Date: 2026-09-16
 
 ## GOAL
 
 Require the right specialist review for every material product, UX, AI, architecture, privacy, safety and release decision so that no chantier is validated only by the person or agent who built it.
 
-This matrix adds an independent review layer to the project.
+This matrix adds an independent review layer to the project and is governed by `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 Core rule:
 
-> **BUILD → SPECIALIST REVIEW → FIX IF NEEDED → VERIFY**
+> **BUILD → SCORE → SPECIALIST REVIEW → ADVERSARIAL RE-SCORE → FIX IF NEEDED → VERIFY**
 
 A specialist review is not decorative. If the reviewer identifies a material blocker, the affected gate stays `BLOCKED` or `READY FOR REVIEW` until the issue is resolved or explicitly accepted by the product owner.
+
+Every mandatory specialist review must return both a binary verdict and a severe numerical score `/10` with explicit deductions and evidence.
 
 ## Specialist roles
 
@@ -142,7 +144,23 @@ Every specialist review returns exactly one result:
 - `BLOCKED` — unsafe, unverified or fundamentally inconsistent with canonical requirements.
 - `NOT_APPLICABLE` — only with explicit reason.
 
-No silent review is allowed.
+And every applicable review also returns:
+
+- `SCORE /10` using the severe scale in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`;
+- strongest deductions;
+- direct evidence;
+- highest-impact in-scope improvement.
+
+Recommended consistency:
+
+- `PASS` normally requires score `>=9.0`;
+- `PASS_WITH_NOTES` normally maps to `8.5–8.9` or to `>=9.0` with genuinely minor notes;
+- `CHANGES_REQUIRED` normally applies below `8.5`;
+- `BLOCKED` applies whenever a blocker exists regardless of the numerical average.
+
+A specialist score is not allowed to average away a blocker.
+
+No silent review or unscored mandatory review is allowed.
 
 ## Mandatory review table by change type
 
@@ -203,6 +221,9 @@ GOAL:
 SUCCESS:
 PROOF:
 
+EXECUTION_SCORE: x.x/10
+EXECUTION_DEDUCTIONS:
+
 SPECIALIST CHECKS
 [ ] PRODUCT_AGENT
 [ ] UI_UX_AGENT
@@ -217,16 +238,28 @@ SPECIALIST CHECKS
 [ ] REGULATORY_CLINICAL_REVIEW
 
 For each checked reviewer:
-RESULT: PASS | PASS_WITH_NOTES | CHANGES_REQUIRED | BLOCKED
+RESULT: PASS | PASS_WITH_NOTES | CHANGES_REQUIRED | BLOCKED | NOT_APPLICABLE
+SCORE: x.x/10
 EVIDENCE:
+DEDUCTIONS:
 BLOCKERS:
+HIGHEST_IMPACT_IN_SCOPE_IMPROVEMENT:
 NOTES:
+
+ADVERSARIAL_SCORE: x.x/10
+FINAL_STAGE_SCORE: min(EXECUTION_SCORE, ADVERSARIAL_SCORE)
+SCORE_DELTA:
+DELTA_GT_0_5_INVESTIGATED: YES | NO | N/A
+PERFECTION_PASS:
+RE_SCORE_AFTER_FIXES:
 
 FINAL STATUS:
 NOT STARTED | IN PROGRESS | BLOCKED | READY FOR REVIEW | VERIFIED
 ```
 
 Only relevant roles are checked. `NOT_APPLICABLE` must state why.
+
+Use `templates/STRICT_SCORECARD_TEMPLATE.md` for the full dimension-level scorecard when the stage is material.
 
 ## Independence rule
 
@@ -236,9 +269,11 @@ The reviewer should inspect the actual artifact, code, screenshots, flow or eval
 
 Review prompt principle:
 
-> **Find the strongest reason this should NOT be approved.**
+> **Find the strongest reason this should NOT be approved, and score it lower if the evidence justifies that.**
 
 Only after that challenge should the reviewer return PASS.
+
+If no separate specialist execution runtime is available, the same agent may perform a clearly separated adversarial pass, but must disclose that it is not independent human review and must still use the lower justified score.
 
 ## UX-specific rule
 
@@ -252,6 +287,8 @@ Required evidence where relevant:
 - additional supported widths;
 - loading/empty/error states;
 - accessibility behavior.
+
+For target-driven UI, visual-fidelity scoring without direct target/render comparison is subject to the hard cap in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 For OCD-facing UI, OCD_SAFETY_AGENT review is mandatory whenever the screen contains:
 - scores;
@@ -276,13 +313,15 @@ AI_EVAL_AGENT must review a versioned evaluation set and report:
 - failure/degraded cases;
 - regression versus previous accepted behavior.
 
-OCD_SAFETY_AGENT then reviews the behavioral implications independently.
+OCD_SAFETY_AGENT then reviews the behavioral implications independently and scores the relevant safety dimensions separately.
 
 ## Clinical/regulatory boundary
 
 AI specialist reviews can help find risk, inconsistency and regressions, but they do not constitute medical-device clearance, clinical validation or professional clinical sign-off.
 
 When a feature crosses the clinical boundary defined above, human-qualified review becomes a mandatory blocker before production claims or release.
+
+A high numerical score cannot substitute for required human-qualified validation.
 
 ## Gate integration
 
@@ -292,10 +331,18 @@ A gate in `07_ACCEPTANCE_GATES.md` cannot become `VERIFIED` until every mandator
 - `PASS_WITH_NOTES`;
 - `NOT_APPLICABLE` with explicit justification.
 
-`CHANGES_REQUIRED` or `BLOCKED` prevents verification.
+And until:
+
+- every mandatory applicable reviewer has recorded a severe score `/10`;
+- the stage and lot thresholds in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` are met;
+- no hard score cap or blocker contradicts the claimed status.
+
+`CHANGES_REQUIRED` or `BLOCKED` prevents verification regardless of numerical score.
 
 ## Final rule
 
 **The builder never gets the final word on its own work.**
 
 Specialist review must challenge the artifact from the perspective most capable of finding its failure mode before product-owner approval.
+
+When uncertain between two defensible scores, use the lower score until stronger evidence justifies the higher one.

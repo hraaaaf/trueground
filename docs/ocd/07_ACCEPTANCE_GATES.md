@@ -1,13 +1,15 @@
 # 07 — ACCEPTANCE GATES
 
 Status: DRAFT FOR REVIEW
-Date: 2026-09-15
+Date: 2026-09-16
 
 ## GOAL
 
 Define what evidence is required before a phase or feature can move from `READY FOR REVIEW` to `VERIFIED`.
 
 A green CI is evidence, not completion.
+
+All gates are also subject to `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 ## Global rules
 
@@ -19,17 +21,24 @@ A gate is `VERIFIED` only when:
 - non-regression has been checked;
 - required screenshots/evidence exist;
 - required specialist reviews from `08_SPECIALIST_REVIEW_MATRIX.md` are recorded;
+- every mandatory specialist includes the required severe score `/10`;
+- material stages have execution scores and adversarial re-scores;
+- the applicable strict-scoring thresholds from `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` are met;
 - known risks are documented;
 - no release blocker remains hidden;
 - product-owner approval is obtained where explicitly required.
 
+A high numerical score cannot override a failed binary gate, blocker or missing required evidence.
+
 A **lot** is not considered execution-closed merely because its acceptance gate is `VERIFIED`.
 
-Lot closure additionally requires the handover package defined in `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`:
+Lot closure additionally requires the handover package defined in `09_LOT_WINDOW_HANDOVER_PROTOCOL.md` and the final strict scorecard defined in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`:
 
 - `docs/ocd/handovers/LOT_XX_HANDOVER.md`;
 - `docs/ocd/handovers/LOT_YY_START_PROMPT.md` when the next approved lot is known;
-- exact repository-state snapshot at handover time.
+- exact repository-state snapshot at handover time;
+- final adversarial lot audit;
+- `FINAL_LOT_SCORE >= 9.0` for a lot called `VERIFIED`.
 
 Allowed verification status values:
 
@@ -43,6 +52,7 @@ Allowed verification status values:
 
 ### Required
 - all nine canonical Markdown files exist;
+- the mandatory cross-cutting scoring protocol `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` exists and is referenced by execution, review and handover rules;
 - Dashboard V3 is referenced as the current target;
 - Product Spec navigation matches North Star navigation;
 - no score-heavy V1/V2 home requirement remains canonical;
@@ -50,12 +60,14 @@ Allowed verification status values:
 - privacy and safety release blockers are explicit;
 - specialist review requirements are explicit;
 - one-lot-per-window and handover requirements are explicit;
+- strict scoring, adversarial re-scoring and perfection-pass requirements are explicit;
 - roadmap and gates reference each other correctly.
 
 ### Proof
 - branch diff;
 - changed-file list;
 - document review notes;
+- strict scorecard;
 - explicit product-owner approval before merge.
 
 ## GATE 1 — ARCHITECTURE_BOUNDARY_VERIFIED
@@ -136,6 +148,9 @@ For significant redesigns, provide before/after or target/implementation compari
 - loading/empty/error states are defined where applicable;
 - text scaling/accessibility does not destroy critical navigation;
 - screenshots are compared to the canonical target.
+
+### Scoring constraint
+For target-driven UI, visual fidelity must be scored from the actual render, not source code. If direct target/render comparison is missing, apply the hard cap from `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 ### Limitation
 Pixel-perfect verification cannot be claimed until a full-resolution canonical source image is committed and used for comparison.
@@ -270,6 +285,8 @@ Pixel-perfect verification cannot be claimed until a full-resolution canonical s
 ### Blocker
 Any known material increase in reassurance, checking, rumination, compulsive repetition, unsafe practice guidance or unsupported medical claims blocks release until resolved or explicitly accepted through a documented risk decision.
 
+A documented risk acceptance does not erase the scoring deduction.
+
 ## GATE 11 — BETA_READINESS_VERIFIED
 
 ### Required
@@ -280,6 +297,8 @@ Any known material increase in reassurance, checking, rumination, compulsive rep
 - privacy/security baseline passes;
 - account/session edge cases are tested;
 - non-regression suite passes;
+- strict scorecards exist for material phases;
+- final product-level adversarial audit meets the applicable scoring threshold;
 - known risks and out-of-scope items are documented;
 - no production deployment has been performed merely to prove readiness.
 
@@ -291,18 +310,20 @@ A beta readiness report containing:
 - test commands and results;
 - screenshots;
 - CI state;
+- strict scorecards and final score;
 - unresolved risks;
 - release blockers;
 - explicit recommendation.
 
 ## GATE 12 — RELEASE_AUTHORIZED
 
-Technical verification is not release authorization.
+Technical verification and a high score are not release authorization.
 
 Before any merge or external production release:
 
 - exact PR and HEAD SHA must be identified;
 - current CI/check state must be confirmed;
+- strict scorecard must be current;
 - material risks must be stated;
 - product owner must give explicit approval.
 
@@ -312,14 +333,19 @@ Without that approval:
 
 ## Lot closeout gate
 
-Every lot/window closeout must satisfy `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`.
+Every lot/window closeout must satisfy `09_LOT_WINDOW_HANDOVER_PROTOCOL.md` and `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 
 ### Required
 
 - one coherent lot only was executed in the window;
 - current lot state is explicit;
-- required specialist verdicts are recorded;
+- every material stage has execution score + adversarial re-score + final stage score;
+- required specialist verdicts and scores are recorded;
 - tests and non-regression evidence are recorded;
+- final adversarial severity review is recorded;
+- focused perfection pass is completed where required;
+- `FINAL_LOT_SCORE` is recorded;
+- a lot called `VERIFIED` has `FINAL_LOT_SCORE >= 9.0` and all binary gates pass;
 - exact repository truth is captured;
 - `LOT_XX_HANDOVER.md` exists;
 - `LOT_YY_START_PROMPT.md` exists if the next lot is already approved;
@@ -330,12 +356,14 @@ Every lot/window closeout must satisfy `09_LOT_WINDOW_HANDOVER_PROTOCOL.md`.
 
 Do not begin the next material lot in the same window merely because time/context remains available.
 
+Do not hide a low score, missing proof or unresolved specialist issue behind an aggregate score.
+
 ## Standard chantier closeout
 
 Every significant chantier ends with:
 
 ### Résultat
-What was actually achieved.
+What was actually achieved, including the strict score where applicable.
 
 ### Modifications
 Files/components changed.
@@ -347,15 +375,15 @@ Exact tests executed and results.
 What existing behavior was checked.
 
 ### Preuves
-SHA, PR, screenshots, CI, logs or reports.
+SHA, PR, screenshots, CI, logs, reports and score evidence.
 
 ### Risques
-Remaining uncertainty.
+Remaining uncertainty and explicit score deductions.
 
 ### État
-One allowed status only.
+One allowed status only, plus whether the applicable scoring threshold is met.
 
 ### Prochaine étape
 One recommended next action.
 
-Then, if the window is closing the lot, generate the mandatory handover package before starting a new window.
+Then, if the window is closing the lot, generate the mandatory handover package and strict scorecard before starting a new window.
