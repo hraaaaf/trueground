@@ -113,8 +113,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _TargetCard(
                                 icon: Icons.pause_rounded,
                                 title: 'Pause the ritual',
-                                description:
-                                    'Create space\nbetween the urge\nand the action.',
+                                description: 'Create space\nbetween urge\nand action.',
+                                accent: const Color(0xFF48AAB5),
                                 onTap: () => context.go('/practice'),
                               ),
                             ),
@@ -123,8 +123,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _TargetCard(
                                 icon: Icons.eco_outlined,
                                 title: 'Practice uncertainty',
-                                description:
-                                    'Guided exercises to\nbuild tolerance, not\ncertainty.',
+                                description: 'Build tolerance,\nnot certainty.',
+                                accent: const Color(0xFF56AFC4),
                                 onTap: () => context.go('/practice'),
                               ),
                             ),
@@ -133,8 +133,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _TargetCard(
                                 icon: Icons.bar_chart_rounded,
                                 title: 'Continue planned practice',
-                                description:
-                                    'Return to your ERP\nexercises at your\npace.',
+                                description: 'Return to planned\npractice at your\npace.',
+                                accent: const Color(0xFF4F9FC4),
                                 onTap: () => context.go('/practice'),
                               ),
                             ),
@@ -154,8 +154,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _WideCard(
                                 icon: Icons.explore_outlined,
                                 title: 'Return to what matters',
-                                description:
-                                    'Work • Family • Rest • Faith •\nFriends',
+                                description: 'Work • Family • Rest\nFaith • Friends',
+                                accent: Color(0xFF6AAFA5),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -163,8 +163,8 @@ class _TargetDashboard extends StatelessWidget {
                               child: _WideCard(
                                 icon: Icons.groups_2_outlined,
                                 title: 'Need a person, not an answer?',
-                                description:
-                                    'Find support from a therapist or\na trusted person.',
+                                description: 'Therapist or trusted\nperson.',
+                                accent: const Color(0xFF77A7C1),
                                 onTap: () => context.go('/support'),
                               ),
                             ),
@@ -242,15 +242,14 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.eco_outlined,
                 title: 'Practice uncertainty',
-                description:
-                    'Guided exercises to build tolerance, not certainty.',
+                description: 'Guided exercises to build tolerance, not certainty.',
                 onTap: () => context.go('/practice'),
               ),
               const SizedBox(height: 8),
               _AccessibleCard(
                 icon: Icons.bar_chart_rounded,
                 title: 'Continue planned practice',
-                description: 'Return to your ERP exercises at your pace.',
+                description: 'Return to your planned practice at your pace.',
                 onTap: () => context.go('/practice'),
               ),
             ],
@@ -268,8 +267,7 @@ class _AccessibleDashboard extends StatelessWidget {
               _AccessibleCard(
                 icon: Icons.groups_2_outlined,
                 title: 'Need a person, not an answer?',
-                description:
-                    'Find support from a therapist or a trusted person.',
+                description: 'Find support from a therapist or a trusted person.',
                 onTap: () => context.go('/support'),
               ),
             ],
@@ -346,124 +344,161 @@ class _HeroCard extends StatelessWidget {
       button: true,
       label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
       excludeSemantics: true,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Ink(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFF78D5FF), width: 1.3),
-              gradient: const LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: <Color>[
-                  Color(0xFF0B4A85),
-                  Color(0xFF1A64A2),
-                  Color(0xFF3094D0),
-                ],
-              ),
-              boxShadow: <BoxShadow>[
-                BoxShadow(
-                  color: TrueGroundColors.heroBlue.withValues(alpha: 0.25),
-                  blurRadius: 22,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(19),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: const Color(0xFF159DCD).withValues(alpha: 0.30),
+              blurRadius: 26,
+              spreadRadius: -5,
+              offset: const Offset(0, 10),
             ),
-            child: Stack(
-              children: <Widget>[
-                const Positioned.fill(
-                  child: CustomPaint(painter: _HeroBackdropPainter()),
+            BoxShadow(
+              color: const Color(0xFF0A3F79).withValues(alpha: 0.18),
+              blurRadius: 14,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(19),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Ink(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(19),
+                border: Border.all(
+                  color: const Color(0xFF86E0FF).withValues(alpha: 0.95),
+                  width: 1.25,
                 ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: <Color>[
-                          Colors.white.withValues(alpha: 0.18),
-                          Colors.white.withValues(alpha: 0.02),
-                          Colors.transparent,
-                        ],
-                        stops: const <double>[0, 0.34, 0.72],
+                gradient: const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: <Color>[
+                    Color(0xFF073F79),
+                    Color(0xFF12639C),
+                    Color(0xFF2EA4D7),
+                  ],
+                  stops: <double>[0, 0.52, 1],
+                ),
+              ),
+              child: Stack(
+                children: <Widget>[
+                  const Positioned.fill(
+                    child: CustomPaint(painter: _HeroBackdropPainter()),
+                  ),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topRight,
+                          end: Alignment.bottomLeft,
+                          colors: <Color>[
+                            Colors.white.withValues(alpha: 0.24),
+                            Colors.white.withValues(alpha: 0.05),
+                            Colors.transparent,
+                          ],
+                          stops: const <double>[0, 0.30, 0.70],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFF258DDB),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.18),
+                  Positioned(
+                    top: -42,
+                    right: -8,
+                    child: IgnorePointer(
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                        child: Container(
+                          width: 110,
+                          height: 110,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFA6ECFF).withValues(alpha: 0.16),
                           ),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.12),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.keyboard_double_arrow_down_rounded,
-                          color: Colors.white,
-                          size: 27,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      const Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "I'm stuck in a loop",
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontSize: 19,
-                                height: 1,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.25,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              'Notice the urge. Pause before the ritual.',
-                              maxLines: 2,
-                              style: TextStyle(
-                                fontSize: 11.3,
-                                height: 1.2,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: <Color>[
+                                Color(0xFF36ACE8),
+                                Color(0xFF1687D2),
+                              ],
+                            ),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.35),
+                            ),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.14),
+                                blurRadius: 11,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.keyboard_double_arrow_down_rounded,
+                            color: Colors.white,
+                            size: 27,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "I'm stuck in a loop",
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 19,
+                                  height: 1,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                'Notice the urge. Pause before the ritual.',
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontSize: 11.3,
+                                  height: 1.2,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -477,33 +512,35 @@ class _TargetCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.accent,
     required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final Color accent;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label:
-          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
+        accent: accent,
         onTap: onTap,
         child: Stack(
           children: <Widget>[
             Positioned(
               left: 12,
               top: 10,
-              child: _RoundIcon(icon: icon, size: 36),
+              child: _RoundIcon(icon: icon, size: 36, accent: accent),
             ),
             Positioned(
               left: 12,
-              right: 16,
+              right: 10,
               top: 55,
               height: 43,
               child: Text(
@@ -511,7 +548,7 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 13.8,
+                  fontSize: 13.6,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.22,
@@ -521,16 +558,17 @@ class _TargetCard extends StatelessWidget {
             ),
             Positioned(
               left: 12,
-              right: 6,
+              right: 8,
               top: 102,
-              height: 39,
+              height: 40,
               child: Text(
                 description,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.3,
+                  fontSize: 10.2,
                   height: 1.18,
+                  fontWeight: FontWeight.w400,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
@@ -556,29 +594,31 @@ class _WideCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.accent,
     this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final Color accent;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
       button: onTap != null,
-      label:
-          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+      label: '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
+        accent: accent,
         onTap: onTap,
         child: Stack(
           children: <Widget>[
             Positioned(
               left: 12,
               top: 10,
-              child: _RoundIcon(icon: icon, size: 35),
+              child: _RoundIcon(icon: icon, size: 35, accent: accent),
             ),
             const Positioned(
               right: 10,
@@ -636,15 +676,19 @@ class _ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label:
-          'Review patterns when useful. Look at recurring themes, without judgment.',
+      label: 'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
       child: _GlassPanel(
+        accent: const Color(0xFF62A8B8),
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: <Widget>[
-              _RoundIcon(icon: Icons.bar_chart_rounded, size: 36),
+              _RoundIcon(
+                icon: Icons.bar_chart_rounded,
+                size: 36,
+                accent: Color(0xFF62A8B8),
+              ),
               SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -704,13 +748,18 @@ class _AccessibleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GlassPanel(
+      accent: const Color(0xFF65AEB7),
       onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _RoundIcon(icon: icon, size: 46),
+            _RoundIcon(
+              icon: icon,
+              size: 46,
+              accent: const Color(0xFF65AEB7),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -748,9 +797,14 @@ class _AccessibleCard extends StatelessWidget {
 }
 
 class _GlassPanel extends StatelessWidget {
-  const _GlassPanel({required this.child, this.onTap});
+  const _GlassPanel({
+    required this.child,
+    required this.accent,
+    this.onTap,
+  });
 
   final Widget child;
+  final Color accent;
   final VoidCallback? onTap;
 
   @override
@@ -766,12 +820,18 @@ class _GlassPanel extends StatelessWidget {
         borderRadius: radius,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: const Color(0xFF1C466A).withValues(alpha: 0.10),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF163E5D).withValues(alpha: 0.13),
+            blurRadius: 22,
+            spreadRadius: -5,
+            offset: const Offset(0, 9),
           ),
           BoxShadow(
-            color: Colors.white.withValues(alpha: 0.78),
+            color: accent.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.72),
             blurRadius: 7,
             offset: const Offset(-2, -2),
           ),
@@ -780,7 +840,7 @@ class _GlassPanel extends StatelessWidget {
       child: ClipRRect(
         borderRadius: radius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
           child: Stack(
             fit: StackFit.passthrough,
             children: <Widget>[
@@ -789,16 +849,35 @@ class _GlassPanel extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: radius,
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.96),
-                      width: 1.45,
+                      color: Colors.white.withValues(alpha: 0.88),
+                      width: 1.25,
                     ),
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: <Color>[
-                        Colors.white.withValues(alpha: 0.72),
-                        Colors.white.withValues(alpha: 0.43),
+                        Colors.white.withValues(alpha: 0.62),
+                        accent.withValues(alpha: 0.10),
+                        Colors.white.withValues(alpha: 0.34),
                       ],
+                      stops: const <double>[0, 0.58, 1],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -34,
+                right: -28,
+                child: IgnorePointer(
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                    child: Container(
+                      width: 82,
+                      height: 82,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: accent.withValues(alpha: 0.11),
+                      ),
                     ),
                   ),
                 ),
@@ -811,7 +890,7 @@ class _GlassPanel extends StatelessWidget {
                 child: IgnorePointer(
                   child: Container(
                     height: 1,
-                    color: Colors.white.withValues(alpha: 0.96),
+                    color: Colors.white.withValues(alpha: 0.90),
                   ),
                 ),
               ),
@@ -824,10 +903,15 @@ class _GlassPanel extends StatelessWidget {
 }
 
 class _RoundIcon extends StatelessWidget {
-  const _RoundIcon({required this.icon, required this.size});
+  const _RoundIcon({
+    required this.icon,
+    required this.size,
+    required this.accent,
+  });
 
   final IconData icon;
   final double size;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
@@ -836,13 +920,27 @@ class _RoundIcon extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: const Color(0xFFDDEFF2).withValues(alpha: 0.72),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[
+            Colors.white.withValues(alpha: 0.80),
+            accent.withValues(alpha: 0.18),
+          ],
+        ),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.92),
+          color: Colors.white.withValues(alpha: 0.90),
           width: 1,
         ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: accent.withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: Icon(icon, size: size * 0.49, color: const Color(0xFF2C8E9E)),
+      child: Icon(icon, size: size * 0.49, color: const Color(0xFF238A9A)),
     );
   }
 }
@@ -908,9 +1006,9 @@ class _HeroBackdropPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final fill = Paint()..color = Colors.white.withValues(alpha: 0.085);
+    final fill = Paint()..color = Colors.white.withValues(alpha: 0.10);
     final line = Paint()
-      ..color = Colors.white.withValues(alpha: 0.12)
+      ..color = Colors.white.withValues(alpha: 0.16)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
