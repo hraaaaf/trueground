@@ -13,7 +13,7 @@ class LoopFlowScreen extends StatefulWidget {
   static const patternStepKey = ValueKey('loop-pattern-step');
   static const actionStepKey = ValueKey('loop-action-step');
   static const completeStepKey = ValueKey('loop-complete-step');
-  static const safetySupportKey = ValueKey('loop-safety-support');
+  static const supportEscapeKey = ValueKey('loop-support-escape');
 
   @override
   State<LoopFlowScreen> createState() => _LoopFlowScreenState();
@@ -96,8 +96,8 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
                 loopBoundedNotice,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 16),
-              _SafetyBoundary(onSupport: () => context.go('/support')),
+              const SizedBox(height: 12),
+              _SupportEscapeHatch(onSupport: () => context.go('/support')),
               const SizedBox(height: 18),
               switch (_stage) {
                 _LoopStage.pattern => _PatternStep(onSelected: _selectPattern),
@@ -119,54 +119,62 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
   }
 }
 
-class _SafetyBoundary extends StatelessWidget {
-  const _SafetyBoundary({required this.onSupport});
+class _SupportEscapeHatch extends StatelessWidget {
+  const _SupportEscapeHatch({required this.onSupport});
 
   final VoidCallback onSupport;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      container: true,
-      label: '$loopSafetyBoundary Open Support.',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xFFE9F2F5),
+      button: true,
+      label: '$loopSupportTitle. $loopSupportHelper Open Support.',
+      excludeSemantics: true,
+      child: Material(
+        color: Colors.white.withValues(alpha: 0.72),
+        borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+        child: InkWell(
+          key: LoopFlowScreen.supportEscapeKey,
+          onTap: onSupport,
           borderRadius: BorderRadius.circular(TrueGroundRadii.control),
-          border: Border.all(color: const Color(0xFFC7DCE4)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const ExcludeSemantics(
-                child: Icon(
-                  Icons.shield_outlined,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.groups_2_outlined,
                   color: TrueGroundColors.primary,
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      loopSafetyBoundary,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: TrueGroundColors.ink,
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        loopSupportTitle,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: TrueGroundColors.ink,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    TextButton(
-                      key: LoopFlowScreen.safetySupportKey,
-                      onPressed: onSupport,
-                      child: const Text('Open Support'),
-                    ),
-                  ],
+                      SizedBox(height: 2),
+                      Text(
+                        loopSupportHelper,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: TrueGroundColors.inkMuted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Icon(
+                  Icons.arrow_forward_rounded,
+                  color: TrueGroundColors.primary,
+                ),
+              ],
+            ),
           ),
         ),
       ),
