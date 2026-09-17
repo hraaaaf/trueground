@@ -422,9 +422,9 @@ class _HeroCard extends StatelessWidget {
                           height: 110,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: const Color(0xFFA6ECFF).withValues(
-                              alpha: 0.16,
-                            ),
+                            color: const Color(
+                              0xFFA6ECFF,
+                            ).withValues(alpha: 0.16),
                           ),
                         ),
                       ),
@@ -768,11 +768,7 @@ class _AccessibleCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            _RoundIcon(
-              icon: icon,
-              size: 46,
-              accent: const Color(0xFF65AEB7),
-            ),
+            _RoundIcon(icon: icon, size: 46, accent: const Color(0xFF65AEB7)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -810,11 +806,7 @@ class _AccessibleCard extends StatelessWidget {
 }
 
 class _GlassPanel extends StatelessWidget {
-  const _GlassPanel({
-    required this.child,
-    required this.accent,
-    this.onTap,
-  });
+  const _GlassPanel({required this.child, required this.accent, this.onTap});
 
   final Widget child;
   final Color accent;
@@ -953,11 +945,7 @@ class _RoundIcon extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        icon,
-        size: size * 0.49,
-        color: const Color(0xFF238A9A),
-      ),
+      child: Icon(icon, size: size * 0.49, color: const Color(0xFF238A9A)),
     );
   }
 }
