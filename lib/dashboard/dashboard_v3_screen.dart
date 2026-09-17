@@ -300,7 +300,7 @@ class _PracticeActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.practiceGridKey,
-      height: compact ? 238 : 232,
+      height: compact ? 220 : 214,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -342,7 +342,7 @@ class _ValuesActions extends StatelessWidget {
 
     return SizedBox(
       key: DashboardV3Screen.valuesGridKey,
-      height: compact ? 164 : 172,
+      height: compact ? 154 : 156,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _withHorizontalGaps(cards),
@@ -405,37 +405,58 @@ class _MiniActionCard extends StatelessWidget {
           onTap: onTap,
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              compact ? 9 : 11,
+              compact ? 10 : 12,
+              compact ? 10 : 11,
+              compact ? 8 : 10,
               compact ? 9 : 10,
-              compact ? 6 : 9,
-              compact ? 7 : 8,
             ),
             child: LayoutBuilder(
               builder: (context, constraints) {
+                final title = Text(
+                  this.title,
+                  style: TextStyle(
+                    fontFamily: 'serif',
+                    fontSize: compact ? 13.1 : 14.5,
+                    height: 1.05,
+                    fontWeight: FontWeight.w600,
+                    color: TrueGroundColors.primary,
+                  ),
+                );
+                final description = Text(
+                  this.description,
+                  style: TextStyle(
+                    fontSize: compact ? 9.1 : 9.8,
+                    height: 1.2,
+                    color: TrueGroundColors.inkMuted,
+                  ),
+                );
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     _RoundIcon(icon: icon, compact: true),
-                    const SizedBox(height: 7),
-                    Text(
+                    const SizedBox(height: 8),
+                    if (constraints.hasBoundedHeight)
+                      SizedBox(
+                        height: compact ? 44 : 48,
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: title,
+                        ),
+                      )
+                    else
                       title,
-                      style: TextStyle(
-                        fontFamily: 'serif',
-                        fontSize: compact ? 13.1 : 14.5,
-                        height: 1.05,
-                        fontWeight: FontWeight.w600,
-                        color: TrueGroundColors.primary,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
+                    const SizedBox(height: 4),
+                    if (constraints.hasBoundedHeight)
+                      SizedBox(
+                        height: compact ? 46 : 42,
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: description,
+                        ),
+                      )
+                    else
                       description,
-                      style: TextStyle(
-                        fontSize: compact ? 9.1 : 9.8,
-                        height: 1.2,
-                        color: TrueGroundColors.inkMuted,
-                      ),
-                    ),
                     if (constraints.hasBoundedHeight)
                       const Spacer()
                     else
@@ -476,49 +497,77 @@ class _DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = Padding(
-      padding: EdgeInsets.fromLTRB(
-        compact ? 10 : 12,
-        compact ? 8 : 9,
-        compact ? 9 : 10,
-        compact ? 8 : 9,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
+    final content = LayoutBuilder(
+      builder: (context, constraints) {
+        final title = Text(
+          this.title,
+          style: TextStyle(
+            fontFamily: 'serif',
+            fontSize: compact ? 12.9 : 14.2,
+            height: 1.05,
+            fontWeight: FontWeight.w600,
+            color: TrueGroundColors.primary,
+          ),
+        );
+        final description = Text(
+          this.description,
+          style: TextStyle(
+            fontSize: compact ? 9.0 : 9.7,
+            height: 1.18,
+            color: TrueGroundColors.inkMuted,
+          ),
+        );
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            compact ? 10 : 11,
+            compact ? 9 : 10,
+            compact ? 10 : 11,
+            compact ? 9 : 10,
+          ),
+          child: Column(
+            mainAxisAlignment: constraints.hasBoundedHeight
+                ? MainAxisAlignment.center
+                : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _RoundIcon(icon: icon, compact: true),
-              const Spacer(),
-              const Icon(
-                Icons.chevron_right_rounded,
-                size: 19,
-                color: TrueGroundColors.inkMuted,
+              Row(
+                children: <Widget>[
+                  _RoundIcon(icon: icon, compact: true),
+                  const Spacer(),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 19,
+                    color: TrueGroundColors.inkMuted,
+                  ),
+                ],
               ),
+              const SizedBox(height: 6),
+              if (constraints.hasBoundedHeight)
+                SizedBox(
+                  height: compact ? 28 : 32,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: title,
+                  ),
+                )
+              else
+                title,
+              const SizedBox(height: 4),
+              if (constraints.hasBoundedHeight)
+                SizedBox(
+                  height: compact ? 34 : 36,
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: description,
+                  ),
+                )
+              else
+                description,
             ],
           ),
-          const SizedBox(height: 5),
-          Text(
-            title,
-            style: TextStyle(
-              fontFamily: 'serif',
-              fontSize: compact ? 12.9 : 14.2,
-              height: 1.05,
-              fontWeight: FontWeight.w600,
-              color: TrueGroundColors.primary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: compact ? 9.0 : 9.7,
-              height: 1.18,
-              color: TrueGroundColors.inkMuted,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
 
     return Semantics(
