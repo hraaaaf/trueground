@@ -96,16 +96,16 @@ class _TargetDashboard extends StatelessWidget {
                       Positioned(
                         left: 19,
                         right: 19,
-                        top: 160,
-                        height: 122,
+                        top: 150,
+                        height: 102,
                         child: _HeroCard(onTap: () => context.go('/loop')),
                       ),
                       Positioned(
                         key: DashboardV3Screen.practiceGridKey,
                         left: 19,
                         right: 19,
-                        top: 294,
-                        height: 198,
+                        top: 272,
+                        height: 166,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
@@ -145,8 +145,8 @@ class _TargetDashboard extends StatelessWidget {
                         key: DashboardV3Screen.valuesGridKey,
                         left: 19,
                         right: 19,
-                        top: 504,
-                        height: 144,
+                        top: 458,
+                        height: 119,
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
@@ -174,8 +174,8 @@ class _TargetDashboard extends StatelessWidget {
                       const Positioned(
                         left: 19,
                         right: 19,
-                        top: 660,
-                        height: 68,
+                        top: 597,
+                        height: 61,
                         child: _ReviewCard(),
                       ),
                     ],
@@ -397,13 +397,13 @@ class _HeroCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,
-                    vertical: 14,
+                    vertical: 10,
                   ),
                   child: Row(
                     children: <Widget>[
                       Container(
-                        width: 54,
-                        height: 54,
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: const Color(0xFF258DDB),
@@ -421,10 +421,10 @@ class _HeroCard extends StatelessWidget {
                         child: const Icon(
                           Icons.keyboard_double_arrow_down_rounded,
                           color: Colors.white,
-                          size: 31,
+                          size: 27,
                         ),
                       ),
-                      const SizedBox(width: 13),
+                      const SizedBox(width: 12),
                       const Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -434,19 +434,19 @@ class _HeroCard extends StatelessWidget {
                               "I'm stuck in a loop",
                               maxLines: 1,
                               style: TextStyle(
-                                fontSize: 21.5,
+                                fontSize: 19,
                                 height: 1,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.25,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 7),
+                            SizedBox(height: 5),
                             Text(
                               'Notice the urge. Pause before the ritual.',
                               maxLines: 2,
                               style: TextStyle(
-                                fontSize: 12.7,
+                                fontSize: 11.3,
                                 height: 1.2,
                                 color: Colors.white,
                               ),
@@ -458,7 +458,7 @@ class _HeroCard extends StatelessWidget {
                       const Icon(
                         Icons.chevron_right_rounded,
                         color: Colors.white,
-                        size: 28,
+                        size: 24,
                       ),
                     ],
                   ),
@@ -498,20 +498,20 @@ class _TargetCard extends StatelessWidget {
           children: <Widget>[
             Positioned(
               left: 12,
-              top: 13,
-              child: _RoundIcon(icon: icon, size: 44),
+              top: 10,
+              child: _RoundIcon(icon: icon, size: 36),
             ),
             Positioned(
               left: 12,
               right: 8,
-              top: 68,
-              height: 52,
+              top: 55,
+              height: 43,
               child: Text(
                 title,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 15.8,
+                  fontSize: 13.2,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.22,
@@ -522,14 +522,14 @@ class _TargetCard extends StatelessWidget {
             Positioned(
               left: 12,
               right: 6,
-              top: 126,
-              height: 40,
+              top: 102,
+              height: 39,
               child: Text(
                 description,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.3,
+                  fontSize: 9.8,
                   height: 1.18,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -537,10 +537,10 @@ class _TargetCard extends StatelessWidget {
             ),
             const Positioned(
               left: 10,
-              bottom: 7,
+              bottom: 8,
               child: Icon(
                 Icons.chevron_right_rounded,
-                size: 20,
+                size: 18,
                 color: TrueGroundColors.inkMuted,
               ),
             ),
@@ -577,29 +577,29 @@ class _WideCard extends StatelessWidget {
           children: <Widget>[
             Positioned(
               left: 12,
-              top: 12,
-              child: _RoundIcon(icon: icon, size: 42),
+              top: 10,
+              child: _RoundIcon(icon: icon, size: 35),
             ),
             const Positioned(
               right: 10,
-              top: 22,
+              top: 15,
               child: Icon(
                 Icons.chevron_right_rounded,
-                size: 21,
+                size: 19,
                 color: TrueGroundColors.inkMuted,
               ),
             ),
             Positioned(
               left: 12,
               right: 10,
-              top: 62,
-              height: 38,
+              top: 52,
+              height: 30,
               child: Text(
                 title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 15.2,
+                  fontSize: 13.2,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.18,
@@ -610,14 +610,14 @@ class _WideCard extends StatelessWidget {
             Positioned(
               left: 12,
               right: 10,
-              top: 105,
-              height: 30,
+              top: 84,
+              height: 28,
               child: Text(
                 description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.3,
+                  fontSize: 9.8,
                   height: 1.16,
                   color: TrueGroundColors.inkMuted,
                 ),
@@ -641,11 +641,11 @@ class _ReviewCard extends StatelessWidget {
       excludeSemantics: true,
       child: _GlassPanel(
         child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: <Widget>[
-              _RoundIcon(icon: Icons.bar_chart_rounded, size: 46),
-              SizedBox(width: 12),
+              _RoundIcon(icon: Icons.bar_chart_rounded, size: 36),
+              SizedBox(width: 10),
               Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -655,19 +655,19 @@ class _ReviewCard extends StatelessWidget {
                       'Review patterns when useful',
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 16.8,
+                        fontSize: 13.5,
                         height: 1,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.2,
                         color: TrueGroundColors.primary,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 3),
                     Text(
                       'Look at recurring themes, without judgment.',
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 11.6,
+                        fontSize: 9.8,
                         height: 1.1,
                         color: TrueGroundColors.inkMuted,
                       ),
@@ -677,7 +677,7 @@ class _ReviewCard extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                size: 21,
+                size: 19,
                 color: TrueGroundColors.inkMuted,
               ),
             ],
