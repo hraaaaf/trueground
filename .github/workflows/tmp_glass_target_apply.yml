@@ -1,3 +1,4 @@
+# trigger validated target application
 name: TEMP glass target apply
 
 on:
