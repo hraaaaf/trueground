@@ -60,7 +60,9 @@ void main() {
     });
   }
 
-  testWidgets('immediate-safety boundary routes out to Support', (tester) async {
+  testWidgets('immediate-safety boundary routes out to Support', (
+    tester,
+  ) async {
     await _useSurface(tester, const Size(390, 844));
     await _openLoop(tester);
 
@@ -120,16 +122,17 @@ void main() {
   });
 
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
-    testWidgets('Loop flow renders without overflow at ${size.width.toInt()} px', (
-      tester,
-    ) async {
-      await _useSurface(tester, size);
-      await _openLoop(tester);
+    testWidgets(
+      'Loop flow renders without overflow at ${size.width.toInt()} px',
+      (tester) async {
+        await _useSurface(tester, size);
+        await _openLoop(tester);
 
-      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
-      expect(find.text('Choose the closest fit.'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+        expect(find.text('Choose the closest fit.'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   }
 
   testWidgets('Loop critical actions remain reachable at 200% text scaling', (
