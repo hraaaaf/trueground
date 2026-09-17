@@ -24,14 +24,11 @@ void main() {
   });
 
   test('LOT 05 policy exposes only the approved bounded action set', () {
-    expect(
-      LoopNextAction.values,
-      <LoopNextAction>[
-        LoopNextAction.practiceUncertainty,
-        LoopNextAction.returnHome,
-        LoopNextAction.humanSupport,
-      ],
-    );
+    expect(LoopNextAction.values, <LoopNextAction>[
+      LoopNextAction.practiceUncertainty,
+      LoopNextAction.returnHome,
+      LoopNextAction.humanSupport,
+    ]);
     expect(loopActionContent.length, 3);
   });
 
