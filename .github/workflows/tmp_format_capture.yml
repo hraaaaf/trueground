@@ -1,0 +1,33 @@
+name: TEMP formatter capture
+
+on:
+  pull_request:
+    branches:
+      - lot/04-dashboard-v3-static
+
+permissions:
+  contents: read
+
+jobs:
+  format-capture:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Format target files
+        run: dart format lib/dashboard/dashboard_v3_screen.dart lib/shell/app_shell.dart
+      - name: Upload formatted sources
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: temp-formatted-sources
+          path: |
+            lib/dashboard/dashboard_v3_screen.dart
+            lib/shell/app_shell.dart
+          retention-days: 1
