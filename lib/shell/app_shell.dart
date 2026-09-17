@@ -31,9 +31,7 @@ class AppShell extends StatelessWidget {
     return RepaintBoundary(
       key: captureKey,
       child: Scaffold(
-        backgroundColor: onHome
-            ? Colors.transparent
-            : TrueGroundColors.background,
+        backgroundColor: onHome ? Colors.transparent : TrueGroundColors.background,
         body: SafeArea(
           child: onHome
               ? Stack(
@@ -53,27 +51,36 @@ class AppShell extends StatelessWidget {
             child: SizedBox(
               height: usesLargeTextLayout ? 100 : 84,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(26),
-                ),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.72),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Colors.white.withValues(alpha: 0.76),
+                          const Color(0xFFEAF7FA).withValues(alpha: 0.58),
+                          Colors.white.withValues(alpha: 0.66),
+                        ],
+                      ),
                       border: Border(
                         top: BorderSide(
-                          color: Colors.white.withValues(alpha: 0.98),
-                          width: 1.4,
+                          color: Colors.white.withValues(alpha: 0.96),
+                          width: 1.3,
                         ),
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: TrueGroundColors.primary.withValues(
-                            alpha: 0.08,
-                          ),
-                          blurRadius: 24,
+                          color: const Color(0xFF0A456C).withValues(alpha: 0.12),
+                          blurRadius: 28,
                           offset: const Offset(0, -7),
+                        ),
+                        BoxShadow(
+                          color: const Color(0xFF57B9C7).withValues(alpha: 0.08),
+                          blurRadius: 22,
+                          offset: const Offset(0, -4),
                         ),
                       ],
                     ),
@@ -137,52 +144,69 @@ class _HomeGlassBackdrop extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: <Color>[
-                  Color(0xFFF8F6F3),
-                  Color(0xFFF1F5F4),
-                  Color(0xFFF8F4F0),
+                  Color(0xFFFAF7F3),
+                  Color(0xFFF0F7F6),
+                  Color(0xFFF7F3EF),
                 ],
-                stops: <double>[0, 0.52, 1],
+                stops: <double>[0, 0.50, 1],
               ),
             ),
           ),
           Positioned(
-            top: -55,
-            right: -65,
+            top: -70,
+            right: -55,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
+              imageFilter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
               child: _GlowOrb(
-                size: 220,
+                size: 245,
                 colors: <Color>[
-                  const Color(0xFF74B8CE).withValues(alpha: 0.19),
+                  const Color(0xFF58B7D6).withValues(alpha: 0.30),
+                  const Color(0xFF8ED5E4).withValues(alpha: 0.10),
                   const Color(0xFF74B8CE).withValues(alpha: 0.01),
                 ],
               ),
             ),
           ),
           Positioned(
-            top: 250,
-            left: -90,
+            top: 205,
+            left: -105,
             child: ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 34, sigmaY: 34),
+              imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: _GlowOrb(
-                size: 230,
+                size: 270,
                 colors: <Color>[
-                  const Color(0xFF9CCDBD).withValues(alpha: 0.16),
+                  const Color(0xFF73C9B7).withValues(alpha: 0.24),
+                  const Color(0xFFA5DCD1).withValues(alpha: 0.08),
                   const Color(0xFF9CCDBD).withValues(alpha: 0.01),
                 ],
               ),
             ),
           ),
           Positioned(
-            top: 430,
-            right: -82,
+            top: 390,
+            right: -95,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              child: _GlowOrb(
+                size: 255,
+                colors: <Color>[
+                  const Color(0xFFE4B79B).withValues(alpha: 0.24),
+                  const Color(0xFFF0D1BE).withValues(alpha: 0.08),
+                  const Color(0xFFE7C8B2).withValues(alpha: 0.01),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -110,
+            left: 35,
             child: ImageFiltered(
               imageFilter: ImageFilter.blur(sigmaX: 34, sigmaY: 34),
               child: _GlowOrb(
-                size: 220,
+                size: 250,
                 colors: <Color>[
-                  const Color(0xFFE7C8B2).withValues(alpha: 0.15),
-                  const Color(0xFFE7C8B2).withValues(alpha: 0.01),
+                  const Color(0xFF6EAFD0).withValues(alpha: 0.13),
+                  const Color(0xFF6EAFD0).withValues(alpha: 0.01),
                 ],
               ),
             ),
@@ -206,7 +230,12 @@ class _GlowOrb extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: RadialGradient(colors: colors),
+        gradient: RadialGradient(
+          colors: colors,
+          stops: colors.length == 3
+              ? const <double>[0, 0.48, 1]
+              : const <double>[0, 1],
+        ),
       ),
     );
   }
