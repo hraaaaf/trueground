@@ -559,7 +559,7 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 13.6,
+                  fontSize: 13.8,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.22,
@@ -577,9 +577,9 @@ class _TargetCard extends StatelessWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.2,
+                  fontSize: 10.6,
                   height: 1.18,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
@@ -651,7 +651,7 @@ class _WideCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 13.2,
+                  fontSize: 13.4,
                   height: 1.04,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.18,
@@ -669,8 +669,9 @@ class _WideCard extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 9.8,
+                  fontSize: 10.2,
                   height: 1.16,
+                  fontWeight: FontWeight.w500,
                   color: TrueGroundColors.inkMuted,
                 ),
               ),
@@ -712,7 +713,7 @@ class _ReviewCard extends StatelessWidget {
                       'Review patterns when useful',
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 13.5,
+                        fontSize: 13.7,
                         height: 1,
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.2,
@@ -724,8 +725,9 @@ class _ReviewCard extends StatelessWidget {
                       'Look at recurring themes, without judgment.',
                       maxLines: 1,
                       style: TextStyle(
-                        fontSize: 10.5,
+                        fontSize: 10.8,
                         height: 1.1,
+                        fontWeight: FontWeight.w500,
                         color: TrueGroundColors.inkMuted,
                       ),
                     ),
