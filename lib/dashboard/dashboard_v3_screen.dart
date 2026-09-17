@@ -690,8 +690,8 @@ class _GlassPanel extends StatelessWidget {
         borderRadius: borderRadius,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: TrueGroundColors.primary.withValues(alpha: 0.13),
-            blurRadius: 22,
+            color: TrueGroundColors.primary.withValues(alpha: 0.15),
+            blurRadius: 24,
             offset: const Offset(0, 9),
           ),
           BoxShadow(
@@ -704,7 +704,7 @@ class _GlassPanel extends StatelessWidget {
       child: ClipRRect(
         borderRadius: borderRadius,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          filter: ImageFilter.blur(sigmaX: 11, sigmaY: 11),
           child: Stack(
             fit: StackFit.passthrough,
             children: <Widget>[
@@ -715,14 +715,14 @@ class _GlassPanel extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: <Color>[
-                        Colors.white.withValues(alpha: 0.72),
-                        Colors.white.withValues(alpha: 0.48),
+                        Colors.white.withValues(alpha: 0.56),
+                        Colors.white.withValues(alpha: 0.30),
                       ],
                     ),
                     borderRadius: borderRadius,
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.94),
-                      width: 1.2,
+                      color: Colors.white.withValues(alpha: 0.98),
+                      width: 1.35,
                     ),
                   ),
                 ),
@@ -735,7 +735,7 @@ class _GlassPanel extends StatelessWidget {
                 child: IgnorePointer(
                   child: Container(
                     height: 1,
-                    color: Colors.white.withValues(alpha: 0.88),
+                    color: Colors.white.withValues(alpha: 0.95),
                   ),
                 ),
               ),
@@ -760,7 +760,7 @@ class _RoundIcon extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.52),
+        color: Colors.white.withValues(alpha: 0.42),
         shape: BoxShape.circle,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.86),
