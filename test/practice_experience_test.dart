@@ -76,7 +76,11 @@ Future<void> _pumpDirectPractice(
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
-        body: PracticeScreen(completionStore: store, now: () => now),
+        body: PracticeScreen(
+          key: UniqueKey(),
+          completionStore: store,
+          now: () => now,
+        ),
       ),
     ),
   );
