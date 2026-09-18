@@ -16,7 +16,7 @@ LOT 05 branch:
 
 Runtime candidate verified before documentation closeout:
 
-`a46db908d9f4a3f6a50024b356247d660ce60ec8`
+`9870a171dc6e227ddf1349798b2ba5a54aa2f9ec`
 
 PR:
 
@@ -59,21 +59,21 @@ LOT 05 provides:
 
 Runtime candidate:
 
-`a46db908d9f4a3f6a50024b356247d660ce60ec8`
+`9870a171dc6e227ddf1349798b2ba5a54aa2f9ec`
 
 Exact runtime-candidate CI:
 
-- LOT 03 Flutter shell `35287423135` → SUCCESS;
-- LOT 04 Dashboard V3 `35287423044` → SUCCESS;
-- LOT 05 Bounded Loop `35287423068` → SUCCESS.
+- LOT 03 Flutter shell `35345719952` → SUCCESS;
+- LOT 04 Dashboard V3 `35345719962` → SUCCESS;
+- LOT 05 Bounded Loop `35345719949` → SUCCESS.
 
 LOT 05 detail:
 
 - format → PASS;
 - analyze → PASS;
 - client/provider isolation → PASS;
-- focused Loop tests → 18/18 PASS;
-- full suite → 30/30 PASS;
+- focused Loop tests → 21/21 PASS;
+- full suite → 33/33 PASS;
 - release web build → PASS;
 - smoke → PASS;
 - 360 capture → PASS;
@@ -81,12 +81,23 @@ LOT 05 detail:
 
 Final runtime visual artifact:
 
-- artifact id `10524693557`;
-- digest `sha256:d9d8b8fbf6463923489bb04d38e64e45516b10c3e815f823706b9fc850213840`;
+- artifact id `10546049484`;
+- digest `sha256:dc249223034c13650f4d593eba1e7be7ad48263d2829988a5f13de29f820cc4d`;
 - `loop_360.png` → `sha256:b60ee01df8c8a20a68207db84c8696511a1d73d65e65a9474b0c027ef406684d`;
 - `loop_390.png` → `sha256:877ef717c767aa797d2ffc76d05ca433ac5900cb939a8b572d149a4a9a7564ba`.
 
-Both screenshots were downloaded and visually inspected.
+Both production-web screenshots were downloaded and visually inspected.
+
+Additional final state-layout evidence:
+
+- `loop_360_action_widget.png` → `sha256:a5216ee34f0b9e8a09d020346ac9399ddc1629ee89b73875c1cb516c5e0f0a82`;
+- `loop_360_complete_widget.png` → `sha256:9b65efe992b10a32597afe04d655da06f7ea33e762df59d79983c428ad84bc33`;
+- `loop_360_pattern_widget.png` → `sha256:3f46b9148b9be2f4661822b0bd26bd3d520e9fc0d69413948521cb9d08065f4a`;
+- `loop_390_action_widget.png` → `sha256:49ba57c2914335c1fc97cde9ccf6a9ebbf2355346fc0bcd416a1fee9854787a0`;
+- `loop_390_complete_widget.png` → `sha256:4692bc7d371c415494c1f03123765cba418f1bfdde5e53a5295817a55a7bf4e5`;
+- `loop_390_pattern_widget.png` → `sha256:bbfa7e30759ed05a3c2041d38e1c16398ed002d44cf111220311ff2d4fb79074`.
+
+These widget captures were visually inspected for geometry/state integrity only; Flutter test typography is not treated as production visual-fidelity proof.
 
 Specialist review:
 
@@ -235,10 +246,10 @@ Double-score report:
 
 `docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`
 
-- severe Pass A diagnostic mean: `9.54 / 10`, retained after critical floor: `9.20 / 10`;
-- adversarial Pass B diagnostic mean: `9.29 / 10`, retained after critical floor: `8.90 / 10`;
-- retained strict LOT score: `8.90 / 10`;
-- runtime change required by scoring: NO;
+- final Perfection Pass A diagnostic mean: `9.58 / 10`, retained after critical floor: `9.30 / 10`;
+- adversarial Pass B diagnostic mean: `9.34 / 10`, retained after critical floor: `9.00 / 10`;
+- retained strict LOT score: `9.00 / 10`;
+- scoring-driven runtime change: YES — accessibility semantics only (`liveRegion` on action/completion headings);
 - second pass was a deliberately separated adversarial review, not falsely represented as an external human/agent reviewer.
 
 ## 11. OUT OF SCOPE / NOT DONE
@@ -272,15 +283,15 @@ No merge of PR #12 is authorized by this handover.
 
 ### Résultat
 
-LOT 05 bounded Loop behavior is implemented and runtime-verified on `a46db908d9f4a3f6a50024b356247d660ce60ec8` with exact successful LOT03/LOT04/LOT05 CI, bounded deterministic behavior, no unrestricted chat and final 360/390 visual evidence.
+LOT 05 bounded Loop behavior is implemented and runtime-verified on `9870a171dc6e227ddf1349798b2ba5a54aa2f9ec` with exact successful LOT03/LOT04/LOT05 CI, bounded deterministic behavior, no unrestricted chat and final 360/390 visual evidence.
 
 ### Modifications
 
-Added isolated Loop policy/UI, router wiring, focused safety tests, full-path accessibility coverage, versioned eval cases and LOT05 CI. Reconciled transition documentation and added specialist/closeout documentation.
+Added isolated Loop policy/UI, router wiring, focused safety tests, full-path accessibility coverage, versioned eval cases and LOT05 CI. Final Perfection Pass added explicit live-region stage semantics, two-width/all-state accessibility guideline coverage, two-width 200% coverage, and six deterministic state-layout captures. No clinical copy or policy behavior changed.
 
 ### Tests
 
-Focused LOT05: 18/18 PASS. Full suite: 30/30 PASS. Format, analyze, isolation, release build, smoke, 360 and 390 capture all pass. LOT03 and LOT04 exact runtime-candidate workflows also pass.
+Focused LOT05: 21/21 PASS. Full suite: 33/33 PASS. Format, analyze, isolation, release build, smoke, 360 and 390 capture all pass. LOT03 and LOT04 exact runtime-candidate workflows also pass.
 
 ### Non-régression
 
@@ -288,16 +299,16 @@ Dashboard V3, five-tab navigation, 360/390 shell behavior, 200% accessibility ba
 
 ### Preuves
 
-Runtime candidate `a46db908d9f4a3f6a50024b356247d660ce60ec8`; runs `35287423135`, `35287423044`, `35287423068`; artifact `10524693557`; digest and screenshot hashes recorded above; zero unresolved PR threads.
+Runtime candidate `9870a171dc6e227ddf1349798b2ba5a54aa2f9ec`; runs `35345719952`, `35345719962`, `35345719949`; artifact `10546049484`; digest and screenshot hashes recorded above; zero unresolved PR threads.
 
 ### Risques
 
-Gate 4 is not fully verified; Support and Practice remain placeholders; dedicated crisis policy is not implemented; no clinical validation is claimed; native-device assistive-technology testing remains outstanding.
+Gate 4 is not fully verified; Support and Practice remain placeholders; dedicated crisis policy is not implemented; no clinical validation is claimed; native-device VoiceOver/TalkBack and hardware-keyboard testing remain outstanding. Widget state captures use Flutter test typography and are treated as geometry evidence only.
 
 ### État
 
-`NOT_VERIFIED — RETAINED STRICT SCORE 8.90/10 / NOT MERGED / NOT DEPLOYED`
+`READY_FOR_FINAL_EXACT_HEAD_VERIFICATION — RETAINED STRICT SCORE 9.00/10 / NOT MERGED / NOT DEPLOYED`
 
 ### Prochaine étape
 
-Double scoring is mandatory and complete under the hardened doctrine with retained strict LOT score `8.90 / 10`. Before any renewed `VERIFIED` claim or merge decision, re-read the live exact-head CI for the current PR head after these governance/documentation changes. Even with green exact-head CI, LOT 05 remains `NOT_VERIFIED` while the retained strict score is below the mandatory `9.0/10` threshold. A targeted evidence/remediation pass and fresh double score are required before any VERIFIED claim. Do not merge, deploy or start LOT 06 without explicit approval.
+The targeted Perfection Pass is complete and the fresh retained score is `9.00 / 10`. Run exact-head LOT03/LOT04/LOT05 CI after this documentation closeout commit. If all required checks remain green and repository truth is unchanged, Gate 5 may be promoted to `VERIFIED`, at which point merge becomes the next human gate. Do not merge, deploy or start LOT 06 without explicit approval.

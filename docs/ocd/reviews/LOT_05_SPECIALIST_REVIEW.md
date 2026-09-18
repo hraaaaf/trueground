@@ -3,7 +3,7 @@
 Date: 2026-09-18  
 Repository: `hraaaaf/trueground`  
 PR: #12 — `feat: LOT 05 bounded Loop flow`  
-Runtime candidate reviewed: `a46db908d9f4a3f6a50024b356247d660ce60ec8`  
+Runtime candidate reviewed: `9870a171dc6e227ddf1349798b2ba5a54aa2f9ec`  
 Base: `lot/04-dashboard-v3-static @ 2b5f29dba596f99be05b124d093aa751d3a4222d`  
 Target gate: `GATE 5 — LOOP_FLOW_VERIFIED`
 
@@ -11,20 +11,21 @@ Target gate: `GATE 5 — LOOP_FLOW_VERIFIED`
 
 - PR #12: OPEN / DRAFT / NOT MERGED / mergeable.
 - Unresolved PR review threads: 0.
-- LOT 03 run `35287423135` → SUCCESS.
-- LOT 04 run `35287423044` → SUCCESS.
-- LOT 05 run `35287423068` → SUCCESS.
-- Focused LOT 05 tests: 18/18 PASS.
-- Full Flutter suite: 30/30 PASS.
+- LOT 03 run `35345719952` → SUCCESS.
+- LOT 04 run `35345719962` → SUCCESS.
+- LOT 05 run `35345719949` → SUCCESS.
+- Focused LOT 05 tests: 21/21 PASS.
+- Full Flutter suite: 33/33 PASS.
 - Format / analyze / client-provider isolation / release build / smoke: PASS.
-- Final visual artifact: `10524693557`.
-- Artifact digest: `sha256:d9d8b8fbf6463923489bb04d38e64e45516b10c3e815f823706b9fc850213840`.
+- Final visual artifact: `10546049484`.
+- Artifact digest: `sha256:dc249223034c13650f4d593eba1e7be7ad48263d2829988a5f13de29f820cc4d`.
 - `loop_360.png`: `sha256:b60ee01df8c8a20a68207db84c8696511a1d73d65e65a9474b0c027ef406684d`.
 - `loop_390.png`: `sha256:877ef717c767aa797d2ffc76d05ca433ac5900cb939a8b572d149a4a9a7564ba`.
-- Both screenshots were downloaded and visually inspected.
+- Both production-web screenshots were downloaded and visually inspected with no overflow/cutoff observed.
+- Six additional widget state-layout captures cover pattern/action/completion at 360 and 390; they are treated as geometry evidence, not production typography evidence.
 - Strict scoring protocol is now mandatory under `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 - LOT 05 double-score report: `docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`.
-- Pass A diagnostic mean: `9.54 / 10`, retained `9.20 / 10`; Pass B diagnostic mean: `9.29 / 10`, retained `8.90 / 10`; final strict retained LOT score: `8.90 / 10`.
+- Perfection Pass A diagnostic mean: `9.58 / 10`, retained `9.30 / 10`; Pass B diagnostic mean: `9.34 / 10`, retained `9.00 / 10`; final strict retained LOT score: `9.00 / 10`.
 
 ## OCD_SAFETY_AGENT
 
@@ -80,7 +81,9 @@ RESULT: `PASS_WITH_NOTES`
 - Labeled tap-target guideline: PASS.
 - Text-contrast guideline: PASS.
 - 360/390 render tests: PASS.
-- 200% text scaling now exercises pattern → action → complete state and keeps critical actions reachable.
+- 200% text scaling exercises pattern → action → complete at both 360 and 390 and keeps critical actions reachable.
+- Accessibility guidelines run on pattern/action/complete states at both 360 and 390.
+- Action and completion headings expose tested live-region semantics so stage changes are announced to assistive technology.
 - Interactive choices and Support escape hatch have explicit semantics.
 
 Note: native VoiceOver/TalkBack and hardware-keyboard traversal are not claimed.
@@ -102,7 +105,7 @@ Note: this is product copy, not clinically validated therapeutic language.
 RESULT: `PASS`
 
 - Exact candidate LOT03, LOT04 and LOT05 workflows all pass.
-- Full suite 30/30 passes.
+- Full suite 33/33 passes.
 - Dashboard CTA opens the bounded Loop flow.
 - Five-tab navigation remains functional.
 - Dashboard hierarchy and 200% baseline remain green.
@@ -151,7 +154,7 @@ Note: this is not an independent human clinical or regulatory review.
 
 No specialist verdict is `CHANGES_REQUIRED` or `BLOCKED` inside the authorized local-only deterministic LOT 05 scope.
 
-Subject to exact-head CI after the governance/documentation update, `GATE 5 — LOOP_FLOW_VERIFIED` is supported for:
+Runtime evidence and the final strict score now support `GATE 5 — LOOP_FLOW_VERIFIED` at the mandatory `9.00/10` threshold. Final repository status still requires exact-head CI after this documentation closeout commit.
 
 - bounded Loop entry;
 - no unrestricted chat;
@@ -167,3 +170,5 @@ Subject to exact-head CI after the governance/documentation update, `GATE 5 — 
 - client isolation and Core/OCD separation.
 
 This does not imply Gate 4 verification, production crisis readiness, clinical validation, Practice implementation, LOT 06 behavior, merge authorization or deployment authorization.
+
+Perfection Pass status: `READY_FOR_FINAL_EXACT_HEAD_VERIFICATION`.
