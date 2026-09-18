@@ -45,10 +45,7 @@ void main() {
 
         final boundaryKey = GlobalKey();
         await tester.pumpWidget(
-          RepaintBoundary(
-            key: boundaryKey,
-            child: const TrueGroundApp(),
-          ),
+          RepaintBoundary(key: boundaryKey, child: const TrueGroundApp()),
         );
         await tester.pumpAndSettle();
         await tester.tap(find.text('Loop'));
@@ -56,15 +53,9 @@ void main() {
 
         final width = size.width.toInt();
         expect(find.byKey(LoopFlowScreen.patternStepKey), findsOneWidget);
-        await _capture(
-          tester,
-          boundaryKey,
-          'loop_${width}_pattern_widget.png',
-        );
+        await _capture(tester, boundaryKey, 'loop_${width}_pattern_widget.png');
 
-        final certainty = find.byKey(
-          const ValueKey('loop-pattern-certainty'),
-        );
+        final certainty = find.byKey(const ValueKey('loop-pattern-certainty'));
         await tester.scrollUntilVisible(
           certainty,
           120,
@@ -76,11 +67,7 @@ void main() {
         await _jumpToTop(tester);
 
         expect(find.byKey(LoopFlowScreen.actionStepKey), findsOneWidget);
-        await _capture(
-          tester,
-          boundaryKey,
-          'loop_${width}_action_widget.png',
-        );
+        await _capture(tester, boundaryKey, 'loop_${width}_action_widget.png');
 
         final practice = find.byKey(
           const ValueKey('loop-action-practiceUncertainty'),
@@ -96,11 +83,7 @@ void main() {
         await _jumpToTop(tester);
 
         expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
-        await _capture(
-          tester,
-          boundaryKey,
-          'loop_${width}_complete_widget.png',
-        );
+        await _capture(tester, boundaryKey, 'loop_${width}_complete_widget.png');
 
         expect(tester.takeException(), isNull);
       },
