@@ -58,19 +58,57 @@ Score each applicable axis from 0.0 to 10.0:
 
 Mark an axis `NOT_APPLICABLE` only with an explicit reason.
 
-The overall score must be calculated from the applicable axes using the same weighting in both passes. If no lot-specific weighting is approved, use an equal-weight arithmetic mean.
+A mean may be displayed for diagnostic context, but it can NEVER be the retained certification score.
+
+The retained score is:
+
+`RETAINED_SCORE = min(EXECUTION_SCORE, ADVERSARIAL_SCORE, all applicable caps, every critical-dimension score)`
+
+For a lot containing multiple material steps:
+
+`LOT_SCORE = min(all retained material-step scores)`
+
+Never average material steps. Never let strong dimensions compensate for a weak critical dimension.
+
+Critical dimensions include, whenever applicable:
+- safety / clinical / scientific claims;
+- security / privacy / tenant isolation;
+- data integrity / migrations / restore;
+- architecture boundary violations;
+- release / rollback / reproducibility;
+- required UI geometry / accessibility / interaction behavior;
+- any dimension explicitly designated critical by the project.
 
 Do not inflate the score because a limitation is out of scope. Score the authorized deliverable as delivered, while separately recording production-readiness limitations.
 
-## Severity anchors
+## Severity anchors and hard caps
 
-- 10.0 — no material defect or evidence gap found after adversarial review;
-- 9.5–9.9 — exceptional; only very minor non-material deductions;
-- 9.0–9.4 — strong but meaningful polish/evidence limitations remain;
-- 8.0–8.9 — good but several material weaknesses or incompletenesses remain;
-- below 8.0 — not acceptable for a perfection-oriented closeout without explicit product-owner risk acceptance.
+- `10.0/10` is exceptional and requires complete evidence, every applicable binary gate green, no known realistically improvable in-scope weakness, AND a genuinely independent reviewer that did not author the implementation.
+- Any retained score `>= 9.5/10` requires a genuinely independent adversarial review of the final diff/runtime/evidence. A second pass by the same agent/session is not independent.
+- If the same person/model/session performs execution and adversarial review, automatic cap: `9.4/10`.
+- Required test red, required gate not green, or required proof absent/stale: cap `7.9/10`.
+- Demonstrated regression: cap `6.9/10` until remediation and fresh non-regression proof.
+- Blocking safety, privacy, security, data-integrity, or clinical/scientific-claim issue: cap `5.9/10` AND status `BLOCKED`.
+- Significant UI/UX work without real Target ↔ Render comparison at required identical viewports/states: visual-fidelity dimension cap `7.5/10`.
+- Any unresolved score divergence `> 0.5` between the two primary passes blocks closeout until investigated and rescored.
+- Any material in-scope weakness found during the final Perfection Pass must be corrected before `VERIFIED`.
+
+Caps stack; the lowest applicable cap wins.
 
 A score is evidence-backed criticism, not a reward for effort.
+
+## Mandatory Perfection Pass
+
+Before any lot can be `VERIFIED`, perform a final Perfection Pass after all ordinary implementation/review work:
+
+1. list every remaining weakness, uncertainty and rough edge;
+2. separate genuinely out-of-scope/external limits from realistically improvable in-scope issues;
+3. fix every materially improvable in-scope issue;
+4. rerun every affected test/evidence item on the new exact HEAD;
+5. rerun BOTH scoring passes;
+6. retain the new lower result under all caps and critical-dimension floors.
+
+A Perfection Pass that identifies an improvable material weakness and leaves it unfixed prohibits `VERIFIED`.
 
 ## Mandatory five reasons preventing 10/10
 
