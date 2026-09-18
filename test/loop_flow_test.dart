@@ -155,51 +155,68 @@ void main() {
     );
   }
 
-  testWidgets('Loop critical actions remain reachable at 200% text scaling', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(360, 800));
-    tester.platformDispatcher.textScaleFactorTestValue = 2;
-    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+  for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
+    testWidgets(
+      'Loop critical actions remain reachable at 200% text scaling at ${size.width.toInt()} px',
+      (tester) async {
+        await _useSurface(tester, size);
+        tester.platformDispatcher.textScaleFactorTestValue = 2;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-    await _openLoop(tester);
+        final semantics = tester.ensureSemantics();
+        try {
+          await _openLoop(tester);
 
-    expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
-    expect(find.byKey(LoopFlowScreen.supportEscapeKey), findsOneWidget);
+          expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+          expect(find.byKey(LoopFlowScreen.supportEscapeKey), findsOneWidget);
 
-    final other = find.byKey(const ValueKey('loop-pattern-other'));
-    await tester.scrollUntilVisible(
-      other,
-      160,
-      scrollable: find.byType(Scrollable).first,
+          final other = find.byKey(const ValueKey('loop-pattern-other'));
+          await tester.scrollUntilVisible(
+            other,
+            160,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          expect(other.hitTestable(), findsOneWidget);
+          await tester.tap(other);
+          await tester.pumpAndSettle();
+
+          final returnHome = find.byKey(
+            const ValueKey('loop-action-returnHome'),
+          );
+          await tester.scrollUntilVisible(
+            returnHome,
+            160,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          expect(returnHome.hitTestable(), findsOneWidget);
+          await tester.tap(returnHome);
+          await tester.pumpAndSettle();
+
+          final continueAction = find.byKey(
+            const ValueKey('loop-continue-action'),
+          );
+          await tester.scrollUntilVisible(
+            continueAction,
+            160,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          expect(continueAction.hitTestable(), findsOneWidget);
+          expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
+
+          await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(textContrastGuideline));
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
     );
-    await tester.pumpAndSettle();
-    expect(other.hitTestable(), findsOneWidget);
-    await tester.tap(other);
-    await tester.pumpAndSettle();
-
-    final returnHome = find.byKey(const ValueKey('loop-action-returnHome'));
-    await tester.scrollUntilVisible(
-      returnHome,
-      160,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    expect(returnHome.hitTestable(), findsOneWidget);
-    await tester.tap(returnHome);
-    await tester.pumpAndSettle();
-
-    final continueAction = find.byKey(const ValueKey('loop-continue-action'));
-    await tester.scrollUntilVisible(
-      continueAction,
-      160,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    expect(continueAction.hitTestable(), findsOneWidget);
-    expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+  }
 
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets(
