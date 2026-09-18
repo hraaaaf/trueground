@@ -1,7 +1,4 @@
-enum FirewallDisposition {
-  allow,
-  redirectToBoundedLoop,
-}
+enum FirewallDisposition { allow, redirectToBoundedLoop }
 
 enum FirewallReasonCode {
   none,
@@ -26,7 +23,8 @@ class FirewallDecision {
   final String userFacingCopy;
   final String? redirectRoute;
 
-  bool get isRedirect => disposition == FirewallDisposition.redirectToBoundedLoop;
+  bool get isRedirect =>
+      disposition == FirewallDisposition.redirectToBoundedLoop;
 }
 
 class FirewallAuditSnapshot {
@@ -132,10 +130,7 @@ class CompulsionFirewallSession {
     );
   }
 
-  FirewallDecision _rememberAndReturn(
-    _Turn turn,
-    FirewallDecision decision,
-  ) {
+  FirewallDecision _rememberAndReturn(_Turn turn, FirewallDecision decision) {
     _turns.add(turn);
     _reasonCodes.add(decision.reasonCode);
     if (_turns.length > maxTurns) {
@@ -166,13 +161,7 @@ class CompulsionFirewallSession {
   }
 }
 
-enum _RiskFamily {
-  none,
-  certainty,
-  checking,
-  rumination,
-  confession,
-}
+enum _RiskFamily { none, certainty, checking, rumination, confession }
 
 class _Turn {
   const _Turn({
