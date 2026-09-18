@@ -19,7 +19,9 @@ This prevents context drift, hidden assumptions, stale SHAs, accidental scope ex
 
 Every implementation lot follows:
 
-`READ → PLAN → EXECUTE → SPECIALIST REVIEW → VERIFY → HANDOVER → NEXT WINDOW PROMPT`
+`READ → PLAN → EXECUTE → SPECIALIST REVIEW → DOUBLE SCORE → VERIFY → HANDOVER → NEXT WINDOW PROMPT`
+
+For every material lot, the double-score closeout defined in `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` is mandatory. If either pass is missing, the lot state is `VERIFICATION INCOMPLETE`, never `VERIFIED`.
 
 A lot is not considered fully closed until the handover package exists.
 
@@ -32,6 +34,7 @@ A lot is one bounded, auditable objective with its own:
 - PROOF;
 - branch/PR scope where applicable;
 - required specialist reviews;
+- mandatory severe score + independent/adversarial second score, retaining the lower result;
 - acceptance gate;
 - non-regression checks.
 
@@ -163,6 +166,7 @@ It must instruct the next window to:
 7. remain inside the next lot scope;
 8. preserve Core IAmina / OCD capsule separation;
 9. preserve existing behavior and run non-regression checks;
+9a. execute the mandatory severe score and independent/adversarial second score from `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`, retain the lower score, and never call the lot VERIFIED if either pass is missing;
 10. never merge or deploy without explicit product-owner approval;
 11. stop and report if repository reality differs materially from the handover.
 

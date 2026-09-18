@@ -93,9 +93,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('primary loop CTA uses the existing Loop placeholder route', (
-    tester,
-  ) async {
+  testWidgets('primary loop CTA opens the bounded Loop flow', (tester) async {
     await _useSurface(tester, const Size(390, 844));
     await tester.pumpWidget(const TrueGroundApp());
     await tester.pumpAndSettle();
@@ -104,10 +102,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const ValueKey('screen-loop')), findsOneWidget);
-    expect(
-      find.text('Loop behavior is intentionally not implemented in this lot.'),
-      findsOneWidget,
-    );
+    expect(find.text('Choose the closest fit.'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
+    expect(find.text('Send'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

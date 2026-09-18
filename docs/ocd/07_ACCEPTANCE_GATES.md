@@ -9,6 +9,8 @@ Define what evidence is required before a phase or feature can move from `READY 
 
 A green CI is evidence, not completion.
 
+For every material lot, `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` is mandatory. Missing either scoring pass, the retained lower score, or the required 10/10 deductions forces `VERIFICATION INCOMPLETE`; the lot must not be called `VERIFIED`.
+
 ## Global rules
 
 A gate is `VERIFIED` only when:
@@ -19,6 +21,7 @@ A gate is `VERIFIED` only when:
 - non-regression has been checked;
 - required screenshots/evidence exist;
 - required specialist reviews from `08_SPECIALIST_REVIEW_MATRIX.md` are recorded;
+- both mandatory scoring passes from `10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` are complete and the lower score is recorded;
 - known risks are documented;
 - no release blocker remains hidden;
 - product-owner approval is obtained where explicitly required.
