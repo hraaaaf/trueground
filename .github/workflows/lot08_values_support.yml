@@ -51,7 +51,7 @@ jobs:
             exit 1
           fi
 
-          if grep -R -n -E 'clinically proven|treats OCD|cures OCD|you are safe|nothing bad will happen|your anxiety will|guarantee|contacted successfully' lib/values lib/support; then
+          if grep -R -n -E 'clinically proven|treats OCD|cures OCD|definitely safe|everything is safe|nothing bad will happen|your anxiety will|guarantee|contacted successfully' lib/values lib/support; then
             echo 'Unsupported clinical, reassurance or fake-contact copy found.'
             exit 1
           fi

@@ -94,10 +94,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
                   onBack: _restart,
                 )
               else
-                _LeaveFlowStep(
-                  area: _selectedArea!,
-                  onRestart: _restart,
-                ),
+                _LeaveFlowStep(area: _selectedArea!),
             ],
           ),
         ),
@@ -211,13 +208,9 @@ class _ChooseActionStep extends StatelessWidget {
 }
 
 class _LeaveFlowStep extends StatelessWidget {
-  const _LeaveFlowStep({
-    required this.area,
-    required this.onRestart,
-  });
+  const _LeaveFlowStep({required this.area});
 
   final String area;
-  final VoidCallback onRestart;
 
   @override
   Widget build(BuildContext context) {
@@ -247,11 +240,6 @@ class _LeaveFlowStep extends StatelessWidget {
         FilledButton(
           onPressed: () => context.go('/'),
           child: const Text('Back to Home'),
-        ),
-        const SizedBox(height: TrueGroundSpacing.sm),
-        TextButton(
-          onPressed: onRestart,
-          child: const Text('Choose a different area'),
         ),
       ],
     );

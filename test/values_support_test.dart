@@ -144,7 +144,14 @@ void main() {
     await tester.pumpWidget(const TrueGroundApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Return to what matters'));
+    final valuesCard = find.text('Return to what matters');
+    await tester.scrollUntilVisible(
+      valuesCard,
+      140,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(valuesCard);
     await tester.pumpAndSettle();
     expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
     expect(tester.takeException(), isNull);
