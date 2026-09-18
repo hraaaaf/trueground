@@ -53,84 +53,70 @@ class CompulsionFirewallSession {
       return _rememberAndReturn(current, _allow());
     }
 
-    final previous = _turns.isEmpty ? null : _turns.last;
-    if (previous == null) {
+    if (_turns.isEmpty) {
       return _rememberAndReturn(current, _allow());
     }
 
+    if (_isExplicitContextChange(current.normalized) &&
+        current.riskFamily == _RiskFamily.none) {
+      return _rememberAndReturn(current, _allow());
+    }
+
+    for (final previous in _turns.reversed) {
+      final reason = _reasonAgainst(current, previous);
+      if (reason != null) {
+        return _rememberAndReturn(current, _redirect(reason));
+      }
+    }
+
+    return _rememberAndReturn(current, _allow());
+  }
+
+  FirewallReasonCode? _reasonAgainst(_Turn current, _Turn previous) {
     final similarity = _jaccard(current.tokens, previous.tokens);
     final sameRiskFamily =
         current.riskFamily != _RiskFamily.none &&
         current.riskFamily == previous.riskFamily;
 
-    if (_isExplicitContextChange(current.normalized) &&
-        (current.riskFamily == _RiskFamily.none ||
-            (!sameRiskFamily && similarity < 0.42))) {
-      return _rememberAndReturn(current, _allow());
-    }
-
     if (current.normalized == previous.normalized &&
         current.riskFamily != _RiskFamily.none) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.exactRepeat),
-      );
+      return FirewallReasonCode.exactRepeat;
     }
 
     if (_hasCertaintyEscalation(current.normalized) &&
         (_sharesTopic(current, previous) || sameRiskFamily)) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.certaintyEscalation),
-      );
+      return FirewallReasonCode.certaintyEscalation;
     }
 
     if (current.riskFamily == _RiskFamily.checking &&
         previous.riskFamily == _RiskFamily.checking &&
         _relatedEnough(current, previous, similarity)) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.checkingLoop),
-      );
+      return FirewallReasonCode.checkingLoop;
     }
 
     if (current.riskFamily == _RiskFamily.rumination &&
         previous.riskFamily == _RiskFamily.rumination &&
         _relatedEnough(current, previous, similarity)) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.ruminationLoop),
-      );
+      return FirewallReasonCode.ruminationLoop;
     }
 
     if (current.riskFamily == _RiskFamily.confession &&
         previous.riskFamily == _RiskFamily.confession &&
         _relatedEnough(current, previous, similarity)) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.reconfession),
-      );
+      return FirewallReasonCode.reconfession;
     }
 
-    if (sameRiskFamily &&
-        current.riskFamily != _RiskFamily.none &&
-        similarity >= 0.42) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.paraphrasedRepeat),
-      );
+    if (sameRiskFamily && similarity >= 0.42) {
+      return FirewallReasonCode.paraphrasedRepeat;
     }
 
     if (current.riskFamily != _RiskFamily.none &&
         previous.riskFamily != _RiskFamily.none &&
         similarity >= 0.58) {
-      return _rememberAndReturn(
-        current,
-        _redirect(FirewallReasonCode.paraphrasedRepeat),
-      );
+      return FirewallReasonCode.paraphrasedRepeat;
     }
 
-    return _rememberAndReturn(current, _allow());
+    return null;
   }
 
   void reset() {
@@ -172,7 +158,7 @@ class CompulsionFirewallSession {
       reasonCode: reasonCode,
       redirectRoute: '/loop',
       userFacingCopy:
-          'This may be the same certainty or checking loop returning. '
+          'This may be the same question or analysis loop returning. '
           'I will not try to settle it again. Choose one bounded next step instead.',
     );
   }
