@@ -132,6 +132,10 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(
+      find.text('Not for urgent safety, medical or emergency decisions.'),
+      findsOneWidget,
+    );
 
     await tester.tap(find.text('Begin'));
     await tester.pumpAndSettle();
