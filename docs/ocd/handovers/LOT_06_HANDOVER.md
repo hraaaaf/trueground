@@ -180,3 +180,34 @@ LOT07 execution is NOT authorized by the current instruction. Do not create or e
 `VERIFICATION INCOMPLETE` until the documentation-final exact HEAD re-runs LOT03/LOT04/LOT05/LOT06 successfully.
 
 No merge or deployment is authorized.
+
+
+---
+
+## POST-MERGE ADDENDUM — 2026-09-18
+
+Product-owner merge authorization was subsequently granted for PR #14.
+
+Repository truth after merge:
+
+- PR #14: CLOSED / MERGED;
+- merged candidate HEAD: `64872299233576fdefd9134199874a7365e16e0c`;
+- merge commit exact: `8015e0dbe46f9b51b67ce0b43affec4687166823`;
+- merge target: `lot/04-dashboard-v3-static`;
+- deployment: NOT PERFORMED;
+- production/data/secrets mutation: NOT PERFORMED.
+
+Final pre-merge exact-head certification on `6487229...`:
+
+- LOT03 run `35351807318` → SUCCESS;
+- LOT04 run `35351807313` → SUCCESS;
+- LOT05 run `35351807294` → SUCCESS;
+- LOT06 run `35351807405` → SUCCESS;
+- retained strict score: `9.00 / 10`;
+- Gate: `GATE 6 — COMPULSION_FIREWALL_VERIFIED`.
+
+Post-merge workflows were automatically triggered on merge commit `8015e0d...` and must be rechecked live by the LOT07 window. Their state must never be inferred from this addendum.
+
+LOT07 is the next roadmap phase: `PHASE 7 — Practice experience`.
+
+This addendum authorizes preparation of the LOT07 starter prompt only. It does not authorize merge of this documentation branch, deployment, production mutation, or any LOT07 implementation by itself.
