@@ -124,6 +124,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   title: 'Leave the question unanswered for this moment.',
                   body:
                       'You do not need to decide whether the feared outcome is safe here, and you do not need to feel calm before moving on.',
+                  note:
+                      'Not for urgent safety, medical or emergency decisions.',
                   primaryLabel: 'Continue',
                   onPrimary: _completePause,
                   secondaryLabel: 'Exit practice',
@@ -151,6 +153,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   key: PracticeScreen.uncertaintyNoticeKey,
                   title: 'Notice the pull to get a definite answer.',
                   body: 'You do not need to analyze the question here.',
+                  note:
+                      'Not for urgent safety, medical or emergency decisions.',
                   primaryLabel: 'Continue',
                   onPrimary: () => _show(_PracticeView.uncertaintyChoose),
                   secondaryLabel: 'Exit practice',
@@ -161,6 +165,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   title:
                       'For this moment, choose not to solve the uncertainty in TrueGround.',
                   body: 'I may not know for sure right now.',
+                  note:
+                      'Not for urgent safety, medical or emergency decisions.',
                   primaryLabel: 'Finish practice',
                   onPrimary: _completeUncertainty,
                   secondaryLabel: 'Exit practice',
