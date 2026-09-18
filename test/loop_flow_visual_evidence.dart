@@ -83,7 +83,11 @@ void main() {
         await _jumpToTop(tester);
 
         expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
-        await _capture(tester, boundaryKey, 'loop_${width}_complete_widget.png');
+        await _capture(
+          tester,
+          boundaryKey,
+          'loop_${width}_complete_widget.png',
+        );
 
         expect(tester.takeException(), isNull);
       },
