@@ -72,7 +72,7 @@ void main() {
 
     expect(find.byKey(PracticeScreen.pauseMomentKey), findsOneWidget);
     expect(
-      find.textContaining('you do not need to feel calm before moving on'),
+      find.textContaining('You do not need to feel calm before moving on'),
       findsOneWidget,
     );
     expect(find.textContaining('you are safe'), findsNothing);
