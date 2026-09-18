@@ -3,7 +3,7 @@
 Date: 2026-09-18
 Candidate scored: runtime `a46db908d9f4a3f6a50024b356247d660ce60ec8`
 Closeout branch before governance-only edits: `8ace7a78e732810709fe52aec268a5a821630b74`
-Method: equal-weight mean across 10 mandatory axes.
+Method: diagnostic axis scoring plus hard critical-dimension floor under the hardened doctrine. Means may be shown for context but do not certify the lot.
 
 ## PASS A — SEVERE REVIEW
 
@@ -20,7 +20,11 @@ Method: equal-weight mean across 10 mandatory axes.
 | QA / non-regression | 9.7 |
 | Evidence / reproducibility | 9.7 |
 
-Overall A: **9.54 / 10**
+Diagnostic mean A: **9.54 / 10**
+
+Critical-dimension floor A: **9.20 / 10** (Accessibility)
+
+Retained Pass A score: **9.20 / 10**
 
 Reasons preventing 10/10:
 1. Support is still a placeholder destination, so the visible human-support escape is not a complete support capability.
@@ -49,7 +53,11 @@ This is a deliberately separate adversarial pass with a fresh rubric emphasis. N
 | QA / non-regression | 9.5 |
 | Evidence / reproducibility | 9.3 |
 
-Overall B: **9.29 / 10**
+Diagnostic mean B: **9.29 / 10**
+
+Critical-dimension floor B: **8.90 / 10** (Accessibility)
+
+Retained Pass B score: **8.90 / 10**
 
 Reasons preventing 10/10:
 1. A user selecting human support lands on a placeholder; the route is correct but the end-to-end support outcome is intentionally incomplete.
@@ -65,9 +73,11 @@ Material finding: no current-scope defect severe enough to require a runtime cha
 
 ## RETAINED SCORE
 
-`min(9.54, 9.29) = 9.29 / 10`
+`min(Pass A retained 9.20, Pass B retained 8.90, applicable caps) = 8.90 / 10`
 
-**Retained strict score: 9.29 / 10**
+Same-executor cap: `9.40 / 10` (not the limiting factor).
+
+**Retained strict score: 8.90 / 10**
 
 No averaging of the two overall scores is permitted.
 
@@ -75,6 +85,15 @@ No averaging of the two overall scores is permitted.
 
 - Runtime change required by scoring: NO.
 - UI recapture required by scoring: NO, because no runtime/UI file changed.
-- Exact-head CI after governance/documentation changes: REQUIRED before any renewed VERIFIED claim.
+- Exact-head CI after governance/documentation changes: REQUIRED, but green CI alone cannot restore VERIFIED while the retained score remains below the mandatory `9.0/10` threshold.
 - Merge authorization: NOT GRANTED.
 - Deployment authorization: NOT GRANTED.
+
+
+## HARDENED-DOCTRINE CONSEQUENCE
+
+Under the hardened global-style scoring rule, LOT 05 is **NOT_VERIFIED** at `8.90 / 10`.
+
+This is intentionally stricter than the earlier arithmetic-mean interpretation. Accessibility is a critical dimension for this lot, and a weak critical dimension may not be hidden by stronger architecture/QA scores.
+
+To reach `VERIFIED`, LOT 05 requires a new evidence/remediation pass that legitimately lifts the retained critical floor to at least `9.0/10`, followed by fresh exact-head evidence and both scores again.
