@@ -140,6 +140,20 @@ If either scoring pass discovers a material issue:
 
 A pre-fix score cannot certify a post-fix candidate.
 
+## VERIFIED threshold
+
+A material lot may be called `VERIFIED` only when ALL of the following are true:
+
+1. `LOT_SCORE >= 9.0/10`;
+2. every applicable binary gate is green on the exact final HEAD/evidence set;
+3. no blocking finding remains;
+4. every material step has both scoring passes;
+5. every score divergence `> 0.5` is investigated and resolved;
+6. the final Perfection Pass is complete;
+7. every materially improvable in-scope weakness discovered by that pass has been fixed and re-proven.
+
+Below `9.0/10`, status is `NOT_VERIFIED` even when CI is green.
+
 ## Handover record
 
 Every `LOT_XX_HANDOVER.md` must include:
