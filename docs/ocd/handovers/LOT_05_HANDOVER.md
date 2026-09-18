@@ -229,7 +229,17 @@ For LOT 05:
 
 Strict scoring protocol:
 
-`NOT_APPLICABLE` because the strict-scoring governance file is not present on the final LOT 04 base.
+`MANDATORY` under `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
+
+Double-score report:
+
+`docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`
+
+- severe Pass A: `9.54 / 10`;
+- adversarial Pass B: `9.29 / 10`;
+- retained score: `min(A, B) = 9.29 / 10`;
+- runtime change required by scoring: NO;
+- second pass was a deliberately separated adversarial review, not falsely represented as an external human/agent reviewer.
 
 ## 11. OUT OF SCOPE / NOT DONE
 
@@ -286,8 +296,8 @@ Gate 4 is not fully verified; Support and Practice remain placeholders; dedicate
 
 ### État
 
-`RUNTIME VERIFIED / DOCUMENTATION CLOSEOUT COMMITTED / NOT MERGED / NOT DEPLOYED`
+`VERIFICATION INCOMPLETE — GOVERNANCE UPDATE EXACT-HEAD CI PENDING / NOT MERGED / NOT DEPLOYED`
 
 ### Prochaine étape
 
-Before any merge decision, re-read the live exact-head CI for the current PR head. This handover does not pin a future documentation-only run ID. If live exact-head CI is green and repository truth is unchanged, LOT 05 supports `GATE 5 — LOOP_FLOW_VERIFIED` and may be presented for explicit product-owner merge authorization. Do not merge, deploy or start LOT 06 without explicit approval.
+Double scoring is now mandatory and complete with retained score `9.29 / 10`. Before any renewed `VERIFIED` claim or merge decision, re-read the live exact-head CI for the current PR head after these governance/documentation changes. If it is green and repository truth is unchanged, LOT 05 may return to `GATE 5 — LOOP_FLOW_VERIFIED` and be presented for explicit product-owner merge authorization. Do not merge, deploy or start LOT 06 without explicit approval.
