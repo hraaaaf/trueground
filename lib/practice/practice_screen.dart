@@ -95,7 +95,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Choose one brief practice. No scores, streaks or anxiety ratings.',
+                'Choose one brief practice. Each one has a clear end.',
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 18),
@@ -131,7 +131,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 _PracticeView.pauseEnd => _PracticeEnd(
                     key: PracticeScreen.pauseEndKey,
                     body:
-                        'TrueGround does not grade whether you resisted perfectly. Choose your next ordinary action when you leave.',
+                        'TrueGround does not grade how the pause went. Choose your next ordinary action when you leave.',
                     onHome: () => _returnHome(context),
                   ),
                 _PracticeView.uncertaintyStart => _PracticeStep(
@@ -210,7 +210,7 @@ class _PracticeMenu extends StatelessWidget {
           icon: Icons.pause_rounded,
           title: pauseCompleted ? 'Pause finished for now' : 'Pause the ritual',
           helper: pauseCompleted
-              ? 'Finished for this app session. There is no replay button.'
+              ? 'This practice has ended for this app session.'
               : 'Create a small space before an urge-driven action.',
           onTap: pauseCompleted ? null : onPause,
         ),
@@ -222,7 +222,7 @@ class _PracticeMenu extends StatelessWidget {
               ? 'Uncertainty practice finished for now'
               : 'Practice uncertainty',
           helper: uncertaintyCompleted
-              ? 'Finished for this app session. There is no replay button.'
+              ? 'This practice has ended for this app session.'
               : 'Leave a question unresolved without trying to prove it safe or unsafe.',
           onTap: uncertaintyCompleted ? null : onUncertainty,
         ),
@@ -231,7 +231,7 @@ class _PracticeMenu extends StatelessWidget {
           key: const ValueKey('practice-choice-planned'),
           icon: Icons.history_rounded,
           title: 'Continue planned practice',
-          helper: 'Resume a saved practice when one actually exists.',
+          helper: 'Saved practice is not available yet.',
           onTap: onPlanned,
         ),
         const SizedBox(height: 16),
@@ -325,11 +325,6 @@ class _PracticeEnd extends StatelessWidget {
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: const Text('Return to Home'),
         ),
-        const SizedBox(height: 10),
-        Text(
-          'There is no replay button and no score to check.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
       ],
     );
   }
@@ -361,7 +356,7 @@ class _PlannedPracticeEmpty extends StatelessWidget {
         const SizedBox(height: 10),
         const _PracticePanel(
           body:
-              'No saved practice is available in this version.\n\nTrueGround will not pretend to remember a plan that has not been stored.',
+              'No saved practice is available in this version.\n\nNothing has been stored to resume yet.',
         ),
         const SizedBox(height: 18),
         FilledButton(
