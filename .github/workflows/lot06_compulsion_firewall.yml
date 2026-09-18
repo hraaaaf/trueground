@@ -1,0 +1,63 @@
+name: LOT 06 Compulsion Firewall
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compulsion-firewall:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format lib test
+          git diff --exit-code
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: OCD capsule isolation guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d lib/compulsion_firewall
+          if grep -R -n -E 'firebase|supabase|openai|anthropic|gemini|diabetes|iamina_core' lib/compulsion_firewall test/compulsion_firewall_test.dart; then
+            echo 'Forbidden provider, cross-client, or Core coupling marker found.'
+            exit 1
+          fi
+
+      - name: Privacy and persistence guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'SharedPreferences|sqlite|Hive|File\(|http\.|https://|analytics|telemetry' lib/compulsion_firewall; then
+            echo 'Unexpected persistence, network, or analytics behavior found.'
+            exit 1
+          fi
+
+      - name: Focused Compulsion Firewall tests
+        run: flutter test test/compulsion_firewall_test.dart
+
+      - name: Full regression suite
+        run: flutter test
+
+      - name: Release web build
+        run: flutter build web --release
