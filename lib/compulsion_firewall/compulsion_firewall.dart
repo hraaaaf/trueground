@@ -49,7 +49,7 @@ class CompulsionFirewallSession {
   FirewallDecision evaluate(String rawMessage) {
     final current = _Turn.fromRaw(rawMessage);
 
-    if (current.normalized.isEmpty || _isLegitimateEscape(current.normalized)) {
+    if (current.normalized.isEmpty || _isHardEscape(current.normalized)) {
       return _rememberAndReturn(current, _allow());
     }
 
@@ -62,6 +62,12 @@ class CompulsionFirewallSession {
     final sameRiskFamily =
         current.riskFamily != _RiskFamily.none &&
         current.riskFamily == previous.riskFamily;
+
+    if (_isExplicitContextChange(current.normalized) &&
+        (current.riskFamily == _RiskFamily.none ||
+            (!sameRiskFamily && similarity < 0.42))) {
+      return _rememberAndReturn(current, _allow());
+    }
 
     if (current.normalized == previous.normalized &&
         current.riskFamily != _RiskFamily.none) {
@@ -292,6 +298,12 @@ _RiskFamily _riskFamilyFor(String text) {
     'dangerous',
     'bad person',
     'safe for sure',
+    'what does this say about me',
+    'what does that say about me',
+    'does this mean i am',
+    'does that mean i am',
+    'what kind of person',
+    'who i am',
   ])) {
     return _RiskFamily.certainty;
   }
@@ -327,13 +339,8 @@ bool _hasCertaintyEscalation(String text) {
   ]);
 }
 
-bool _isLegitimateEscape(String text) {
+bool _isHardEscape(String text) {
   return _containsAny(text, const <String>[
-    'correction:',
-    'i meant:',
-    'new question:',
-    'different question:',
-    'new information:',
     'accessibility:',
     'screen reader',
     'button is not working',
@@ -341,6 +348,16 @@ bool _isLegitimateEscape(String text) {
     'support:',
     'emergency:',
     'immediate danger:',
+  ]);
+}
+
+bool _isExplicitContextChange(String text) {
+  return _containsAny(text, const <String>[
+    'correction:',
+    'i meant:',
+    'new question:',
+    'different question:',
+    'new information:',
   ]);
 }
 
