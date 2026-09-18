@@ -108,7 +108,7 @@ Examples outside the allowed autonomous practice scope include:
 
 LOT07B will not collect enough context to adjudicate these cases.
 
-User-facing copy must therefore make clear that the practice is not for urgent safety or medical decisions.
+User-facing copy must therefore make clear that the practice is not for urgent safety or medical decisions. That boundary must remain visible on the active instruction steps where the user is asked to leave a question unresolved.
 
 ## SURFACE 1 — PAUSE THE RITUAL
 
