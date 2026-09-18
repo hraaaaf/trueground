@@ -25,6 +25,10 @@ Ambiguous repetition is allowed rather than aggressively labeled. Legitimate cor
 | Rumination | analyze → keep analyzing same target | redirect |
 | Reconfession | added detail → same confession cycle | redirect |
 | Bypass attempt | "different wording" + one-last-time check | redirect |
+| Fake context-change bypass | "New question:" + same certainty request | redirect |
+| Non-adjacent reassurance | reassurance → neutral turn → same topic certainty | redirect |
+| Non-adjacent checking | checking → neutral turn → same target checking | redirect |
+| Distant paraphrase | identity/harm meaning reworded with low lexical overlap | redirect |
 | Legitimate correction | explicit correction marker | allow |
 | New question | explicit different/new question | allow |
 | Accessibility | screen-reader/accessibility issue | allow |
@@ -32,6 +36,9 @@ Ambiguous repetition is allowed rather than aggressively labeled. Legitimate cor
 | Support escape | asks for person/support | allow |
 | Distinct safety content | explicit emergency/immediate danger marker | allow to dedicated downstream handling |
 | Ordinary repeat | repeated neutral informational question | allow |
+| Ordinary verification | verify/confirm a technical fact | allow |
+| Unrelated certainty escalation | certainty question about topic A → guarantee about topic B | allow |
+| LOT05 handoff | firewall redirect route applied to app router | existing bounded Loop, no free-text composer |
 | Reset | reset then same reassurance-style question | first-turn allow |
 | Privacy audit | reason codes only, no raw content export | pass |
 | Bounded history | max-turn window enforced | pass |
