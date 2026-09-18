@@ -41,8 +41,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          if grep -R -n -E 'openai|anthropic|gemini|firebase|supabase|shared_preferences|sqflite|hive|isar' lib/practice pubspec.yaml; then
-            echo 'Forbidden provider/persistence dependency marker found in LOT07 scope.'
+          if grep -R -n -E 'openai|anthropic|gemini|firebase|supabase|sqflite|hive|isar' lib/practice pubspec.yaml; then
+            echo 'Forbidden provider/database dependency marker found in LOT07 scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'shared_preferences' lib/practice pubspec.yaml \
+            | grep -v -E 'practice_completion_store.dart|pubspec.yaml'; then
+            echo 'shared_preferences escaped the approved LOT07C completion-store boundary.'
             exit 1
           fi
 
