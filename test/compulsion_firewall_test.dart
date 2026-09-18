@@ -301,7 +301,9 @@ void main() {
 
     test('repeated attempts stay bounded without fresh certainty', () {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate(
+        'Are you sure this thought does not make me dangerous?',
+      );
 
       final second = firewall.evaluate(
         'Can you guarantee this thought does not mean I am dangerous?',
@@ -315,7 +317,10 @@ void main() {
 
       for (final decision in <FirewallDecision>[second, third, fourth]) {
         expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
-        expect(decision.userFacingCopy, isNot(contains('you are not dangerous')));
+        expect(
+          decision.userFacingCopy,
+          isNot(contains('you are not dangerous')),
+        );
       }
     });
 
