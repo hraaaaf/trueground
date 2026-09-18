@@ -1,0 +1,246 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:trueground/compulsion_firewall/compulsion_firewall.dart';
+
+void main() {
+  group('LOT 06 Compulsion Firewall', () {
+    test('first reassurance-style question is not automatically blocked', () {
+      final firewall = CompulsionFirewallSession();
+
+      final decision = firewall.evaluate('Are you sure I am not dangerous?');
+
+      expect(decision.disposition, FirewallDisposition.allow);
+      expect(decision.reasonCode, FirewallReasonCode.none);
+    });
+
+    test('exact reassurance repetition redirects without fresh certainty', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am not dangerous?');
+
+      final decision = firewall.evaluate('Are you sure I am not dangerous?');
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.exactRepeat);
+      expect(decision.redirectRoute, '/loop');
+      expect(decision.userFacingCopy, isNot(contains('you are not dangerous')));
+      expect(decision.userFacingCopy, contains('may be'));
+    });
+
+    test('close paraphrase of certainty request redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+
+      final decision = firewall.evaluate(
+        'Can you be certain this thought does not mean I am dangerous?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(
+        decision.reasonCode,
+        anyOf(
+          FirewallReasonCode.paraphrasedRepeat,
+          FirewallReasonCode.certaintyEscalation,
+        ),
+      );
+    });
+
+    test('certainty escalation with guarantee redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this does not mean I am dangerous?');
+
+      final decision = firewall.evaluate(
+        'Can you guarantee I am not dangerous?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.certaintyEscalation);
+    });
+
+    test('promise escalation redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure nothing bad will happen?');
+
+      final decision = firewall.evaluate(
+        'Promise me nothing bad will happen.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.certaintyEscalation);
+    });
+
+    test('repeated checking request redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Please check the lock again for me.');
+
+      final decision = firewall.evaluate(
+        'Can you double check the lock one last time?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(
+        decision.reasonCode,
+        anyOf(
+          FirewallReasonCode.checkingLoop,
+          FirewallReasonCode.certaintyEscalation,
+        ),
+      );
+    });
+
+    test('repeated rumination redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Help me analyze again why this thought happened.');
+
+      final decision = firewall.evaluate(
+        'I need to keep analyzing why that thought happened.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.ruminationLoop);
+    });
+
+    test('reconfession redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('I need to confess another detail about what I thought.');
+
+      final decision = firewall.evaluate(
+        'I forgot to mention one more detail, let me confess it again.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.reconfession);
+    });
+
+    test('adversarial one-last-time wording does not bypass firewall', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Can you check whether I made a mistake?');
+
+      final decision = firewall.evaluate(
+        'Different wording: check one last time whether I made a mistake.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
+    test('legitimate correction is not blocked', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure the appointment is Monday?');
+
+      final decision = firewall.evaluate(
+        'Correction: I meant Tuesday, not Monday.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('new question is not blocked merely because history exists', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure the appointment is Monday?');
+
+      final decision = firewall.evaluate(
+        'New question: what time does the clinic open?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('accessibility request is not classified as compulsion', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Can you check this for me?');
+
+      final decision = firewall.evaluate(
+        'Accessibility: the screen reader cannot reach the support button.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('interface error is not classified as compulsion', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Can you check this for me?');
+
+      final decision = firewall.evaluate('The button is not working.');
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('support escape remains available', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am safe for sure?');
+
+      final decision = firewall.evaluate(
+        'Support: I want to talk to a trusted person.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('distinct emergency content is not swallowed by OCD firewall', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure nothing bad will happen?');
+
+      final decision = firewall.evaluate(
+        'Emergency: there is an immediate physical danger right now.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('ordinary repeated informational request is not auto-blocked', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('What does ERP stand for?');
+
+      final decision = firewall.evaluate('What does ERP stand for?');
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
+    test('reset clears session repetition context', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am not dangerous?');
+      firewall.reset();
+
+      final decision = firewall.evaluate('Are you sure I am not dangerous?');
+
+      expect(decision.disposition, FirewallDisposition.allow);
+      expect(firewall.auditSnapshot().turnCount, 1);
+    });
+
+    test('audit snapshot contains reason codes but no raw content field', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am not dangerous?');
+      firewall.evaluate('Are you sure I am not dangerous?');
+
+      final snapshot = firewall.auditSnapshot();
+
+      expect(snapshot.turnCount, 2);
+      expect(snapshot.reasonCodes.last, FirewallReasonCode.exactRepeat);
+      expect(snapshot.toString(), isNot(contains('dangerous')));
+    });
+
+    test('history is bounded in memory', () {
+      final firewall = CompulsionFirewallSession(maxTurns: 3);
+
+      firewall.evaluate('What does ERP stand for?');
+      firewall.evaluate('New question: what is uncertainty tolerance?');
+      firewall.evaluate('New question: what is a bounded loop?');
+      firewall.evaluate('New question: what is response prevention?');
+
+      expect(firewall.auditSnapshot().turnCount, 3);
+    });
+
+    test('firewall response is cautious and non-diagnostic', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am not dangerous?');
+
+      final copy = firewall
+          .evaluate('Are you sure I am not dangerous?')
+          .userFacingCopy
+          .toLowerCase();
+
+      expect(copy, contains('may be'));
+      expect(copy, isNot(contains('you have ocd')));
+      expect(copy, isNot(contains('you are compulsing')));
+      expect(copy, isNot(contains('definitely')));
+      expect(copy, isNot(contains('guarantee')));
+    });
+  });
+}
