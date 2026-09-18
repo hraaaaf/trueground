@@ -24,7 +24,7 @@ Target gate: `GATE 5 — LOOP_FLOW_VERIFIED`
 - Both screenshots were downloaded and visually inspected.
 - Strict scoring protocol is now mandatory under `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
 - LOT 05 double-score report: `docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`.
-- Pass A: `9.54 / 10`; adversarial Pass B: `9.29 / 10`; retained lower score: `9.29 / 10`.
+- Pass A diagnostic mean: `9.54 / 10`, retained `9.20 / 10`; Pass B diagnostic mean: `9.29 / 10`, retained `8.90 / 10`; final strict retained LOT score: `8.90 / 10`.
 
 ## OCD_SAFETY_AGENT
 
