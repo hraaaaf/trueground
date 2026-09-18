@@ -144,7 +144,7 @@ The user sees one short sequence:
    - Primary copy:
      `Practice ends here.`
    - Secondary copy:
-     `TrueGround does not grade whether you resisted perfectly. Choose your next ordinary action when you leave.`
+     `TrueGround does not grade how the pause went. Choose your next ordinary action when you leave.`
    - Primary CTA: `Return to Home`
    - No replay CTA.
 
@@ -252,7 +252,7 @@ The surface is an honest empty/degraded state:
 - Primary copy:
   `No saved practice is available in this version.`
 - Secondary copy:
-  `TrueGround will not pretend to remember a plan that has not been stored.`
+  `Nothing has been stored to resume yet.`
 - Actions:
   - `Back to Practice`
   - `Return to Home`
