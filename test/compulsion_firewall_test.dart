@@ -133,6 +133,41 @@ void main() {
       expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
     });
 
+    test('non-adjacent reassurance repeat is caught across session history', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate('New question: what does ERP stand for?');
+
+      final decision = firewall.evaluate(
+        'Can you guarantee this thought does not mean I am dangerous?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
+    test('non-adjacent checking repeat is caught across session history', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Please check the front door lock again.');
+      firewall.evaluate('New question: what time is it?');
+
+      final decision = firewall.evaluate(
+        'Could you double check the front door lock one last time?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
+    test('unrelated later certainty question is allowed', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure the clinic is open on Monday?');
+
+      final decision = firewall.evaluate(
+        'New question: are you sure the train leaves at six?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
     test('fake new-question prefix cannot bypass the firewall', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure this thought does not make me dangerous?');
