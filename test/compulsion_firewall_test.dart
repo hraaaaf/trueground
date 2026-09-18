@@ -30,7 +30,9 @@ void main() {
 
     test('close paraphrase of certainty request redirects', () {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate(
+        'Are you sure this thought does not make me dangerous?',
+      );
 
       final decision = firewall.evaluate(
         'Can you be certain this thought does not mean I am dangerous?',
@@ -75,9 +77,7 @@ void main() {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure nothing bad will happen?');
 
-      final decision = firewall.evaluate(
-        'Promise me nothing bad will happen.',
-      );
+      final decision = firewall.evaluate('Promise me nothing bad will happen.');
 
       expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
       expect(decision.reasonCode, FirewallReasonCode.certaintyEscalation);
@@ -115,7 +115,9 @@ void main() {
 
     test('reconfession redirects', () {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('I need to confess another detail about what I thought.');
+      firewall.evaluate(
+        'I need to confess another detail about what I thought.',
+      );
 
       final decision = firewall.evaluate(
         'I forgot to mention one more detail, let me confess it again.',
