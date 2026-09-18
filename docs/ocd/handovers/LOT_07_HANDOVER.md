@@ -120,6 +120,7 @@ Scientific / safety / governance:
 - docs/ocd/evals/LOT_07A_PRACTICE_SAFETY_EVAL_CASES.md
 - docs/ocd/reviews/LOT_07A_SCIENTIFIC_ALIGNMENT.md
 - docs/ocd/lots/LOT_07C_ANTI_REPLAY_PERSISTENCE_CONTRACT.md
+- docs/ocd/reviews/LOT_07_EVIDENCE_TRANSFER_MATRIX.md
 - docs/ocd/reviews/LOT_07_SPECIALIST_REVIEW.md
 - docs/ocd/reviews/LOT_07_STRICT_DOUBLE_SCORE.md
 - docs/ocd/handovers/LOT_07_HANDOVER.md
@@ -145,7 +146,7 @@ Current verdict: PASS_WITH_NOTES.
 
 Residual notes:
 - no independent OCD-clinician sign-off of exact copy;
-- no real-user usability/ritualization study;
+- targeted TrueGround-specific usability/safety validation remains; external evidence is now explicitly transferred for established OCD/digital-support principles;
 - English-only;
 - no physical-device manual validation;
 - device-clock manipulation is outside the UX guard threat model;
@@ -154,10 +155,10 @@ Residual notes:
 ## Strict double score
 
 - PASS A — severe execution: 9.4 / 10
-- PASS B — adversarial: 9.2 / 10
-- divergence: 0.2
+- PASS B — adversarial: 9.3 / 10
+- divergence: 0.1
 - same-session cap: 9.4
-- retained strict score: **9.20 / 10**
+- retained strict score: **9.30 / 10**
 
 ## What was NOT done
 
@@ -180,7 +181,7 @@ Residual notes:
 ## Remaining risks / limitations
 
 - Independent OCD clinician review remains required before treating the copy as clinically production-ready.
-- Real-user testing remains required before broad release.
+- A broad de novo clinical/user study is not required merely to reproduce established ERP/digital-OCD evidence. Targeted human-factors validation remains for TrueGround-specific transfer gaps: wording, disabled-state checking cues, hidden 2-hour behavior, urgent-safety comprehension and localization.
 - English-only baseline remains.
 - The two-hour anti-replay duration is an explicit product UX guard, not an evidence-based treatment frequency.
 - Continue planned practice remains an honest degraded state because no saved treatment plan exists.
