@@ -34,6 +34,10 @@ Reasons preventing 10/10:
 7. English-only baseline.
 8. Pass A is not an independent external review.
 
+Evidence-transfer matrix: docs/ocd/reviews/LOT_07_EVIDENCE_TRANSFER_MATRIX.md.
+
+The matrix removes an overly broad requirement to reproduce established OCD science with a proprietary TrueGround study. It does not remove targeted validation for implementation-specific transfer gaps and does not create an efficacy claim.
+
 Material improvement over the prior candidate:
 - restart no longer resets the anti-replay guard;
 - expiry is exact at +2h;
@@ -57,14 +61,14 @@ Material improvement over the prior candidate:
 | QA / NON-REGRESSION | 9.5 |
 | EVIDENCE / REPRODUCIBILITY | 9.3 |
 
-PASS B adversarial score: **9.2 / 10**.
+PASS B adversarial score: **9.3 / 10**.
 
 Reasons preventing 10/10:
 1. The app still relies on the user to honor the urgent-safety exclusion; it cannot decide whether an external check is objectively required.
 2. A two-hour anti-replay interval can be defended as UX friction but not as an evidence-based clinical dose.
 3. Device clock changes can affect expiry. This is documented and acceptable only because the feature is not a security or treatment-enforcement boundary.
 4. A local write failure cannot guarantee cross-restart persistence, although the current session remains guarded.
-5. No real-user evidence shows that disabled cards, completion labels, or re-entry behavior will not themselves become checking cues.
+5. External evidence now supports the broader digital-compulsion design direction, but no external study validates TrueGround’s exact disabled cards, completion labels, hidden 2-hour rule, or re-entry behavior.
 6. Exact micro-copy still lacks independent specialist sign-off.
 7. Pass B is adversarial but not genuinely independent.
 
@@ -74,12 +78,12 @@ The persistence correction removes the most concrete prior product weakness with
 ## Divergence and retained score
 
 - Pass A: 9.4
-- Pass B: 9.2
-- Divergence: 0.2 — below the 0.5 investigation threshold.
+- Pass B: 9.3
+- Divergence: 0.1 — below the 0.5 investigation threshold.
 - Same-session governance cap: 9.4.
 - Lowest critical-dimension score: 9.1 (data/privacy/security), with no binary gate failure.
 
-**RETAINED STRICT SCORE = 9.20 / 10.**
+**RETAINED STRICT SCORE = 9.30 / 10.**
 
 Threshold result: exceeds the 9.0 Gate-verification threshold, provided documentation-final exact-head LOT03/04/05/06/07 remains green.
 
