@@ -3,10 +3,15 @@ import 'package:go_router/go_router.dart';
 
 import '../dashboard/dashboard_v3_screen.dart';
 import '../loop/loop_flow_screen.dart';
+import '../practice/practice_completion_store.dart';
+import '../practice/practice_screen.dart';
 import '../shell/app_shell.dart';
 import '../shell/shell_placeholder_screen.dart';
 
-GoRouter createTrueGroundRouter() {
+GoRouter createTrueGroundRouter({
+  PracticeCompletionStore? practiceCompletionStore,
+  DateTime Function()? practiceNow,
+}) {
   return GoRouter(
     initialLocation: '/',
     routes: <RouteBase>[
@@ -38,11 +43,9 @@ GoRouter createTrueGroundRouter() {
               GoRoute(
                 path: '/practice',
                 name: 'practice',
-                builder: (context, state) => const ShellPlaceholderScreen(
-                  key: ValueKey('screen-practice'),
-                  title: 'Practice',
-                  description:
-                      'Practice behavior is intentionally not implemented in this lot.',
+                builder: (context, state) => PracticeScreen(
+                  completionStore: practiceCompletionStore,
+                  now: practiceNow,
                 ),
               ),
             ],
