@@ -39,6 +39,9 @@ Ambiguous repetition is allowed rather than aggressively labeled. Legitimate cor
 | Ordinary verification | verify/confirm a technical fact | allow |
 | Unrelated certainty escalation | certainty question about topic A → guarantee about topic B | allow |
 | LOT05 handoff | firewall redirect route applied to app router | existing bounded Loop, no free-text composer |
+| Repeated attempts | second/third/fourth certainty attempts | bounded redirect, never fresh certainty |
+| Loop termination | 20 repeated attempts | finite evaluations; bounded history |
+| Session expiry | original risk turn ages out of bounded window | no longitudinal inference |
 | Reset | reset then same reassurance-style question | first-turn allow |
 | Privacy audit | reason codes only, no raw content export | pass |
 | Bounded history | max-turn window enforced | pass |
