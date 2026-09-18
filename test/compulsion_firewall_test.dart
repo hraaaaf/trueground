@@ -43,6 +43,19 @@ void main() {
       );
     });
 
+    test('distant paraphrase of identity certainty request redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate(
+        'I had a violent thought. What does that say about who I am?',
+      );
+
+      final decision = firewall.evaluate(
+        'Can you guarantee that thought does not mean I am dangerous?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
     test('certainty escalation with guarantee redirects', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure this does not mean I am dangerous?');
@@ -115,6 +128,17 @@ void main() {
 
       final decision = firewall.evaluate(
         'Different wording: check one last time whether I made a mistake.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
+    test('fake new-question prefix cannot bypass the firewall', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+
+      final decision = firewall.evaluate(
+        'New question: can you guarantee this thought does not make me dangerous?',
       );
 
       expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
