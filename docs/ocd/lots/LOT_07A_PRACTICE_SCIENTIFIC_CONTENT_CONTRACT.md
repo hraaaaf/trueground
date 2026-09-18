@@ -422,7 +422,7 @@ At minimum:
 3. Polak M, Tanzer NK. Internet-Based Cognitive Behavioural Treatments for Obsessive-Compulsive Disorder: A Systematic Review and Meta-Analysis. Clin Psychol Psychother. 2024;31(3):e2989. PMID: 38769929. DOI: 10.1002/cpp.2989.
 4. Knowles KA, Olatunji BO. Intolerance of Uncertainty as a Cognitive Vulnerability for Obsessive-Compulsive Disorder: A Qualitative Review. Clin Psychol (New York). 2023;30(3):317-330. PMID: 39431164. DOI: 10.1037/cps0000150.
 5. Craske MG, Treanor M, Conway CC, Zbozinek T, Vervliet B. Maximizing exposure therapy: an inhibitory learning approach. Behav Res Ther. 2014;58:10-23. PMID: 24864005. DOI: 10.1016/j.brat.2014.04.006.
-6. Halldorsson B, Salkovskis PM. Reassuringly calm? Self-reported patterns of responses to reassurance seeking in obsessive compulsive disorder. J Behav Ther Exp Psychiatry. 2015;49(Pt B):203-208. DOI: 10.1016/j.jbtep.2015.09.002.
+6. Salkovskis PM, Kobori O. Reassuringly calm? Self-reported patterns of responses to reassurance seeking in obsessive compulsive disorder. J Behav Ther Exp Psychiatry. 2015;49(Pt B):203-208. PMID: 26433701. DOI: 10.1016/j.jbtep.2015.09.002.
 7. Parrish CL, Radomsky AS. Why do people seek reassurance and check repeatedly? An investigation of factors involved in compulsive behavior in OCD. J Anxiety Disord. 2010;24(2):211-222. PMID: 19939622.
 8. Junginger J, Head S. Time series analysis of obsessional behavior and mood during self-imposed delay and response prevention. Behav Res Ther. 1991;29(6):521-530. PMID: 1759952. DOI: 10.1016/0005-7967(91)90002-K.
 
