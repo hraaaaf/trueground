@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "repository": "hraaaaf/trueground",
+  "doctrine": {
+    "version": "1.0.0",
+    "commit_sha": "4c0ed295cc095fc5e7f9d0ddde3b1af95ac8dba9"
+  },
+  "adopted_at": "2026-09-18",
+  "local_governance": [
+    "docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md",
+    "docs/ocd/07_ACCEPTANCE_GATES.md",
+    "docs/ocd/08_SPECIALIST_REVIEW_MATRIX.md",
+    "docs/ocd/09_LOT_WINDOW_HANDOVER_PROTOCOL.md"
+  ],
+  "exceptions": [],
+  "notes": "Central doctrine is a minimum baseline. TrueGround OCD-specific safety, Core/capsule separation, clinical-claim discipline, and stricter local gates remain authoritative additions and are not moved into the generic doctrine."
+}
