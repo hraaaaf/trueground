@@ -228,9 +228,15 @@ void main() {
           await _openLoop(tester);
 
           Future<void> expectGuidelines() async {
-            await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+            await expectLater(
+              tester,
+              meetsGuideline(androidTapTargetGuideline),
+            );
             await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-            await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+            await expectLater(
+              tester,
+              meetsGuideline(labeledTapTargetGuideline),
+            );
             await expectLater(tester, meetsGuideline(textContrastGuideline));
             expect(tester.takeException(), isNull);
           }
