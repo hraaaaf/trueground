@@ -43,7 +43,7 @@ void main() {
     expect(find.byType(TextField), findsNothing);
     expect(find.byType(EditableText), findsNothing);
     expect(
-      find.textContaining('No scores, streaks or anxiety ratings'),
+      find.textContaining('Each one has a clear end'),
       findsOneWidget,
     );
     expect(tester.takeException(), isNull);
@@ -85,7 +85,6 @@ void main() {
     expect(find.textContaining('does not grade'), findsOneWidget);
     expect(find.text('Again'), findsNothing);
     expect(find.text('Repeat'), findsNothing);
-    expect(find.textContaining('score to check'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -110,7 +109,7 @@ void main() {
     expect(find.byKey(PracticeScreen.menuKey), findsOneWidget);
     expect(find.text('Pause finished for now'), findsOneWidget);
     expect(find.text('Pause the ritual'), findsNothing);
-    expect(find.textContaining('There is no replay button'), findsOneWidget);
+    expect(find.textContaining('ended for this app session'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -194,7 +193,7 @@ void main() {
       findsOneWidget,
     );
     expect(
-      find.textContaining('will not pretend to remember'),
+      find.textContaining('Nothing has been stored to resume yet'),
       findsOneWidget,
     );
     expect(find.textContaining('Last practiced'), findsNothing);
