@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/practice/practice_completion_store.dart';
 import 'package:trueground/practice/practice_screen.dart';
@@ -10,8 +9,15 @@ Future<void> _useSurface(WidgetTester tester, Size size) async {
   addTearDown(() => tester.binding.setSurfaceSize(null));
 }
 
-Future<void> _openPractice(WidgetTester tester) async {
-  await tester.pumpWidget(const TrueGroundApp());
+Future<void> _openPractice(
+  WidgetTester tester, {
+  PracticeCompletionStore? store,
+}) async {
+  await tester.pumpWidget(
+    TrueGroundApp(
+      practiceCompletionStore: store ?? _FakePracticeCompletionStore(),
+    ),
+  );
   await tester.pumpAndSettle();
   await tester.tap(find.text('Practice').first);
   await tester.pumpAndSettle();
@@ -78,10 +84,6 @@ Future<void> _pumpDirectPractice(
 }
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues(<String, Object>{});
-  });
-
   test(
     'two-hour anti-replay boundary is exact and not a clinical schedule',
     () {
