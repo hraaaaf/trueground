@@ -237,6 +237,7 @@ class _ActionStep extends StatelessWidget {
       children: <Widget>[
         Semantics(
           header: true,
+          liveRegion: true,
           child: Text(
             'Notice the pattern',
             style: Theme.of(context).textTheme.titleMedium,
@@ -294,6 +295,7 @@ class _CompleteStep extends StatelessWidget {
       children: <Widget>[
         Semantics(
           header: true,
+          liveRegion: true,
           child: Text(
             'Next move chosen',
             style: Theme.of(context).textTheme.titleMedium,
