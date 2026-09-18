@@ -1,5 +1,19 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+const Duration practiceAntiReplayWindow = Duration(hours: 2);
+
+bool isPracticeAntiReplayActive(
+  DateTime? completedAt, {
+  required DateTime now,
+}) {
+  if (completedAt == null) {
+    return false;
+  }
+
+  final elapsed = now.toUtc().difference(completedAt.toUtc());
+  return !elapsed.isNegative && elapsed < practiceAntiReplayWindow;
+}
+
 abstract interface class PracticeCompletionStore {
   Future<DateTime?> readPauseCompletedAt();
 
