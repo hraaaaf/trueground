@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:trueground/app/router.dart';
 import 'package:trueground/compulsion_firewall/compulsion_firewall.dart';
+import 'package:trueground/loop/loop_flow_screen.dart';
 
 void main() {
   group('LOT 06 Compulsion Firewall', () {
@@ -284,6 +287,28 @@ void main() {
       firewall.evaluate('New question: what is response prevention?');
 
       expect(firewall.auditSnapshot().turnCount, 3);
+    });
+
+    testWidgets('redirect contract lands on the existing bounded LOT 05 Loop', (
+      tester,
+    ) async {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      final decision = firewall.evaluate(
+        'Can you guarantee this thought does not mean I am dangerous?',
+      );
+
+      final router = createTrueGroundRouter();
+      addTearDown(router.dispose);
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      router.go(decision.redirectRoute!);
+      await tester.pumpAndSettle();
+
+      expect(decision.isRedirect, isTrue);
+      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+      expect(find.text('Choose the closest fit.'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(EditableText), findsNothing);
     });
 
     test('firewall response is cautious and non-diagnostic', () {
