@@ -326,24 +326,34 @@ bool _hasCertaintyEscalation(String text) {
 }
 
 bool _isHardEscape(String text) {
-  return _containsAny(text, const <String>[
-    'accessibility:',
+  if (_containsAny(text, const <String>[
+    'accessibility ',
     'screen reader',
     'button is not working',
     'app error',
-    'support:',
-    'emergency:',
-    'immediate danger:',
-  ]);
+    'emergency ',
+    'immediate danger',
+  ])) {
+    return true;
+  }
+
+  return text.contains('support ') &&
+      _containsAny(text, const <String>[
+        'trusted person',
+        'therapist',
+        'human support',
+        'talk to a person',
+        'talk to someone',
+      ]);
 }
 
 bool _isExplicitContextChange(String text) {
   return _containsAny(text, const <String>[
-    'correction:',
-    'i meant:',
-    'new question:',
-    'different question:',
-    'new information:',
+    'correction ',
+    'i meant ',
+    'new question ',
+    'different question ',
+    'new information ',
   ]);
 }
 
