@@ -22,7 +22,9 @@ Target gate: `GATE 5 — LOOP_FLOW_VERIFIED`
 - `loop_360.png`: `sha256:b60ee01df8c8a20a68207db84c8696511a1d73d65e65a9474b0c027ef406684d`.
 - `loop_390.png`: `sha256:877ef717c767aa797d2ffc76d05ca433ac5900cb939a8b572d149a4a9a7564ba`.
 - Both screenshots were downloaded and visually inspected.
-- Strict scoring protocol: NOT_APPLICABLE because `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md` is absent from the final LOT 04 base.
+- Strict scoring protocol is now mandatory under `docs/ocd/10_STRICT_SCORING_AND_PERFECTION_PROTOCOL.md`.
+- LOT 05 double-score report: `docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`.
+- Pass A: `9.54 / 10`; adversarial Pass B: `9.29 / 10`; retained lower score: `9.29 / 10`.
 
 ## OCD_SAFETY_AGENT
 
@@ -149,7 +151,7 @@ Note: this is not an independent human clinical or regulatory review.
 
 No specialist verdict is `CHANGES_REQUIRED` or `BLOCKED` inside the authorized local-only deterministic LOT 05 scope.
 
-`GATE 5 — LOOP_FLOW_VERIFIED` is supported for:
+Subject to exact-head CI after the governance/documentation update, `GATE 5 — LOOP_FLOW_VERIFIED` is supported for:
 
 - bounded Loop entry;
 - no unrestricted chat;
