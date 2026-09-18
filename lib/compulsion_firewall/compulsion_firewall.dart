@@ -160,7 +160,8 @@ class CompulsionFirewallSession {
       redirectRoute: '/loop',
       userFacingCopy:
           'This may be the same question or analysis loop returning. '
-          'I will not try to settle it again. Choose one bounded next step instead.',
+          'Rather than trying to settle it again, choose one bounded next step. '
+          'Human support remains available.',
     );
   }
 }
