@@ -141,6 +141,50 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('Loop stage changes expose live-region semantics', (tester) async {
+    await _useSurface(tester, const Size(390, 844));
+    final semantics = tester.ensureSemantics();
+    try {
+      await _openLoop(tester);
+
+      await tester.tap(find.byKey(const ValueKey('loop-pattern-certainty')));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.text('Notice the pattern')),
+        matchesSemantics(
+          label: 'Notice the pattern',
+          isHeader: true,
+          isLiveRegion: true,
+        ),
+      );
+
+      final practice = find.byKey(
+        const ValueKey('loop-action-practiceUncertainty'),
+      );
+      await tester.scrollUntilVisible(
+        practice,
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(practice);
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.getSemantics(find.text('Next move chosen')),
+        matchesSemantics(
+          label: 'Next move chosen',
+          isHeader: true,
+          isLiveRegion: true,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets(
       'Loop flow renders without overflow at ${size.width.toInt()} px',
