@@ -268,6 +268,17 @@ void main() {
       expect(decision.disposition, FirewallDisposition.allow);
     });
 
+    test('ordinary technical verification is not classified as checking', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Can you verify the app version number?');
+
+      final decision = firewall.evaluate(
+        'Please confirm the app version number.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
     test('ordinary repeated informational request is not auto-blocked', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('What does ERP stand for?');
