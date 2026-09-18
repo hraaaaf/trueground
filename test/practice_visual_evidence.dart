@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
+import 'package:trueground/practice/practice_completion_store.dart';
 import 'package:trueground/practice/practice_screen.dart';
 
 Future<void> _capture(
@@ -40,6 +41,20 @@ Future<void> _jumpToTop(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+class _EmptyPracticeCompletionStore implements PracticeCompletionStore {
+  @override
+  Future<DateTime?> readPauseCompletedAt() async => null;
+
+  @override
+  Future<DateTime?> readUncertaintyCompletedAt() async => null;
+
+  @override
+  Future<void> writePauseCompletedAt(DateTime completedAt) async {}
+
+  @override
+  Future<void> writeUncertaintyCompletedAt(DateTime completedAt) async {}
+}
+
 void main() {
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets('capture Practice states at ${size.width.toInt()} px', (
@@ -50,7 +65,12 @@ void main() {
 
       final boundaryKey = GlobalKey();
       await tester.pumpWidget(
-        RepaintBoundary(key: boundaryKey, child: const TrueGroundApp()),
+        RepaintBoundary(
+          key: boundaryKey,
+          child: TrueGroundApp(
+            practiceCompletionStore: _EmptyPracticeCompletionStore(),
+          ),
+        ),
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Practice').first);
