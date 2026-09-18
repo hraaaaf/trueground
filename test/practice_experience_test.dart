@@ -74,6 +74,7 @@ void main() {
       findsOneWidget,
     );
     expect(find.textContaining('you are safe'), findsNothing);
+    expect(find.text('Not for urgent safety, medical or emergency decisions.'), findsOneWidget);
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
@@ -137,11 +138,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(PracticeScreen.uncertaintyNoticeKey), findsOneWidget);
     expect(find.textContaining('do not need to analyze'), findsOneWidget);
+    expect(find.text('Not for urgent safety, medical or emergency decisions.'), findsOneWidget);
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
     expect(find.byKey(PracticeScreen.uncertaintyChooseKey), findsOneWidget);
     expect(find.text('I may not know for sure right now.'), findsOneWidget);
+    expect(find.text('Not for urgent safety, medical or emergency decisions.'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(find.byType(EditableText), findsNothing);
 
