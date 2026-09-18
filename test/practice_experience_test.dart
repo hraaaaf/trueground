@@ -70,10 +70,7 @@ Future<void> _pumpDirectPractice(
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
-        body: PracticeScreen(
-          completionStore: store,
-          now: () => now,
-        ),
+        body: PracticeScreen(completionStore: store, now: () => now),
       ),
     ),
   );
@@ -85,62 +82,62 @@ void main() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
   });
 
+  test(
+    'two-hour anti-replay boundary is exact and not a clinical schedule',
+    () {
+      final completedAt = DateTime.utc(2026, 9, 18, 10);
 
-  test('two-hour anti-replay boundary is exact and not a clinical schedule', () {
-    final completedAt = DateTime.utc(2026, 9, 18, 10);
-
-    expect(
-      isPracticeAntiReplayActive(
-        completedAt,
-        now: completedAt.add(
-          const Duration(hours: 1, minutes: 59, seconds: 59),
+      expect(
+        isPracticeAntiReplayActive(
+          completedAt,
+          now: completedAt.add(
+            const Duration(hours: 1, minutes: 59, seconds: 59),
+          ),
         ),
-      ),
-      isTrue,
-    );
-    expect(
-      isPracticeAntiReplayActive(
-        completedAt,
-        now: completedAt.add(const Duration(hours: 2)),
-      ),
-      isFalse,
-    );
-    expect(
-      isPracticeAntiReplayActive(null, now: completedAt),
-      isFalse,
-    );
-  });
+        isTrue,
+      );
+      expect(
+        isPracticeAntiReplayActive(
+          completedAt,
+          now: completedAt.add(const Duration(hours: 2)),
+        ),
+        isFalse,
+      );
+      expect(isPracticeAntiReplayActive(null, now: completedAt), isFalse);
+    },
+  );
 
-  testWidgets('persisted pause completion survives widget restart for two hours', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(390, 844));
-    final store = _FakePracticeCompletionStore();
-    final completedAt = DateTime.utc(2026, 9, 18, 10);
+  testWidgets(
+    'persisted pause completion survives widget restart for two hours',
+    (tester) async {
+      await _useSurface(tester, const Size(390, 844));
+      final store = _FakePracticeCompletionStore();
+      final completedAt = DateTime.utc(2026, 9, 18, 10);
 
-    await _pumpDirectPractice(tester, store: store, now: completedAt);
-    await tester.tap(find.byKey(const ValueKey('practice-choice-pause')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Start a brief pause'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+      await _pumpDirectPractice(tester, store: store, now: completedAt);
+      await tester.tap(find.byKey(const ValueKey('practice-choice-pause')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Start a brief pause'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
 
-    expect(store.pauseCompletedAt, completedAt);
+      expect(store.pauseCompletedAt, completedAt);
 
-    await _pumpDirectPractice(
-      tester,
-      store: store,
-      now: completedAt.add(const Duration(minutes: 30)),
-    );
+      await _pumpDirectPractice(
+        tester,
+        store: store,
+        now: completedAt.add(const Duration(minutes: 30)),
+      );
 
-    expect(find.text('Pause finished for now'), findsOneWidget);
-    expect(find.text('Pause the ritual'), findsNothing);
-    expect(find.textContaining('recently completed'), findsOneWidget);
-    expect(find.textContaining('2 hours'), findsNothing);
-    expect(find.textContaining('120'), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.text('Pause finished for now'), findsOneWidget);
+      expect(find.text('Pause the ritual'), findsNothing);
+      expect(find.textContaining('recently completed'), findsOneWidget);
+      expect(find.textContaining('2 hours'), findsNothing);
+      expect(find.textContaining('120'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('persisted pause completion re-enables exactly after two hours', (
     tester,
@@ -161,7 +158,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('storage read failure does not open a replay path', (tester) async {
+  testWidgets('storage read failure does not open a replay path', (
+    tester,
+  ) async {
     await _useSurface(tester, const Size(390, 844));
     final store = _FakePracticeCompletionStore()..failReads = true;
 
@@ -176,12 +175,14 @@ void main() {
       findsNWidgets(2),
     );
     expect(
-      tester.widget<InkWell>(
-        find.descendant(
-          of: find.byKey(const ValueKey('practice-choice-pause')),
-          matching: find.byType(InkWell),
-        ),
-      ).onTap,
+      tester
+          .widget<InkWell>(
+            find.descendant(
+              of: find.byKey(const ValueKey('practice-choice-pause')),
+              matching: find.byType(InkWell),
+            ),
+          )
+          .onTap,
       isNull,
     );
     expect(tester.takeException(), isNull);
