@@ -160,6 +160,17 @@ void main() {
       expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
     });
 
+    test('unrelated certainty escalation on a different topic is allowed', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure the clinic is open on Monday?');
+
+      final decision = firewall.evaluate(
+        'New question: can you guarantee the train leaves at six?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
     test('unrelated later certainty question is allowed', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure the clinic is open on Monday?');
