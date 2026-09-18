@@ -84,7 +84,8 @@ class CompulsionFirewallSession {
     }
 
     if (_hasCertaintyEscalation(current.normalized) &&
-        (_sharesTopic(current, previous) || sameRiskFamily)) {
+        (_sharesTopic(current, previous) ||
+            (sameRiskFamily && similarity >= 0.30))) {
       return FirewallReasonCode.certaintyEscalation;
     }
 
@@ -235,7 +236,21 @@ Set<String> _semanticTokens(String normalized) {
   return normalized
       .split(' ')
       .where((token) => token.length > 2 && !stopWords.contains(token))
+      .map(_canonicalTopicToken)
       .toSet();
+}
+
+String _canonicalTopicToken(String token) {
+  if (const <String>{
+    'dangerous',
+    'unsafe',
+    'violent',
+    'monster',
+    'harmful',
+  }.contains(token)) {
+    return 'harm-identity';
+  }
+  return token;
 }
 
 _RiskFamily _riskFamilyFor(String text) {
