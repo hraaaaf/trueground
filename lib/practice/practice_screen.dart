@@ -139,6 +139,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     title: 'Practice uncertainty',
                     body:
                         'This is a brief practice in leaving a question unresolved — not in proving that a feared outcome is safe or unsafe.',
+                    note: 'Not for urgent safety, medical or emergency decisions.',
                     primaryLabel: 'Begin',
                     onPrimary: () => _show(_PracticeView.uncertaintyNotice),
                     secondaryLabel: 'Exit practice',
