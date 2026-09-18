@@ -309,14 +309,6 @@ _RiskFamily _riskFamilyFor(String text) {
     return _RiskFamily.certainty;
   }
   if (_containsAny(text, const <String>[
-    'check',
-    'verify',
-    'confirm',
-    'recheck',
-  ])) {
-    return _RiskFamily.checking;
-  }
-  if (_containsAny(text, const <String>[
     'analyze',
     'ruminate',
     'figure out',
