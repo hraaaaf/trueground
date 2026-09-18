@@ -235,9 +235,9 @@ Double-score report:
 
 `docs/ocd/reviews/LOT_05_STRICT_DOUBLE_SCORE.md`
 
-- severe Pass A: `9.54 / 10`;
-- adversarial Pass B: `9.29 / 10`;
-- retained score: `min(A, B) = 9.29 / 10`;
+- severe Pass A diagnostic mean: `9.54 / 10`, retained after critical floor: `9.20 / 10`;
+- adversarial Pass B diagnostic mean: `9.29 / 10`, retained after critical floor: `8.90 / 10`;
+- retained strict LOT score: `8.90 / 10`;
 - runtime change required by scoring: NO;
 - second pass was a deliberately separated adversarial review, not falsely represented as an external human/agent reviewer.
 
@@ -296,8 +296,8 @@ Gate 4 is not fully verified; Support and Practice remain placeholders; dedicate
 
 ### État
 
-`VERIFICATION INCOMPLETE — GOVERNANCE UPDATE EXACT-HEAD CI PENDING / NOT MERGED / NOT DEPLOYED`
+`NOT_VERIFIED — RETAINED STRICT SCORE 8.90/10 / NOT MERGED / NOT DEPLOYED`
 
 ### Prochaine étape
 
-Double scoring is now mandatory and complete with retained score `9.29 / 10`. Before any renewed `VERIFIED` claim or merge decision, re-read the live exact-head CI for the current PR head after these governance/documentation changes. If it is green and repository truth is unchanged, LOT 05 may return to `GATE 5 — LOOP_FLOW_VERIFIED` and be presented for explicit product-owner merge authorization. Do not merge, deploy or start LOT 06 without explicit approval.
+Double scoring is mandatory and complete under the hardened doctrine with retained strict LOT score `8.90 / 10`. Before any renewed `VERIFIED` claim or merge decision, re-read the live exact-head CI for the current PR head after these governance/documentation changes. Even with green exact-head CI, LOT 05 remains `NOT_VERIFIED` while the retained strict score is below the mandatory `9.0/10` threshold. A targeted evidence/remediation pass and fresh double score are required before any VERIFIED claim. Do not merge, deploy or start LOT 06 without explicit approval.
