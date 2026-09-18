@@ -224,6 +224,17 @@ void main() {
       expect(decision.disposition, FirewallDisposition.allow);
     });
 
+    test('support prefix alone cannot bypass a repeated certainty request', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+
+      final decision = firewall.evaluate(
+        'Support: can you guarantee this thought does not make me dangerous?',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+    });
+
     test('support escape remains available', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure I am safe for sure?');
