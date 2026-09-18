@@ -29,25 +29,23 @@ Future<void> _scrollTo(
 }
 
 void main() {
-  testWidgets('Practice entry exposes three bounded surfaces without free text', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(390, 844));
-    await _openPractice(tester);
+  testWidgets(
+    'Practice entry exposes three bounded surfaces without free text',
+    (tester) async {
+      await _useSurface(tester, const Size(390, 844));
+      await _openPractice(tester);
 
-    expect(find.byKey(PracticeScreen.screenKey), findsOneWidget);
-    expect(find.byKey(PracticeScreen.menuKey), findsOneWidget);
-    expect(find.text('Pause the ritual'), findsOneWidget);
-    expect(find.text('Practice uncertainty'), findsOneWidget);
-    expect(find.text('Continue planned practice'), findsOneWidget);
-    expect(find.byType(TextField), findsNothing);
-    expect(find.byType(EditableText), findsNothing);
-    expect(
-      find.textContaining('Each one has a clear end'),
-      findsOneWidget,
-    );
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.byKey(PracticeScreen.screenKey), findsOneWidget);
+      expect(find.byKey(PracticeScreen.menuKey), findsOneWidget);
+      expect(find.text('Pause the ritual'), findsOneWidget);
+      expect(find.text('Practice uncertainty'), findsOneWidget);
+      expect(find.text('Continue planned practice'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(EditableText), findsNothing);
+      expect(find.textContaining('Each one has a clear end'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('Pause is finite, has no timer, and does not require calm', (
     tester,
@@ -88,30 +86,31 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Pause completion discourages direct replay in same app session', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(390, 844));
-    await _openPractice(tester);
+  testWidgets(
+    'Pause completion discourages direct replay in same app session',
+    (tester) async {
+      await _useSurface(tester, const Size(390, 844));
+      await _openPractice(tester);
 
-    await tester.tap(find.byKey(const ValueKey('practice-choice-pause')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Start a brief pause'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('practice-choice-pause')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Start a brief pause'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const ValueKey('practice-return-home')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Practice').first);
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('practice-return-home')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Practice').first);
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(PracticeScreen.menuKey), findsOneWidget);
-    expect(find.text('Pause finished for now'), findsOneWidget);
-    expect(find.text('Pause the ritual'), findsNothing);
-    expect(find.textContaining('ended for this app session'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.byKey(PracticeScreen.menuKey), findsOneWidget);
+      expect(find.text('Pause finished for now'), findsOneWidget);
+      expect(find.text('Pause the ritual'), findsNothing);
+      expect(find.textContaining('ended for this app session'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('Practice uncertainty is finite and does not generate exposure', (
     tester,
@@ -119,9 +118,7 @@ void main() {
     await _useSurface(tester, const Size(390, 844));
     await _openPractice(tester);
 
-    await tester.tap(
-      find.byKey(const ValueKey('practice-choice-uncertainty')),
-    );
+    await tester.tap(find.byKey(const ValueKey('practice-choice-uncertainty')));
     await tester.pumpAndSettle();
 
     expect(find.byKey(PracticeScreen.uncertaintyStartKey), findsOneWidget);
@@ -161,9 +158,7 @@ void main() {
     await _useSurface(tester, const Size(390, 844));
     await _openPractice(tester);
 
-    await tester.tap(
-      find.byKey(const ValueKey('practice-choice-uncertainty')),
-    );
+    await tester.tap(find.byKey(const ValueKey('practice-choice-uncertainty')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Begin'));
     await tester.pumpAndSettle();
@@ -176,32 +171,39 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Continue planned practice reports missing persistence honestly', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(390, 844));
-    await _openPractice(tester);
+  testWidgets(
+    'Continue planned practice reports missing persistence honestly',
+    (tester) async {
+      await _useSurface(tester, const Size(390, 844));
+      await _openPractice(tester);
 
-    final planned = find.byKey(const ValueKey('practice-choice-planned'));
-    await _scrollTo(tester, planned);
-    await tester.tap(planned);
-    await tester.pumpAndSettle();
+      final planned = find.byKey(const ValueKey('practice-choice-planned'));
+      await _scrollTo(tester, planned);
+      await tester.tap(planned);
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(PracticeScreen.plannedEmptyKey), findsOneWidget);
-    expect(
-      find.textContaining('No saved practice is available in this version'),
-      findsOneWidget,
-    );
-    expect(
-      find.textContaining('Nothing has been stored to resume yet'),
-      findsOneWidget,
-    );
-    expect(find.textContaining('Last practiced'), findsNothing);
-    expect(find.textContaining('streak'), findsNothing);
-    expect(find.byKey(const ValueKey('practice-planned-back')), findsOneWidget);
-    expect(find.byKey(const ValueKey('practice-planned-home')), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.byKey(PracticeScreen.plannedEmptyKey), findsOneWidget);
+      expect(
+        find.textContaining('No saved practice is available in this version'),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining('Nothing has been stored to resume yet'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Last practiced'), findsNothing);
+      expect(find.textContaining('streak'), findsNothing);
+      expect(
+        find.byKey(const ValueKey('practice-planned-back')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('practice-planned-home')),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('Exit practice returns to menu without marking completion', (
     tester,
