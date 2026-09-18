@@ -201,20 +201,58 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Loop surface meets Flutter accessibility guidelines', (
-    tester,
-  ) async {
-    await _useSurface(tester, const Size(390, 844));
-    final semantics = tester.ensureSemantics();
-    try {
-      await _openLoop(tester);
-      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-      await expectLater(tester, meetsGuideline(textContrastGuideline));
-      expect(tester.takeException(), isNull);
-    } finally {
-      semantics.dispose();
-    }
-  });
+  for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
+    testWidgets(
+      'Loop pattern, action, and complete states meet accessibility guidelines at ${size.width.toInt()} px',
+      (tester) async {
+        await _useSurface(tester, size);
+        final semantics = tester.ensureSemantics();
+        try {
+          await _openLoop(tester);
+
+          Future<void> expectGuidelines() async {
+            await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+            await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+            await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+            await expectLater(tester, meetsGuideline(textContrastGuideline));
+            expect(tester.takeException(), isNull);
+          }
+
+          await expectGuidelines();
+
+          final certainty = find.byKey(
+            const ValueKey('loop-pattern-certainty'),
+          );
+          await tester.scrollUntilVisible(
+            certainty,
+            120,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(certainty);
+          await tester.pumpAndSettle();
+
+          expect(find.byKey(LoopFlowScreen.actionStepKey), findsOneWidget);
+          await expectGuidelines();
+
+          final practice = find.byKey(
+            const ValueKey('loop-action-practiceUncertainty'),
+          );
+          await tester.scrollUntilVisible(
+            practice,
+            120,
+            scrollable: find.byType(Scrollable).first,
+          );
+          await tester.pumpAndSettle();
+          await tester.tap(practice);
+          await tester.pumpAndSettle();
+
+          expect(find.byKey(LoopFlowScreen.completeStepKey), findsOneWidget);
+          await expectGuidelines();
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+  }
 }
