@@ -15,16 +15,21 @@ Future<void> _capture(
   await tester.pumpAndSettle();
   final boundary =
       boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage(pixelRatio: 1);
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-  if (bytes == null) {
-    throw StateError('Unable to encode visual evidence: $filename');
-  }
+  final image = boundary.toImageSync(pixelRatio: 1);
+  try {
+    await tester.runAsync(() async {
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytes == null) {
+        throw StateError('Unable to encode visual evidence: $filename');
+      }
 
-  final file = File('build/lot05/screenshots/$filename');
-  await file.parent.create(recursive: true);
-  await file.writeAsBytes(bytes.buffer.asUint8List(), flush: true);
-  image.dispose();
+      final file = File('build/lot05/screenshots/$filename');
+      file.parent.createSync(recursive: true);
+      file.writeAsBytesSync(bytes.buffer.asUint8List(), flush: true);
+    });
+  } finally {
+    image.dispose();
+  }
 }
 
 Future<void> _jumpToTop(WidgetTester tester) async {
