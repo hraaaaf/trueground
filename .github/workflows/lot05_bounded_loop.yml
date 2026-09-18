@@ -98,6 +98,17 @@ jobs:
           sha256sum build/lot05/screenshots/loop_360.png build/lot05/screenshots/loop_390.png
           cat /tmp/trueground-web.log
 
+      - name: Capture Loop state visual evidence
+        run: |
+          flutter test test/loop_flow_visual_evidence.dart
+          test -s build/lot05/screenshots/loop_360_pattern_widget.png
+          test -s build/lot05/screenshots/loop_360_action_widget.png
+          test -s build/lot05/screenshots/loop_360_complete_widget.png
+          test -s build/lot05/screenshots/loop_390_pattern_widget.png
+          test -s build/lot05/screenshots/loop_390_action_widget.png
+          test -s build/lot05/screenshots/loop_390_complete_widget.png
+          sha256sum build/lot05/screenshots/*_widget.png
+
       - name: Upload LOT 05 visual evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
