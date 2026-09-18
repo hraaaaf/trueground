@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import 'practice_completion_store.dart';
 
 enum _PracticeView {
   menu,
@@ -16,7 +19,14 @@ enum _PracticeView {
 }
 
 class PracticeScreen extends StatefulWidget {
-  const PracticeScreen({super.key});
+  const PracticeScreen({
+    super.key,
+    this.completionStore,
+    this.now,
+  });
+
+  final PracticeCompletionStore? completionStore;
+  final DateTime Function()? now;
 
   static const screenKey = ValueKey('screen-practice');
   static const menuKey = ValueKey('practice-menu');
@@ -35,8 +45,55 @@ class PracticeScreen extends StatefulWidget {
 
 class _PracticeScreenState extends State<PracticeScreen> {
   _PracticeView _view = _PracticeView.menu;
+  late final PracticeCompletionStore _completionStore =
+      widget.completionStore ?? SharedPreferencesPracticeCompletionStore();
+  bool _completionStateLoaded = false;
+  bool _completionStateUnavailable = false;
   bool _pauseCompleted = false;
   bool _uncertaintyCompleted = false;
+
+  DateTime _now() => (widget.now ?? DateTime.now)().toUtc();
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadCompletionState());
+  }
+
+  Future<void> _loadCompletionState() async {
+    try {
+      final pauseCompletedAt = await _completionStore.readPauseCompletedAt();
+      final uncertaintyCompletedAt =
+          await _completionStore.readUncertaintyCompletedAt();
+      if (!mounted) {
+        return;
+      }
+
+      final now = _now();
+      setState(() {
+        _pauseCompleted = isPracticeAntiReplayActive(
+          pauseCompletedAt,
+          now: now,
+        );
+        _uncertaintyCompleted = isPracticeAntiReplayActive(
+          uncertaintyCompletedAt,
+          now: now,
+        );
+        _completionStateLoaded = true;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _completionStateLoaded = true;
+        _completionStateUnavailable = true;
+        _pauseCompleted = true;
+        _uncertaintyCompleted = true;
+      });
+    }
+  }
 
   void _show(_PracticeView view) {
     setState(() {
@@ -45,17 +102,39 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   void _completePause() {
+    final completedAt = _now();
     setState(() {
       _pauseCompleted = true;
       _view = _PracticeView.pauseEnd;
     });
+    unawaited(_persistPauseCompletion(completedAt));
+  }
+
+  Future<void> _persistPauseCompletion(DateTime completedAt) async {
+    try {
+      await _completionStore.writePauseCompletedAt(completedAt);
+    } catch (_) {
+      // The in-session anti-replay state remains active even if local storage
+      // is unavailable. No clinical or user-entered data is involved.
+    }
   }
 
   void _completeUncertainty() {
+    final completedAt = _now();
     setState(() {
       _uncertaintyCompleted = true;
       _view = _PracticeView.uncertaintyEnd;
     });
+    unawaited(_persistUncertaintyCompletion(completedAt));
+  }
+
+  Future<void> _persistUncertaintyCompletion(DateTime completedAt) async {
+    try {
+      await _completionStore.writeUncertaintyCompletedAt(completedAt);
+    } catch (_) {
+      // Keep the bounded flow usable without crashing; current-session
+      // anti-replay remains active.
+    }
   }
 
   void _returnHome(BuildContext context) {
@@ -101,6 +180,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
               const SizedBox(height: 18),
               switch (_view) {
                 _PracticeView.menu => _PracticeMenu(
+                  completionStateLoaded: _completionStateLoaded,
+                  completionStateUnavailable: _completionStateUnavailable,
                   pauseCompleted: _pauseCompleted,
                   uncertaintyCompleted: _uncertaintyCompleted,
                   onPause: () => _show(_PracticeView.pauseStart),
@@ -194,6 +275,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
 class _PracticeMenu extends StatelessWidget {
   const _PracticeMenu({
+    required this.completionStateLoaded,
+    required this.completionStateUnavailable,
     required this.pauseCompleted,
     required this.uncertaintyCompleted,
     required this.onPause,
@@ -201,6 +284,8 @@ class _PracticeMenu extends StatelessWidget {
     required this.onPlanned,
   });
 
+  final bool completionStateLoaded;
+  final bool completionStateUnavailable;
   final bool pauseCompleted;
   final bool uncertaintyCompleted;
   final VoidCallback onPause;
@@ -217,10 +302,18 @@ class _PracticeMenu extends StatelessWidget {
           key: const ValueKey('practice-choice-pause'),
           icon: Icons.pause_rounded,
           title: pauseCompleted ? 'Pause finished for now' : 'Pause the ritual',
-          helper: pauseCompleted
-              ? 'This practice has ended for this app session.'
+          helper: !completionStateLoaded
+              ? 'Checking recent practice availability.'
+              : completionStateUnavailable
+              ? 'Practice availability could not be checked.'
+              : pauseCompleted
+              ? 'This practice was recently completed.'
               : 'Create a small space before an urge-driven action.',
-          onTap: pauseCompleted ? null : onPause,
+          onTap: completionStateLoaded &&
+                  !completionStateUnavailable &&
+                  !pauseCompleted
+              ? onPause
+              : null,
         ),
         const SizedBox(height: 10),
         _PracticeChoiceCard(
@@ -229,10 +322,18 @@ class _PracticeMenu extends StatelessWidget {
           title: uncertaintyCompleted
               ? 'Uncertainty practice finished for now'
               : 'Practice uncertainty',
-          helper: uncertaintyCompleted
-              ? 'This practice has ended for this app session.'
+          helper: !completionStateLoaded
+              ? 'Checking recent practice availability.'
+              : completionStateUnavailable
+              ? 'Practice availability could not be checked.'
+              : uncertaintyCompleted
+              ? 'This practice was recently completed.'
               : 'Leave a question unresolved without trying to prove it safe or unsafe.',
-          onTap: uncertaintyCompleted ? null : onUncertainty,
+          onTap: completionStateLoaded &&
+                  !completionStateUnavailable &&
+                  !uncertaintyCompleted
+              ? onUncertainty
+              : null,
         ),
         const SizedBox(height: 10),
         _PracticeChoiceCard(
