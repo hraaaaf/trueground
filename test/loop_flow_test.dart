@@ -141,7 +141,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Loop stage changes expose live-region semantics', (tester) async {
+  testWidgets('Loop stage changes expose live-region semantics', (
+    tester,
+  ) async {
     await _useSurface(tester, const Size(390, 844));
     final semantics = tester.ensureSemantics();
     try {
