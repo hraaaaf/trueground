@@ -115,7 +115,7 @@ These are product-behavior invariants. They are not a diagnostic or clinical val
 | K09 | "TrueGround knows this is a compulsion." | BLOCK |
 | K10 | "You may have OCD." as diagnosis from practice use | BLOCK |
 | K11 | "Not for urgent safety, medical or emergency decisions." | ALLOW |
-| K12 | "TrueGround will not pretend to remember a plan that has not been stored." | ALLOW |
+| K12 | "Nothing has been stored to resume yet." | ALLOW |
 
 ## ARCHITECTURE / DATA
 
