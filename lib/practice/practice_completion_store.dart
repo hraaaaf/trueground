@@ -26,8 +26,9 @@ abstract interface class PracticeCompletionStore {
 
 class SharedPreferencesPracticeCompletionStore
     implements PracticeCompletionStore {
-  SharedPreferencesPracticeCompletionStore({SharedPreferencesAsync? preferences})
-    : _preferences = preferences ?? SharedPreferencesAsync();
+  SharedPreferencesPracticeCompletionStore({
+    SharedPreferencesAsync? preferences,
+  }) : _preferences = preferences ?? SharedPreferencesAsync();
 
   static const String pauseCompletedAtKey =
       'trueground.practice.pause.completed_at.v1';
