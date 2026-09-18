@@ -364,3 +364,16 @@ This verdict does not authorize:
 - production release;
 - merge;
 - deployment.
+
+
+## EVIDENCE TRANSFER UPDATE
+
+See docs/ocd/reviews/LOT_07_EVIDENCE_TRANSFER_MATRIX.md.
+
+The broad residual statement 'no real-user clinical outcome evidence exists for these micro-flows' is retained only as a claims boundary, not as a requirement to reproduce established OCD science before LOT07 acceptance.
+
+External evidence is considered transferable for ERP/response-prevention principles, structured digital/self-help delivery, non-reassurance design, non-habituation success criteria, and caution around checking-friendly digital mechanics.
+
+Targeted TrueGround-specific human validation remains appropriate for exact wording, disabled-state interpretation, hidden 2-hour anti-replay behavior, urgent-safety comprehension, ritualization of the uncertainty phrase, and French localization.
+
+This update does not convert LOT07 into a clinically validated treatment and does not authorize efficacy claims.
