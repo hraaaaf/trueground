@@ -138,17 +138,22 @@ void main() {
       expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
     });
 
-    test('non-adjacent reassurance repeat is caught across session history', () {
-      final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
-      firewall.evaluate('New question: what does ERP stand for?');
+    test(
+      'non-adjacent reassurance repeat is caught across session history',
+      () {
+        final firewall = CompulsionFirewallSession();
+        firewall.evaluate(
+          'Are you sure this thought does not make me dangerous?',
+        );
+        firewall.evaluate('New question: what does ERP stand for?');
 
-      final decision = firewall.evaluate(
-        'Can you guarantee this thought does not mean I am dangerous?',
-      );
+        final decision = firewall.evaluate(
+          'Can you guarantee this thought does not mean I am dangerous?',
+        );
 
-      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
-    });
+        expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      },
+    );
 
     test('non-adjacent checking repeat is caught across session history', () {
       final firewall = CompulsionFirewallSession();
@@ -186,7 +191,9 @@ void main() {
 
     test('fake new-question prefix cannot bypass the firewall', () {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate(
+        'Are you sure this thought does not make me dangerous?',
+      );
 
       final decision = firewall.evaluate(
         'New question: can you guarantee this thought does not make me dangerous?',
@@ -239,7 +246,9 @@ void main() {
 
     test('support prefix alone cannot bypass a repeated certainty request', () {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate(
+        'Are you sure this thought does not make me dangerous?',
+      );
 
       final decision = firewall.evaluate(
         'Support: can you guarantee this thought does not make me dangerous?',
@@ -328,7 +337,9 @@ void main() {
       tester,
     ) async {
       final firewall = CompulsionFirewallSession();
-      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+      firewall.evaluate(
+        'Are you sure this thought does not make me dangerous?',
+      );
       final decision = firewall.evaluate(
         'Can you guarantee this thought does not mean I am dangerous?',
       );
