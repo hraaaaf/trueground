@@ -1,6 +1,6 @@
 # LOT 07C — Anti-Replay Persistence Contract
 
-Status: ARCHITECTURE APPROVED / DURATION POLICY HUMAN GATE
+Status: ARCHITECTURE + 2-HOUR UX ANTI-REPLAY POLICY APPROVED
 Date: 2026-09-18
 Parent: LOT 07 — Practice experience
 
@@ -68,22 +68,26 @@ Storage failure MUST fail safely without blocking navigation or crashing the app
 
 The product MUST NOT tell the user that a clinical safety guarantee exists because a timestamp was stored.
 
-## UNRESOLVED POLICY — HUMAN GATE
+## APPROVED ANTI-REPLAY WINDOW
 
-Architecture is approved, but the duration for which a persisted completion marker disables direct replay is NOT scientifically or product-validated in the current repository.
+Product-owner decision: a persisted completion marker disables direct replay for exactly 2 hours after terminal completion.
 
-LOT07C MUST NOT invent a duration such as:
+This is an internal UX anti-replay guard. It is NOT:
 
-- 5 minutes;
-- 1 hour;
-- 24 hours;
-- until midnight;
-- one practice per day.
+- an ERP schedule;
+- a recommended practice frequency;
+- a clinical dose;
+- a statement that two hours is therapeutically optimal;
+- a promise that replay after two hours is clinically indicated.
 
-The duration must be an explicit product/safety decision.
+The UI MUST NOT expose a countdown, remaining time, exact re-enable time, "come back in two hours" instruction, streak, or frequency target.
 
-Until that decision is made, the persistence adapter may be implemented and tested, but persisted timestamps MUST NOT yet change runtime replay availability.
+At exactly `completed_at + 2h`, the technical marker no longer disables that surface.
 
-## NEXT DECISION
+A future timestamp caused by device-clock manipulation is not treated as a clinical/security boundary. This mechanism is intentionally a local UX guard, not tamper-resistant enforcement.
 
-Choose the expiry/re-enable semantics for each technical marker before wiring persistence into the Practice runtime.
+## FAILURE SEMANTICS
+
+If completion-state reads fail, the affected practice surfaces remain unavailable for that app session rather than opening a blind replay path. Navigation outside those surfaces remains available.
+
+If a completion write fails, the current in-memory session guard remains active and the app does not crash. Cross-restart persistence cannot be guaranteed when the local platform store itself is unavailable.
