@@ -6,6 +6,10 @@ Repository: hraaaaf/trueground
 Parent lot: LOT 07 — Practice experience
 Target implementation step: LOT 07B — Practice Experience Implementation
 
+## SUPERSESSION NOTE — LOT07C
+
+The original LOT07A persistence clauses below describe the pre-LOT07C prototype boundary. They are superseded only for anti-replay persistence by docs/ocd/lots/LOT_07C_ANTI_REPLAY_PERSISTENCE_CONTRACT.md, which authorizes two local completion timestamps and a hidden 2-hour UX anti-replay window. No saved treatment plan, OCD content history, analytics, or broader persistence is authorized.
+
 ## GOAL
 
 Define the exact behavior and copy boundary for the first TrueGround Practice experience before runtime implementation.
