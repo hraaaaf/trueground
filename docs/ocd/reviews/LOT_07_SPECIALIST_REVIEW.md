@@ -14,6 +14,7 @@ Challenge the exact LOT07 Practice candidate from product, OCD-safety, UI/UX, ac
 
 - LOT07A scientific/content contract and adversarial eval matrix.
 - LOT07C anti-replay persistence contract.
+- LOT07 Evidence Transfer Matrix.
 - Runtime implementation in `lib/practice/` plus route/app injection.
 - Exact-head LOT03 run 35401819625 — SUCCESS.
 - Exact-head LOT04 run 35401819670 — SUCCESS.
@@ -30,6 +31,12 @@ Challenge the exact LOT07 Practice candidate from product, OCD-safety, UI/UX, ac
 - Internal-state geometry captures at 360 and 390 px.
 - 200% text-scaling and Flutter accessibility guideline tests.
 - Exact 2-hour boundary tests, restart persistence test, expiry test, and storage-read failure test.
+
+## Evidence-transfer conclusion
+
+The literature now closes the broad evidence gap for several underlying design principles. TrueGround does not need to reproduce established evidence for ERP/response prevention, structured digital/self-help OCD support, reassurance/checking risk, or the decision not to use immediate calm as a success criterion. Remaining human validation is narrowed to implementation-specific transfer gaps documented in docs/ocd/reviews/LOT_07_EVIDENCE_TRANSFER_MATRIX.md.
+
+This does not establish TrueGround efficacy.
 
 ## Strongest challenge
 
@@ -75,7 +82,7 @@ Verified safeguards:
 
 Residual notes:
 - no independent OCD clinician sign-off of exact micro-copy;
-- no real-user usability study on whether Practice itself could become ritualized;
+- no broad de novo user study is required to re-establish already-transferable OCD science; targeted TrueGround-specific usability/safety validation remains for exact wording, disabled-state checking cues, hidden 2-hour behavior, urgent-safety comprehension and localization;
 - the two-hour duration is a product anti-replay convention, not a clinically validated dose;
 - the app still cannot adjudicate whether a real-world check is objectively required.
 
