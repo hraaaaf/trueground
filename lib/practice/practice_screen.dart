@@ -19,11 +19,7 @@ enum _PracticeView {
 }
 
 class PracticeScreen extends StatefulWidget {
-  const PracticeScreen({
-    super.key,
-    this.completionStore,
-    this.now,
-  });
+  const PracticeScreen({super.key, this.completionStore, this.now});
 
   final PracticeCompletionStore? completionStore;
   final DateTime Function()? now;
@@ -63,8 +59,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Future<void> _loadCompletionState() async {
     try {
       final pauseCompletedAt = await _completionStore.readPauseCompletedAt();
-      final uncertaintyCompletedAt =
-          await _completionStore.readUncertaintyCompletedAt();
+      final uncertaintyCompletedAt = await _completionStore
+          .readUncertaintyCompletedAt();
       if (!mounted) {
         return;
       }
@@ -309,7 +305,8 @@ class _PracticeMenu extends StatelessWidget {
               : pauseCompleted
               ? 'This practice was recently completed.'
               : 'Create a small space before an urge-driven action.',
-          onTap: completionStateLoaded &&
+          onTap:
+              completionStateLoaded &&
                   !completionStateUnavailable &&
                   !pauseCompleted
               ? onPause
@@ -329,7 +326,8 @@ class _PracticeMenu extends StatelessWidget {
               : uncertaintyCompleted
               ? 'This practice was recently completed.'
               : 'Leave a question unresolved without trying to prove it safe or unsafe.',
-          onTap: completionStateLoaded &&
+          onTap:
+              completionStateLoaded &&
                   !completionStateUnavailable &&
                   !uncertaintyCompleted
               ? onUncertainty
