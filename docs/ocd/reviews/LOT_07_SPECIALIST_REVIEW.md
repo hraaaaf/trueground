@@ -1,52 +1,55 @@
 # LOT 07 — Specialist Review
 
 Project: TrueGround OCD
-Lot: LOT 07 — Practice experience
-Runtime candidate: cfbfff9fc6f49d299e0b871f82048fe7e1b65973
+Lot: LOT 07 — Practice experience + LOT07C anti-replay persistence
+Runtime candidate: 6c3354f4bd12452db063f7be085d33f07c450556
 PR: #16
 Date: 2026-09-18
 
 ## GOAL
 
-Challenge the exact LOT07 Practice candidate from product, OCD-safety, UI/UX, accessibility, architecture, privacy, QA and copy perspectives before Gate 7 closeout.
+Challenge the exact LOT07 Practice candidate from product, OCD-safety, UI/UX, accessibility, architecture, privacy, QA and copy perspectives after the addition of the approved restart-safe anti-replay guard.
 
 ## Evidence inspected
 
-- LOT07A scientific/content contract and versioned adversarial eval matrix.
-- Runtime implementation in lib/practice/practice_screen.dart and route integration.
-- Exact-head LOT07 run 35376894391: SUCCESS.
-- Exact-head LOT03 run 35376894340: SUCCESS.
-- Exact-head LOT04 run 35376894394: SUCCESS.
-- Exact-head LOT05 run 35376894323: SUCCESS.
-- Exact-head LOT06 run 35376894402: SUCCESS.
-- Focused Practice suite: 12 / 12 passed.
-- Full suite: 77 / 77 passed.
-- flutter analyze: no issues.
+- LOT07A scientific/content contract and adversarial eval matrix.
+- LOT07C anti-replay persistence contract.
+- Runtime implementation in `lib/practice/` plus route/app injection.
+- Exact-head LOT03 run 35401819625 — SUCCESS.
+- Exact-head LOT04 run 35401819670 — SUCCESS.
+- Exact-head LOT05 run 35401819630 — SUCCESS.
+- Exact-head LOT06 run 35401819649 — SUCCESS.
+- Exact-head LOT07 run 35401819639 — SUCCESS.
+- Focused Practice suite: 16 / 16 passed.
+- Full suite: 81 / 81 passed.
+- `flutter analyze`: no issues.
 - Release web build: SUCCESS.
-- Visual artifact 10560518340, digest sha256:fef608399a5851c3486c1636a3ad23498cc085083fd67012a67367ad4714f03e.
+- Visual artifact 10570517748.
+- Artifact digest: sha256:ed9a7497b235e6b9c10212d3951537d99f7cccc44aa3fa1d92d4974f83181f64.
 - Before/after web captures at 360 and 390 px.
-- Internal state geometry captures at 360 and 390 px for menu, Pause, uncertainty and planned-practice empty state.
+- Internal-state geometry captures at 360 and 390 px.
 - 200% text-scaling and Flutter accessibility guideline tests.
+- Exact 2-hour boundary tests, restart persistence test, expiry test, and storage-read failure test.
 
 ## Strongest challenge
 
-The strongest reason not to approve a more ambitious Practice feature is clinical scope creep: the evidence base supports structured ERP, but it does not validate arbitrary app-generated exposures, a universal ritual-delay timer, personalized hierarchy construction, or efficacy claims for these TrueGround micro-flows. LOT07 is acceptable only because the implementation stays deterministic, non-personalized, non-claim, bounded and explicitly excludes urgent safety/medical decisions.
+The main residual risk is not the storage mechanism itself but behavioral interpretation: a two-hour anti-replay window is a product UX guard, not a validated ERP dose, treatment schedule, or clinically optimal interval. The implementation remains acceptable only because the duration is hidden from the user, no countdown or comeback instruction exists, and no efficacy or adherence meaning is attached to the timestamp.
 
 ## Reviewer ledger
 
 | Reviewer | Verdict | Evidence / challenge |
 |---|---|---|
-| PRODUCT_AGENT | PASS | Implements exactly the three approved Practice surfaces; no adjacent feature expansion. |
-| OCD_SAFETY_AGENT | PASS_WITH_NOTES | No reassurance, no generated exposure, no hierarchy, no anxiety-reduction goal, no replay CTA; active steps keep the urgent safety/medical boundary visible. Not independent clinician validation. |
-| UI_UX_AGENT | PASS_WITH_NOTES | Readable before/after web renders at 360/390; calm hierarchy and reachable actions. Internal state screenshots prove geometry but Flutter test-font captures are not typography-fidelity evidence. |
-| ACCESSIBILITY_AGENT | PASS | 360/390 and 200% text scaling pass; semantic headers/live regions and touch-target guidelines are exercised. |
-| CONTENT_COPY_AGENT | PASS_WITH_NOTES | Copy avoids diagnosis, certainty, treatment efficacy and perfectionistic grading. Exact English copy has not received independent human clinical copy review. |
-| QA_NON_REGRESSION_AGENT | PASS | LOT03/04/05/06/07 all SUCCESS on cfbfff9f; 77-test full suite green; release web build green. |
-| ARCHITECTURE_AGENT | PASS | OCD Practice stays capsule-side; no IAmina Core modification, provider or new dependency. |
-| DATA_PRIVACY_SECURITY_AGENT | PASS | Local ephemeral state only; no persistence, analytics, account history, provider transmission or real-user data. |
+| PRODUCT_AGENT | PASS | Implements the three approved Practice surfaces plus only the explicitly approved LOT07C guard. |
+| OCD_SAFETY_AGENT | PASS_WITH_NOTES | No reassurance, generated exposure, hierarchy, anxiety-reduction goal or replay CTA. Restart-safe anti-replay now persists for 2h without surfacing a therapeutic schedule. Independent clinician sign-off is still absent. |
+| UI_UX_AGENT | PASS_WITH_NOTES | Readable 360/390 renders remain stable. No countdown, cooldown timer or exact re-enable time is exposed. Internal screenshots remain geometry evidence rather than complete production typography proof. |
+| ACCESSIBILITY_AGENT | PASS | 360/390, 200% text scaling, semantic labels and touch-target guidelines remain green. |
+| CONTENT_COPY_AGENT | PASS_WITH_NOTES | Copy avoids diagnosis, certainty, efficacy claims and treatment scheduling. Exact English copy still lacks independent clinician review. |
+| QA_NON_REGRESSION_AGENT | PASS | LOT03–LOT07 all SUCCESS on the exact candidate; focused 16/16 and full 81/81 suites green. |
+| ARCHITECTURE_AGENT | PASS | Persistence is capsule-side behind `PracticeCompletionStore`; no IAmina Core modification and no provider/database introduced. |
+| DATA_PRIVACY_SECURITY_AGENT | PASS_WITH_NOTES | Only two local UTC completion timestamps are stored. No OCD text, score, count, streak, account ID, analytics or cloud sync is introduced. Shared preferences is not a security boundary and device-clock tampering is explicitly outside the threat model. |
 | AI_EVAL_AGENT | NOT_APPLICABLE | LOT07 uses no AI/provider/model-generated content. |
-| LOCALIZATION_AGENT | NOT_APPLICABLE | English is the current baseline; LOT07 does not claim multilingual equivalence. |
-| REGULATORY_CLINICAL_REVIEW | NOT_APPLICABLE | Current deliverable is a non-claim prototype. Any treatment-delivery or efficacy claim remains blocked pending qualified human clinical/regulatory review. |
+| LOCALIZATION_AGENT | NOT_APPLICABLE | English remains the baseline; no multilingual equivalence is claimed. |
+| REGULATORY_CLINICAL_REVIEW | NOT_APPLICABLE | Current deliverable remains a non-claim prototype. Qualified human review is required before treatment-delivery or efficacy claims. |
 
 ## OCD safety findings
 
@@ -63,61 +66,60 @@ Verified safeguards:
 - no promise of immediate calm or certainty;
 - no automatic replay or prominent Again action;
 - uncertainty stance appears once, not as a mantra loop;
-- same-session completion disables direct replay without diagnosing the user's motive;
-- objective safety/medical/emergency decisions are explicitly outside the flow;
-- safety boundary remains visible while the active unresolved-question instruction is shown;
-- Continue planned practice is honest about absent persistence.
+- completion now blocks direct replay across restart for exactly two hours;
+- the two-hour interval is not displayed to the user;
+- no “come back in two hours” or equivalent instruction;
+- objective safety/medical/emergency decisions remain explicitly outside the flow;
+- active unresolved-question guidance retains the safety boundary;
+- Continue planned practice still does not fabricate a saved treatment plan.
 
 Residual notes:
-- no independent OCD clinician sign-off of the exact micro-copy;
-- no real-user clinical outcome evidence;
-- app restart resets the intentionally non-persisted anti-replay state;
-- the product does not adjudicate whether a real-world check is objectively required.
-
-These are production-readiness or scope-boundary limitations, not hidden in-scope defects in the authorized non-claim prototype.
-
-## UI / UX findings
-
-PASS_WITH_NOTES.
-
-The readable headless-web before/after captures at 360 and 390 px show a meaningful improvement from the old placeholder to a clear three-choice Practice surface. No cutoff or bottom-navigation collision is visible. The 360 px internal-state captures show that adding the persistent safety note still leaves primary and exit actions visible above the navigation area.
-
-Limitation: Flutter widget screenshots use the test font and are treated only as geometry evidence. Production typography fidelity is supported only for the readable web entry captures, not every internal state.
-
-## Accessibility findings
-
-PASS.
-
-- 360 px: green.
-- 390 px: green.
-- 200% text scaling at both widths: green.
-- Android/iOS tap target guidelines: green in focused accessibility tests.
-- labeled tap target guideline: green.
-- text contrast guideline: green.
-- scrollable layout keeps critical actions reachable.
+- no independent OCD clinician sign-off of exact micro-copy;
+- no real-user usability study on whether Practice itself could become ritualized;
+- the two-hour duration is a product anti-replay convention, not a clinically validated dose;
+- the app still cannot adjudicate whether a real-world check is objectively required.
 
 ## Architecture / privacy findings
 
-PASS.
+PASS_WITH_NOTES.
 
-No Core IAmina change. No DB. No persistence. No provider. No analytics. No account state. No new dependency. The Practice semantics remain isolated in lib/practice.
+Approved persistence is narrowly bounded:
+- dependency: `shared_preferences 2.5.5`;
+- modern `SharedPreferencesAsync` API;
+- only two keys:
+  - `trueground.practice.pause.completed_at.v1`
+  - `trueground.practice.uncertainty.completed_at.v1`
+- UTC ISO-8601 timestamps only;
+- no symptom content or user-entered content;
+- no history list;
+- no count/streak;
+- no analytics;
+- no provider;
+- no DB;
+- no cloud sync introduced by TrueGround;
+- no IAmina Core change.
+
+Storage read failure fails closed for the two Practice surfaces instead of opening a blind replay path. Write failure keeps the in-memory session guard active and does not crash the app.
 
 ## QA findings
 
 PASS.
 
-Exact runtime candidate cfbfff9fc6f49d299e0b871f82048fe7e1b65973:
-- LOT03 35376894340 — SUCCESS
-- LOT04 35376894394 — SUCCESS
-- LOT05 35376894323 — SUCCESS
-- LOT06 35376894402 — SUCCESS
-- LOT07 35376894391 — SUCCESS
-- focused Practice: 12 passed
-- full suite: 77 passed
+Exact candidate 6c3354f4bd12452db063f7be085d33f07c450556:
+- LOT03 35401819625 — SUCCESS
+- LOT04 35401819670 — SUCCESS
+- LOT05 35401819630 — SUCCESS
+- LOT06 35401819649 — SUCCESS
+- LOT07 35401819639 — SUCCESS
+- focused Practice: 16 passed
+- full suite: 81 passed
+- static analysis: no issues
 - release web build: SUCCESS
+- visual artifact: 10570517748
+- artifact digest: sha256:ed9a7497b235e6b9c10212d3951537d99f7cccc44aa3fa1d92d4974f83181f64
 
 ## Final specialist verdict
 
-PASS_WITH_NOTES — candidate is suitable for Gate 7 verification as a bounded non-claim prototype, subject to the mandatory strict double score and documentation-final exact-head recheck.
+PASS_WITH_NOTES — suitable for Gate 7 verification as a bounded non-claim prototype with a narrowly scoped local anti-replay guard.
 
-No merge or deployment is authorized by this review.
+This review does not authorize merge, deployment, treatment claims, autonomous ERP, broader persistence, analytics, provider introduction, Core modification or production-data mutation.
