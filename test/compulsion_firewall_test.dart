@@ -299,6 +299,50 @@ void main() {
       expect(decision.disposition, FirewallDisposition.allow);
     });
 
+    test('repeated attempts stay bounded without fresh certainty', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure this thought does not make me dangerous?');
+
+      final second = firewall.evaluate(
+        'Can you guarantee this thought does not mean I am dangerous?',
+      );
+      final third = firewall.evaluate(
+        'Promise this thought does not mean I am dangerous.',
+      );
+      final fourth = firewall.evaluate(
+        'Check one last time: does this thought mean I am dangerous?',
+      );
+
+      for (final decision in <FirewallDecision>[second, third, fourth]) {
+        expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+        expect(decision.userFacingCopy, isNot(contains('you are not dangerous')));
+      }
+    });
+
+    test('repeated attempts cannot create an evaluation loop', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('Are you sure I am not dangerous?');
+
+      for (var attempt = 0; attempt < 20; attempt++) {
+        final decision = firewall.evaluate('Are you sure I am not dangerous?');
+        expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      }
+
+      expect(firewall.auditSnapshot().turnCount, 8);
+    });
+
+    test('expired session history is not treated as longitudinal memory', () {
+      final firewall = CompulsionFirewallSession(maxTurns: 3);
+      firewall.evaluate('Are you sure I am not dangerous?');
+      firewall.evaluate('New question: what does ERP stand for?');
+      firewall.evaluate('New question: what is a bounded loop?');
+      firewall.evaluate('New question: what is response prevention?');
+
+      final decision = firewall.evaluate('Are you sure I am not dangerous?');
+
+      expect(decision.disposition, FirewallDisposition.allow);
+    });
+
     test('reset clears session repetition context', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Are you sure I am not dangerous?');
