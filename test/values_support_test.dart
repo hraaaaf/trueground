@@ -45,7 +45,7 @@ void main() {
     expect(find.text('Leave for now'), findsOneWidget);
     expect(find.text('I tapped the wrong area'), findsOneWidget);
     expect(find.text('I know my next step'), findsNothing);
-    expect(find.textContaining('perfect choice'), findsOneWidget);
+    expect(find.textContaining('certain or perfect'), findsOneWidget);
 
     await _tapScrollable(tester, find.text('Take my next step'));
 
@@ -202,8 +202,7 @@ void main() {
       expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
       expect(tester.takeException(), isNull);
 
-      await tester.tap(find.text('Family'));
-      await tester.pumpAndSettle();
+      await _tapScrollable(tester, find.text('Family'));
       expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
       expect(tester.takeException(), isNull);
 
