@@ -54,7 +54,14 @@ void main() {
       expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
       await _capture(tester, boundaryKey, 'values_${width}_choose_widget.png');
 
-      await tester.tap(find.text('Family'));
+      final family = find.text('Family');
+      await tester.scrollUntilVisible(
+        family,
+        120,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(family);
       await tester.pumpAndSettle();
       expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
       await _capture(tester, boundaryKey, 'values_${width}_action_widget.png');
