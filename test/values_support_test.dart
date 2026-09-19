@@ -9,6 +9,17 @@ Future<void> _useSurface(WidgetTester tester, Size size) async {
   addTearDown(() => tester.binding.setSurfaceSize(null));
 }
 
+Future<void> _tapScrollable(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    140,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('Return to what matters is user-led and bounded', (tester) async {
     await _useSurface(tester, const Size(390, 844));
@@ -33,8 +44,7 @@ void main() {
     expect(find.text('I know my next step'), findsOneWidget);
     expect(find.textContaining('perfect choice'), findsOneWidget);
 
-    await tester.tap(find.text('I know my next step'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('I know my next step'));
 
     expect(find.byKey(ValuesScreen.leaveFlowKey), findsOneWidget);
     expect(find.text('Family'), findsOneWidget);
@@ -76,10 +86,8 @@ void main() {
     expect(find.textContaining('repeated certainty'), findsOneWidget);
     expect(find.textContaining('contacted successfully'), findsNothing);
 
-    await tester.tap(find.text('Back to support choices'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('My therapist or care team'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Back to support choices'));
+    await _tapScrollable(tester, find.text('My therapist or care team'));
 
     expect(find.byKey(SupportScreen.careTeamKey), findsOneWidget);
     expect(find.textContaining('does not store a therapist'), findsOneWidget);
@@ -96,8 +104,10 @@ void main() {
 
     await tester.tap(find.text('Support').first);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Find professional support outside TrueGround'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(
+      tester,
+      find.text('Find professional support outside TrueGround'),
+    );
 
     expect(find.byKey(SupportScreen.localProfessionalKey), findsOneWidget);
     expect(
