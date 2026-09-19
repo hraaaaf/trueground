@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 abstract final class TrueGroundColors {
-  static const Color background = Color(0xFFF6F4EF);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceMuted = Color(0xFFECEFEA);
-  static const Color primary = Color(0xFF214E45);
-  static const Color primaryContainer = Color(0xFFD9E8E2);
-  static const Color ink = Color(0xFF1E2926);
-  static const Color inkMuted = Color(0xFF52605C);
-  static const Color outline = Color(0xFFBBC5C1);
+  static const Color background = Color(0xFFF3F1F0);
+  static const Color surface = Color(0xFFFCFBFA);
+  static const Color surfaceMuted = Color(0xFFF0F0EE);
+  static const Color primary = Color(0xFF14375C);
+  static const Color primaryContainer = Color(0xFFDDEBED);
+  static const Color heroBlue = Color(0xFF245D8A);
+  static const Color heroIconBlue = Color(0xFF267BB4);
+  static const Color teal = Color(0xFF3E8790);
+  static const Color iconWash = Color(0xFFE5EFF0);
+  static const Color ink = Color(0xFF152D4A);
+  static const Color inkMuted = Color(0xFF5E6878);
+  static const Color outline = Color(0xFFD8D7D4);
   static const Color error = Color(0xFF9D2C2C);
 }
 
@@ -82,11 +86,27 @@ abstract final class TrueGroundTheme {
           color: TrueGroundColors.inkMuted,
         ),
       ),
-      navigationBarTheme: const NavigationBarThemeData(
-        height: 72,
-        backgroundColor: TrueGroundColors.surface,
-        indicatorColor: TrueGroundColors.primaryContainer,
+      navigationBarTheme: NavigationBarThemeData(
+        height: 84,
+        backgroundColor: Colors.transparent,
+        indicatorColor: Colors.transparent,
         elevation: 0,
+        labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            fontSize: 12.5,
+            height: 1,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+            color: TrueGroundColors.primary,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith<IconThemeData>((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            size: selected ? 26 : 24,
+            color: TrueGroundColors.primary,
+          );
+        }),
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: TrueGroundColors.primary,
