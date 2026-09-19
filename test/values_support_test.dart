@@ -41,10 +41,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
-    expect(find.text('I know my next step'), findsOneWidget);
+    expect(find.text('Take my next step'), findsOneWidget);
+    expect(find.text('Leave for now'), findsOneWidget);
+    expect(find.text('I tapped the wrong area'), findsOneWidget);
+    expect(find.text('I know my next step'), findsNothing);
     expect(find.textContaining('perfect choice'), findsOneWidget);
 
-    await _tapScrollable(tester, find.text('I know my next step'));
+    await _tapScrollable(tester, find.text('Take my next step'));
 
     expect(find.byKey(ValuesScreen.leaveFlowKey), findsOneWidget);
     expect(find.text('Family'), findsOneWidget);
@@ -55,6 +58,47 @@ void main() {
     expect(find.textContaining('feel better'), findsNothing);
     expect(find.textContaining('calm down'), findsNothing);
     expect(find.textContaining('clinically proven'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+
+  testWidgets('reselection stays a correction path without scoring feedback', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Return to what matters'));
+    await tester.pumpAndSettle();
+
+    for (var index = 0; index < 3; index += 1) {
+      await tester.tap(find.text('Family'));
+      await tester.pumpAndSettle();
+      expect(find.text('Take my next step'), findsOneWidget);
+      expect(find.text('Leave for now'), findsOneWidget);
+      expect(find.text('I tapped the wrong area'), findsOneWidget);
+      expect(find.textContaining('better choice'), findsNothing);
+      expect(find.textContaining('right choice'), findsNothing);
+      expect(find.textContaining('attempt'), findsNothing);
+      await _tapScrollable(tester, find.text('I tapped the wrong area'));
+      expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
+    }
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('values flow has a neutral exit without certainty declaration', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Return to what matters'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Family'));
+    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Leave for now'));
+    expect(find.byKey(ValuesScreen.screenKey), findsNothing);
+    expect(find.text('Return to what matters'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
