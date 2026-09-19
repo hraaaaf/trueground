@@ -61,7 +61,6 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-
   testWidgets('reselection stays a correction path without scoring feedback', (
     tester,
   ) async {
@@ -182,10 +181,8 @@ void main() {
   }
 
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
-    testWidgets(
-      'LOT08 critical routes survive 200% text scaling at '
-      '${size.width.toInt()} px',
-      (tester) async {
+    testWidgets('LOT08 critical routes survive 200% text scaling at '
+        '${size.width.toInt()} px', (tester) async {
         await _useSurface(tester, size);
         tester.platformDispatcher.textScaleFactorTestValue = 2;
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
@@ -214,8 +211,7 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.byKey(SupportScreen.screenKey), findsOneWidget);
         expect(tester.takeException(), isNull);
-      },
-    );
+    });
   }
 
 }
