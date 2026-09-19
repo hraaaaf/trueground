@@ -2,7 +2,7 @@
 name: trueground-independent-reviewer
 description: Independent adversarial reviewer for TrueGround OCD lots and PRs. Read-only. Challenges safety, scope, UX, claims, architecture, privacy, tests, evidence, and strict scoring before any gate can be verified.
 target: github-copilot
-model: claude-opus-5
+model: claude-sonnet-4.6
 tools: ["read", "search", "execute", "agent", "github/*", "playwright/*"]
 user-invocable: true
 disable-model-invocation: true
