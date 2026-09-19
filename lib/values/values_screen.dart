@@ -28,32 +28,45 @@ class _ValuesScreenState extends State<ValuesScreen> {
     'Something else that matters',
   ];
 
+  final ScrollController _scrollController = ScrollController();
   _ValuesStep _step = _ValuesStep.chooseArea;
   String? _selectedArea;
 
-  void _chooseArea(String area) {
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _moveTo(_ValuesStep step) {
     setState(() {
-      _selectedArea = area;
-      _step = _ValuesStep.chooseAction;
+      _step = step;
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0);
+      }
+    });
+  }
+
+  void _chooseArea(String area) {
+    _selectedArea = area;
+    _moveTo(_ValuesStep.chooseAction);
   }
 
   void _confirmNextStep() {
-    setState(() {
-      _step = _ValuesStep.leaveFlow;
-    });
+    _moveTo(_ValuesStep.leaveFlow);
   }
 
-  void _restart() {
-    setState(() {
-      _selectedArea = null;
-      _step = _ValuesStep.chooseArea;
-    });
+  void _chooseAgain() {
+    _selectedArea = null;
+    _moveTo(_ValuesStep.chooseArea);
   }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      controller: _scrollController,
       key: ValuesScreen.screenKey,
       padding: const EdgeInsets.all(TrueGroundSpacing.lg),
       child: Center(
@@ -91,7 +104,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
                 _ChooseActionStep(
                   area: _selectedArea!,
                   onConfirm: _confirmNextStep,
-                  onBack: _restart,
+                  onBack: _chooseAgain,
                 )
               else
                 _LeaveFlowStep(area: _selectedArea!),
@@ -182,19 +195,23 @@ class _ChooseActionStep extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(
-          'If you already know one small action, take that action without '
-          'using TrueGround to check whether it is the perfect choice.',
+          'Pick one small action yourself. It does not need to feel certain '
+          'or perfect before you leave this flow.',
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
         FilledButton(
           onPressed: onConfirm,
-          child: const Text('I know my next step'),
+          child: const Text('Take my next step'),
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         TextButton(
+          onPressed: () => context.go('/'),
+          child: const Text('Leave for now'),
+        ),
+        TextButton(
           onPressed: onBack,
-          child: const Text('Choose a different area'),
+          child: const Text('I tapped the wrong area'),
         ),
       ],
     );
