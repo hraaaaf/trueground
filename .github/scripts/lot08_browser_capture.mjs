@@ -299,6 +299,16 @@ try {
   await command('Runtime.enable');
   await command('DOM.enable');
   await command('Accessibility.enable');
+  await command('Emulation.setDeviceMetricsOverride', {
+    width,
+    height,
+    deviceScaleFactor: 1,
+    mobile: false,
+    screenWidth: width,
+    screenHeight: height,
+    positionX: 0,
+    positionY: 0,
+  });
 
   await navigate('/#/values');
   await waitForLabel('Family');
