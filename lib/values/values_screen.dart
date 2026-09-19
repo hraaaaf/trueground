@@ -116,9 +116,9 @@ class _BoundaryCard extends StatelessWidget {
           'This is not a way to prove you are safe or make uncertainty '
           'disappear. The app will not choose your values or generate the '
           'perfect action for you.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: TrueGroundColors.ink,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: TrueGroundColors.ink),
         ),
       ),
     );
@@ -147,10 +147,7 @@ class _ChooseAreaStep extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.md),
         for (final area in _ValuesScreenState._areas) ...<Widget>[
-          _ChoiceCard(
-            label: area,
-            onTap: () => onSelected(area),
-          ),
+          _ChoiceCard(label: area, onTap: () => onSelected(area)),
           const SizedBox(height: TrueGroundSpacing.sm),
         ],
       ],
@@ -175,10 +172,7 @@ class _ChooseActionStep extends StatelessWidget {
       key: ValuesScreen.chooseActionKey,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          'You chose',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        Text('You chose', style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(area, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: TrueGroundSpacing.md),
@@ -247,10 +241,7 @@ class _LeaveFlowStep extends StatelessWidget {
 }
 
 class _ChoiceCard extends StatelessWidget {
-  const _ChoiceCard({
-    required this.label,
-    required this.onTap,
-  });
+  const _ChoiceCard({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;

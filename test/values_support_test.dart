@@ -31,10 +31,7 @@ void main() {
 
     expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
     expect(find.text('I know my next step'), findsOneWidget);
-    expect(
-      find.textContaining('perfect choice'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('perfect choice'), findsOneWidget);
 
     await tester.tap(find.text('I know my next step'));
     await tester.pumpAndSettle();
@@ -85,10 +82,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(SupportScreen.careTeamKey), findsOneWidget);
-    expect(
-      find.textContaining('does not store a therapist'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('does not store a therapist'), findsOneWidget);
     expect(find.textContaining('has not contacted anyone'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -115,28 +109,27 @@ void main() {
   });
 
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
-    testWidgets(
-      'LOT08 routes render without framework exceptions at '
-      '${size.width.toInt()} px',
-      (tester) async {
-        await _useSurface(tester, size);
-        await tester.pumpWidget(const TrueGroundApp());
-        await tester.pumpAndSettle();
+    testWidgets('LOT08 routes render without framework exceptions at '
+        '${size.width.toInt()} px', (tester) async {
+      await _useSurface(tester, size);
+      await tester.pumpWidget(const TrueGroundApp());
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text('Return to what matters'));
-        await tester.pumpAndSettle();
-        expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
-        expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Return to what matters'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
+      expect(tester.takeException(), isNull);
 
-        await tester.tap(find.text('Support').first);
-        await tester.pumpAndSettle();
-        expect(find.byKey(SupportScreen.screenKey), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      },
-    );
+      await tester.tap(find.text('Support').first);
+      await tester.pumpAndSettle();
+      expect(find.byKey(SupportScreen.screenKey), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 
-  testWidgets('LOT08 critical routes survive 200% text scaling', (tester) async {
+  testWidgets('LOT08 critical routes survive 200% text scaling', (
+    tester,
+  ) async {
     await _useSurface(tester, const Size(360, 800));
     tester.platformDispatcher.textScaleFactorTestValue = 2;
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);

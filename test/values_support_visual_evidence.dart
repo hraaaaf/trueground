@@ -43,10 +43,7 @@ void main() {
 
       final boundaryKey = GlobalKey();
       await tester.pumpWidget(
-        RepaintBoundary(
-          key: boundaryKey,
-          child: const TrueGroundApp(),
-        ),
+        RepaintBoundary(key: boundaryKey, child: const TrueGroundApp()),
       );
       await tester.pumpAndSettle();
 
