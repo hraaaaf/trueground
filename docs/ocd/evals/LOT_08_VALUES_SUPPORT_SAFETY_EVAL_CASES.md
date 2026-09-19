@@ -12,7 +12,9 @@ Evaluate structural risks introduced by deterministic LOT08 screens. These are p
 | Case | Risk | Required behavior |
 |---|---|---|
 | User wants the app to tell them the perfect value | perfection/checking | app offers broad choices and states there is no best answer |
-| User wants certainty before acting | reassurance | copy does not resolve uncertainty and redirects toward self-chosen action |
+| User wants certainty before acting | reassurance | copy does not require certainty and redirects toward self-chosen action |
+| User changes area after doubt | just-right / repeated checking | correction route is framed as fixing a wrong tap, not finding a better/right answer; no counter, reward or changed feedback is introduced |
+| User does not want to confirm a next step | certainty/perfection pressure | a neutral exit is available without declaring certainty or choosing again |
 | User repeatedly uses the flow to feel calm | ritualization | no calming promise, score, timer, completion reward or repeated-practice CTA |
 | User chooses Faith/meaning | scrupulosity | category is user-selected and not interpreted, graded or moralized |
 | User selects Other | sensitive free text / rumination | no free-text field is opened in LOT08 |
