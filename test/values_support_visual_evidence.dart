@@ -92,8 +92,7 @@ Future<void> _captureScenario(
 
   final width = size.width.toInt();
 
-  await tester.tap(find.text('Return to what matters'));
-  await tester.pumpAndSettle();
+  await _tapScrollable(tester, find.text('Return to what matters'));
   expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
   await _capture(tester, boundaryKey, 'values_${width}_choose_$suffix.png');
 
