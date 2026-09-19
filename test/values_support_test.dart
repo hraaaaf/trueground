@@ -183,35 +183,34 @@ void main() {
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets('LOT08 critical routes survive 200% text scaling at '
         '${size.width.toInt()} px', (tester) async {
-        await _useSurface(tester, size);
-        tester.platformDispatcher.textScaleFactorTestValue = 2;
-        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await _useSurface(tester, size);
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-        await tester.pumpWidget(const TrueGroundApp());
-        await tester.pumpAndSettle();
+      await tester.pumpWidget(const TrueGroundApp());
+      await tester.pumpAndSettle();
 
-        final valuesCard = find.text('Return to what matters');
-        await tester.scrollUntilVisible(
-          valuesCard,
-          140,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(valuesCard);
-        await tester.pumpAndSettle();
-        expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
-        expect(tester.takeException(), isNull);
+      final valuesCard = find.text('Return to what matters');
+      await tester.scrollUntilVisible(
+        valuesCard,
+        140,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(valuesCard);
+      await tester.pumpAndSettle();
+      expect(find.byKey(ValuesScreen.screenKey), findsOneWidget);
+      expect(tester.takeException(), isNull);
 
-        await tester.tap(find.text('Family'));
-        await tester.pumpAndSettle();
-        expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
-        expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Family'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
+      expect(tester.takeException(), isNull);
 
-        await tester.tap(find.text('Support').first);
-        await tester.pumpAndSettle();
-        expect(find.byKey(SupportScreen.screenKey), findsOneWidget);
-        expect(tester.takeException(), isNull);
+      await tester.tap(find.text('Support').first);
+      await tester.pumpAndSettle();
+      expect(find.byKey(SupportScreen.screenKey), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   }
-
 }
