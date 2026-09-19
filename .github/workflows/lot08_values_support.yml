@@ -125,15 +125,25 @@ jobs:
             timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/before_support_${width}.png"               "http://127.0.0.1:7368/#/support"
 
             timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/after_support_${width}.png"               "http://127.0.0.1:7367/#/support"
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/reference_dashboard_${width}.png"               "http://127.0.0.1:7368/#/"
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/after_values_choose_${width}.png"               "http://127.0.0.1:7367/#/values"
           done
 
           test -s build/lot08/screenshots/before_support_360.png
           test -s build/lot08/screenshots/after_support_360.png
           test -s build/lot08/screenshots/before_support_390.png
           test -s build/lot08/screenshots/after_support_390.png
+          test -s build/lot08/screenshots/reference_dashboard_360.png
+          test -s build/lot08/screenshots/reference_dashboard_390.png
+          test -s build/lot08/screenshots/after_values_choose_360.png
+          test -s build/lot08/screenshots/after_values_choose_390.png
 
           sha256sum build/lot08/screenshots/before_support_*.png
           sha256sum build/lot08/screenshots/after_support_*.png
+          sha256sum build/lot08/screenshots/reference_dashboard_*.png
+          sha256sum build/lot08/screenshots/after_values_choose_*.png
 
       - name: Capture LOT08 visual evidence
         run: |
