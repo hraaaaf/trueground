@@ -142,17 +142,14 @@ void main() {
       await _captureScenario(tester, size, suffix: 'widget');
     });
 
-    testWidgets(
-      'capture readable LOT08 states at 200% text scaling and '
-      '${size.width.toInt()} px',
-      (tester) async {
-        await _captureScenario(
-          tester,
-          size,
-          suffix: 'text200_widget',
-          textScaleFactor: 2,
-        );
-      },
-    );
+    testWidgets('capture readable LOT08 states at 200% text scaling and '
+        '${size.width.toInt()} px', (tester) async {
+      await _captureScenario(
+        tester,
+        size,
+        suffix: 'text200_widget',
+        textScaleFactor: 2,
+      );
+    });
   }
 }
