@@ -109,63 +109,100 @@ async function evaluate(expression) {
   return response.result?.value;
 }
 
+function nodeName(node) {
+  return String(node?.name?.value || '').trim();
+}
+
+async function accessibilityNode(label) {
+  const tree = await command('Accessibility.getFullAXTree');
+  const exact = tree.nodes.find((node) => nodeName(node) === label);
+  if (exact) return exact;
+  return (
+    tree.nodes.find((node) => nodeName(node).includes(label)) ||
+    null
+  );
+}
+
 async function waitForLabel(label, timeoutMs = 10000) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
-    const found = await evaluate(`(() => {
-      const labels = [...document.querySelectorAll('[aria-label]')]
-        .map((el) => el.getAttribute('aria-label'))
-        .filter(Boolean);
-      return labels.some(
-        (value) =>
-          value === ${JSON.stringify(label)} ||
-          value.includes(${JSON.stringify(label)}),
-      );
-    })()`);
-    if (found) return;
+    if (await accessibilityNode(label)) return;
     await sleep(200);
   }
-  const labels = await evaluate(
-    "[...document.querySelectorAll('[aria-label]')]" +
-      ".map((el) => el.getAttribute('aria-label'))" +
-      '.filter(Boolean).slice(0, 80)',
-  );
+
+  const tree = await command('Accessibility.getFullAXTree');
+  const names = tree.nodes
+    .map(nodeName)
+    .filter(Boolean)
+    .slice(0, 120);
   throw new Error(
-    `Timed out waiting for aria-label ${label}. Labels: ${JSON.stringify(labels)}`,
+    `Timed out waiting for accessibility node ${label}. Names: ${JSON.stringify(names)}`,
   );
 }
 
 async function enableSemantics() {
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    const enabled = await evaluate(`(() => {
+    await evaluate(`(() => {
       const placeholder = document.querySelector('flt-semantics-placeholder');
       if (placeholder) placeholder.click();
-      return document.querySelectorAll('[aria-label]').length > 0;
+      return true;
     })()`);
-    if (enabled) return;
+    const tree = await command('Accessibility.getFullAXTree');
+    if (tree.nodes.some((node) => nodeName(node))) return;
     await sleep(200);
   }
-  throw new Error('Flutter web semantics did not expose aria-label nodes.');
+  throw new Error('Flutter web semantics did not expose accessibility nodes.');
 }
 
-async function labelRect(label) {
+async function domLabelRect(label) {
   return evaluate(`(() => {
-    const items = [...document.querySelectorAll('[aria-label]')];
-    const exact = items.find(
-      (el) => el.getAttribute('aria-label') === ${JSON.stringify(label)},
-    );
+    const items = [
+      ...document.querySelectorAll(
+        '[aria-label], flt-semantics, [role="button"], button',
+      ),
+    ];
+    const value = (el) =>
+      (el.getAttribute('aria-label') || el.textContent || '').trim();
+    const exact = items.find((el) => value(el) === ${JSON.stringify(label)});
     const partial = items.find((el) =>
-      (el.getAttribute('aria-label') || '').includes(${JSON.stringify(label)}),
+      value(el).includes(${JSON.stringify(label)}),
     );
     const el = exact || partial;
     if (!el) return null;
     const rect = el.getBoundingClientRect();
     return {
-      label: el.getAttribute('aria-label'),
+      source: 'dom',
+      label: value(el),
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
     };
   })()`);
+}
+
+async function labelRect(label) {
+  const node = await accessibilityNode(label);
+  if (node?.backendDOMNodeId) {
+    try {
+      const response = await command('DOM.getBoxModel', {
+        backendNodeId: node.backendDOMNodeId,
+      });
+      const quad =
+        response.model?.border ||
+        response.model?.content ||
+        response.model?.padding;
+      if (quad?.length >= 8) {
+        return {
+          source: 'accessibility',
+          label: nodeName(node),
+          x: (quad[0] + quad[2] + quad[4] + quad[6]) / 4,
+          y: (quad[1] + quad[3] + quad[5] + quad[7]) / 4,
+        };
+      }
+    } catch {
+      // Fall back to the semantics DOM below.
+    }
+  }
+  return domLabelRect(label);
 }
 
 async function clickLabel(label) {
@@ -260,6 +297,8 @@ try {
 
   await command('Page.enable');
   await command('Runtime.enable');
+  await command('DOM.enable');
+  await command('Accessibility.enable');
 
   await navigate('/#/values');
   await waitForLabel('Family');
