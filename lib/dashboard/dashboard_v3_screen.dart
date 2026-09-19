@@ -152,13 +152,14 @@ class _TargetDashboard extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
-                            const Expanded(
+                            Expanded(
                               child: _WideCard(
                                 icon: Icons.explore_outlined,
                                 title: 'Return to what matters',
                                 description:
                                     'Work • Family • Rest\nFaith • Friends',
-                                accent: Color(0xFF6AAFA5),
+                                accent: const Color(0xFF6AAFA5),
+                                onTap: () => context.go('/values'),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -262,10 +263,11 @@ class _AccessibleDashboard extends StatelessWidget {
           Column(
             key: DashboardV3Screen.valuesGridKey,
             children: <Widget>[
-              const _AccessibleCard(
+              _AccessibleCard(
                 icon: Icons.explore_outlined,
                 title: 'Return to what matters',
                 description: 'Work • Family • Rest • Faith • Friends',
+                onTap: () => context.go('/values'),
               ),
               const SizedBox(height: 8),
               _AccessibleCard(
