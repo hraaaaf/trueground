@@ -129,6 +129,13 @@ jobs:
             timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/reference_dashboard_${width}.png"               "http://127.0.0.1:7368/#/"
 
             timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/after_values_choose_${width}.png"               "http://127.0.0.1:7367/#/values"
+
+            node .github/scripts/lot08_browser_capture.mjs \
+              "$chrome_bin" \
+              "http://127.0.0.1:7367" \
+              "$width" \
+              "$height" \
+              "build/lot08/screenshots"
           done
 
           test -s build/lot08/screenshots/before_support_360.png
@@ -145,17 +152,37 @@ jobs:
           sha256sum build/lot08/screenshots/reference_dashboard_*.png
           sha256sum build/lot08/screenshots/after_values_choose_*.png
 
+          for width in 360 390; do
+            test -s "build/lot08/screenshots/browser_values_${width}_choose.png"
+            test -s "build/lot08/screenshots/browser_values_${width}_action.png"
+            test -s "build/lot08/screenshots/browser_values_${width}_terminal.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_menu.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_trusted.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_care.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_local.png"
+          done
+          sha256sum build/lot08/screenshots/browser_*.png
+
       - name: Capture LOT08 visual evidence
         run: |
           flutter test test/values_support_visual_evidence.dart
-          test -s build/lot08/screenshots/values_360_choose_widget.png
-          test -s build/lot08/screenshots/values_360_action_widget.png
-          test -s build/lot08/screenshots/support_360_menu_widget.png
-          test -s build/lot08/screenshots/support_360_trusted_widget.png
-          test -s build/lot08/screenshots/values_390_choose_widget.png
-          test -s build/lot08/screenshots/values_390_action_widget.png
-          test -s build/lot08/screenshots/support_390_menu_widget.png
-          test -s build/lot08/screenshots/support_390_trusted_widget.png
+          for width in 360 390; do
+            test -s "build/lot08/screenshots/values_${width}_choose_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_action_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_terminal_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_menu_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_trusted_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_care_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_local_widget.png"
+
+            test -s "build/lot08/screenshots/values_${width}_choose_text200_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_action_text200_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_terminal_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_menu_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_trusted_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_care_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_local_text200_widget.png"
+          done
           sha256sum build/lot08/screenshots/*_widget.png
 
       - name: Upload LOT 08 visual evidence
