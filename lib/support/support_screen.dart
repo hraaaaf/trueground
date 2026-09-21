@@ -238,6 +238,8 @@ class _SupportChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
+      label: '$title. $description',
+      excludeSemantics: true,
       child: Card(
         margin: EdgeInsets.zero,
         child: InkWell(
