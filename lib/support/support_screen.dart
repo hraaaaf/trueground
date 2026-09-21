@@ -240,6 +240,7 @@ class _SupportChoiceCard extends StatelessWidget {
       button: true,
       label: '$title. $description',
       excludeSemantics: true,
+      onTap: onTap,
       child: Card(
         margin: EdgeInsets.zero,
         child: InkWell(
