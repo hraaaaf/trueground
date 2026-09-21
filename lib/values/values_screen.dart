@@ -31,6 +31,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
   final ScrollController _scrollController = ScrollController();
   _ValuesStep _step = _ValuesStep.chooseArea;
   String? _selectedArea;
+  bool _correctionUsed = false;
 
   @override
   void dispose() {
@@ -59,6 +60,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
   }
 
   void _chooseAgain() {
+    _correctionUsed = true;
     _selectedArea = null;
     _moveTo(_ValuesStep.chooseArea);
   }
@@ -104,7 +106,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
                 _ChooseActionStep(
                   area: _selectedArea!,
                   onConfirm: _confirmNextStep,
-                  onBack: _chooseAgain,
+                  onBack: _correctionUsed ? null : _chooseAgain,
                 )
               else
                 _LeaveFlowStep(area: _selectedArea!),
@@ -177,7 +179,7 @@ class _ChooseActionStep extends StatelessWidget {
 
   final String area;
   final VoidCallback onConfirm;
-  final VoidCallback onBack;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -209,10 +211,11 @@ class _ChooseActionStep extends StatelessWidget {
           onPressed: () => context.go('/'),
           child: const Text('Leave for now'),
         ),
-        TextButton(
-          onPressed: onBack,
-          child: const Text('I tapped the wrong area'),
-        ),
+        if (onBack != null)
+          TextButton(
+            onPressed: onBack,
+            child: const Text('I tapped the wrong area'),
+          ),
       ],
     );
   }
