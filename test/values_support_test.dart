@@ -160,7 +160,10 @@ void main() {
       find.textContaining('does not currently provide a local directory'),
       findsOneWidget,
     );
-    expect(find.textContaining('you can verify outside the app'), findsOneWidget);
+    expect(
+      find.textContaining('you can verify outside the app'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
