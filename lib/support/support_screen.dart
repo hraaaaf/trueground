@@ -176,7 +176,8 @@ class _LocalProfessionalStep extends StatelessWidget {
       paragraphs: const <String>[
         'Look outside TrueGround for a verified local health service or '
             'professional directory.',
-        'TrueGround does not currently provide a local directory. Use a health '\n            'service or professional directory you can verify outside the app.',
+        'TrueGround does not currently provide a local directory. Use a health '
+            'service or professional directory you can verify outside the app.',
       ],
       onBack: onBack,
     );
