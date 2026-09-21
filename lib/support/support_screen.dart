@@ -176,8 +176,7 @@ class _LocalProfessionalStep extends StatelessWidget {
       paragraphs: const <String>[
         'Look outside TrueGround for a verified local health service or '
             'professional directory.',
-        'No launch-region directory is configured in this build, so TrueGround '
-            'will not name or invent a local service here.',
+        'TrueGround does not currently provide a local directory. Use a health '\n            'service or professional directory you can verify outside the app.',
       ],
       onBack: onBack,
     );
