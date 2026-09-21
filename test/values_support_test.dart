@@ -61,7 +61,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('reselection stays a correction path without scoring feedback', (
+  testWidgets('reselection is a one-pass correction without scoring feedback', (
     tester,
   ) async {
     await _useSurface(tester, const Size(390, 844));
@@ -70,18 +70,21 @@ void main() {
     await tester.tap(find.text('Return to what matters'));
     await tester.pumpAndSettle();
 
-    for (var index = 0; index < 3; index += 1) {
-      await tester.tap(find.text('Family'));
-      await tester.pumpAndSettle();
-      expect(find.text('Take my next step'), findsOneWidget);
-      expect(find.text('Leave for now'), findsOneWidget);
-      expect(find.text('I tapped the wrong area'), findsOneWidget);
-      expect(find.textContaining('better choice'), findsNothing);
-      expect(find.textContaining('right choice'), findsNothing);
-      expect(find.textContaining('attempt'), findsNothing);
-      await _tapScrollable(tester, find.text('I tapped the wrong area'));
-      expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
-    }
+    await tester.tap(find.text('Family'));
+    await tester.pumpAndSettle();
+    expect(find.text('I tapped the wrong area'), findsOneWidget);
+    expect(find.textContaining('better choice'), findsNothing);
+    expect(find.textContaining('right choice'), findsNothing);
+    expect(find.textContaining('attempt'), findsNothing);
+
+    await _tapScrollable(tester, find.text('I tapped the wrong area'));
+    expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
+
+    await tester.tap(find.text('Family'));
+    await tester.pumpAndSettle();
+    expect(find.text('Take my next step'), findsOneWidget);
+    expect(find.text('Leave for now'), findsOneWidget);
+    expect(find.text('I tapped the wrong area'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -154,7 +157,7 @@ void main() {
 
     expect(find.byKey(SupportScreen.localProfessionalKey), findsOneWidget);
     expect(
-      find.textContaining('No launch-region directory is configured'),
+      find.textContaining('does not currently provide a local directory'),
       findsOneWidget,
     );
     expect(find.textContaining('will not name or invent'), findsOneWidget);
