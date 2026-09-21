@@ -270,6 +270,8 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
+      label: label,
+      excludeSemantics: true,
       child: Card(
         margin: EdgeInsets.zero,
         child: InkWell(
