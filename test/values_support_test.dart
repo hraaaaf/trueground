@@ -167,6 +167,49 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('values choices expose named actionable semantic buttons', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    final semantics = tester.ensureSemantics();
+    addTearDown(semantics.dispose);
+
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Return to what matters'));
+    await tester.pumpAndSettle();
+
+    final family = find.bySemanticsLabel('Family');
+    expect(family, findsOneWidget);
+    expect(
+      tester.getSemantics(family),
+      matchesSemantics(label: 'Family', isButton: true, hasTapAction: true),
+    );
+  });
+
+  testWidgets('support choices expose named actionable semantic buttons', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    final semantics = tester.ensureSemantics();
+    addTearDown(semantics.dispose);
+
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Support').first);
+    await tester.pumpAndSettle();
+
+    const label =
+        'Someone I trust. Choose a friend, family member, partner, community '
+        'member, or another person you already know.';
+    final trustedPerson = find.bySemanticsLabel(label);
+    expect(trustedPerson, findsOneWidget);
+    expect(
+      tester.getSemantics(trustedPerson),
+      matchesSemantics(label: label, isButton: true, hasTapAction: true),
+    );
+  });
+
   for (final size in <Size>[const Size(360, 800), const Size(390, 844)]) {
     testWidgets('LOT08 routes render without framework exceptions at '
         '${size.width.toInt()} px', (tester) async {
