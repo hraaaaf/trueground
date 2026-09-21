@@ -272,6 +272,7 @@ class _ChoiceCard extends StatelessWidget {
       button: true,
       label: label,
       excludeSemantics: true,
+      onTap: onTap,
       child: Card(
         margin: EdgeInsets.zero,
         child: InkWell(
