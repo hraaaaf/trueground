@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../patterns/pattern_memory_store.dart';
 
 enum _ValuesStep { chooseArea, chooseAction, leaveFlow }
 
 class ValuesScreen extends StatefulWidget {
-  const ValuesScreen({super.key});
+  const ValuesScreen({super.key, this.memoryStore, this.now});
+
+  final PatternMemoryStore? memoryStore;
+  final DateTime Function()? now;
 
   static const screenKey = ValueKey('screen-values');
   static const chooseAreaKey = ValueKey('values-choose-area');
@@ -29,6 +33,8 @@ class _ValuesScreenState extends State<ValuesScreen> {
   ];
 
   final ScrollController _scrollController = ScrollController();
+  late final PatternMemoryStore _memoryStore =
+      widget.memoryStore ?? SharedPreferencesPatternMemoryStore();
   _ValuesStep _step = _ValuesStep.chooseArea;
   String? _selectedArea;
   bool _correctionUsed = false;
@@ -57,6 +63,18 @@ class _ValuesScreenState extends State<ValuesScreen> {
 
   void _confirmNextStep() {
     _moveTo(_ValuesStep.leaveFlow);
+    _persistCompletion();
+  }
+
+  Future<void> _persistCompletion() async {
+    try {
+      await _memoryStore.append(
+        PatternEventKind.valuesStep,
+        occurredAt: (widget.now ?? DateTime.now)().toUtc(),
+      );
+    } catch (_) {
+      // Values remains usable if local pattern memory is unavailable.
+    }
   }
 
   void _chooseAgain() {
