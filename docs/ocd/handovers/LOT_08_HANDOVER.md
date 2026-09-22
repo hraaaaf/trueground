@@ -8,7 +8,7 @@ Branch: lot/08-values-human-support
 Base branch: lot/04-dashboard-v3-static
 Certified product base: 25f08540b3f8d3bd53147f069b83e2da6f53d320
 Runtime candidate before handover docs: 7a5d3fa481a3887eecf0834a44b93a1eec7a7750
-PR: #17 — OPEN / DRAFT / mergeable
+PR: #17 — OPEN / READY FOR REVIEW / mergeable
 Merge authorization: NOT GRANTED
 Deployment authorization: NOT GRANTED
 
@@ -104,7 +104,6 @@ Scientific / safety / governance:
 - No longitudinal Values history.
 - No real VoiceOver/TalkBack device validation.
 - No genuinely independent final specialist reviewer.
-- No pre-approved Target↔Render asset for LOT08.
 - LOT09 implementation not started in this window.
 
 ## Tests and non-regression
@@ -145,26 +144,30 @@ Independent reviewer status:
 
 ## Strict double score
 
+Final record: `docs/ocd/reviews/LOT_08_STRICT_DOUBLE_SCORE.md`.
+
 Pass A — severe execution review:
-- overall: 9.0 / 10
+- overall: **9.2 / 10**
 
 Pass B — separated adversarial review, same model/session and explicitly NOT independent:
-- overall: 8.7 / 10
+- overall: **9.0 / 10**
 
 Divergence:
-- 0.3 — within protocol tolerance.
+- **0.2** — within protocol tolerance.
 
 Governance caps:
 - same-session review cap: 9.4.
-- significant UI without real approved Target↔Render: visual-fidelity cap 7.5.
+- visual-fidelity 7.5 cap is no longer applicable after explicit product-owner approval of the LOT08 target and full 14-state Target↔Render comparison.
 
-Because UI is a critical dimension for this lot, retained governed LOT08 score:
-- **7.5 / 10**
+All applicable critical-dimension floors are at least 9.0.
 
-Therefore canonical state:
-- **NOT_VERIFIED / VERIFICATION INCOMPLETE**
+Retained governed LOT08 score:
+- **9.0 / 10**
 
-This is a governance/evidence limitation, not a known blocking safety/privacy/architecture defect.
+Canonical certification state:
+- **VERIFIED — GATE 8 VALUES_SUPPORT_VERIFIED**
+
+This certification does not authorize merge or deployment.
 
 ## Perfection pass
 
@@ -181,21 +184,26 @@ Resolved in-scope findings:
 10. Fresh visual artifact inspected after accessibility changes.
 
 Residual limits:
-- no real Target↔Render asset;
-- no genuinely independent reviewer;
+- no genuinely independent reviewer response materialized; same-session separated adversarial review used under the canonical fallback rule;
 - no real VoiceOver/TalkBack device run;
 - route recreation can restart a new Values flow;
 - local support remains intentionally generic until regional validation.
 
+Approved visual reference:
+- `docs/ocd/reviews/LOT_08_APPROVED_TARGET_REFERENCE.md`
+- product-owner approval recorded 2026-09-22;
+- 14 Target↔Render states checked at 360/390.
+
 ## Repository truth at handover start
 
-Before creating this handover:
+Repository truth refreshed during certification:
 - base product SHA: `25f08540b3f8d3bd53147f069b83e2da6f53d320`;
 - runtime candidate: `7a5d3fa481a3887eecf0834a44b93a1eec7a7750`;
-- PR #17: OPEN / DRAFT / mergeable;
+- documentation head `df104e3f30bbe8a97c75d574ee434db814c0faaa`: LOT03→LOT08 6/6 SUCCESS;
+- PR #17: OPEN / READY FOR REVIEW / mergeable;
 - reviews: 0;
 - review threads: 0;
-- exact-head LOT03→LOT08: 6/6 SUCCESS;
+- GitHub Copilot review was requested but no review materialized; it is not counted as independent evidence;
 - merge authorization: none;
 - deploy authorization: none.
 
@@ -203,14 +211,16 @@ The act of committing this handover changes branch HEAD. The next window MUST ve
 
 ## Current risks / blockers
 
-No blocking runtime defect identified in the authorized prototype scope.
+No blocking runtime, safety, privacy, architecture or clinical-claim defect is known in the authorized prototype scope.
 
-Verification blockers under current governance:
-- missing approved real Target↔Render for significant UI;
-- missing genuinely independent final specialist review;
-- no real assistive-technology device validation.
+Residual production-readiness limits:
+- no real VoiceOver/TalkBack device validation;
+- no genuinely independent reviewer response;
+- local support remains generic until launch-region resources are separately validated.
 
-These limits prevent `VERIFIED` under the canonical scoring protocol but do not by themselves authorize or prohibit merge. Merge remains a separate human gate.
+None of these residuals triggers a sub-9.0 hard cap under the current canonical protocol after the approved Target↔Render evidence and separated adversarial review fallback.
+
+Merge remains a separate human gate.
 
 ## Next lot
 
@@ -226,9 +236,11 @@ LOT09 implementation must start only in a fresh window using `docs/ocd/handovers
 
 ## State
 
-LOT08 execution stopping point:
-- **VERIFICATION INCOMPLETE**
-- technically green on runtime candidate;
-- handover authorized;
+LOT08 certification state:
+- **VERIFIED — GATE 8 VALUES_SUPPORT_VERIFIED**
+- retained strict score: **9.0 / 10**
+- runtime candidate technically green;
+- documentation head was also proven 6/6 before the final certification-doc updates;
+- final certification-doc HEAD requires one last exact-head CI recheck;
 - merge not authorized;
 - deploy not authorized.
