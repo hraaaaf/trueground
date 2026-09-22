@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/patterns/pattern_review_screen.dart';
 
@@ -53,6 +54,107 @@ void main() {
   test('retention duration is product storage policy, not a clinical schedule', () {
     expect(patternMemoryRetention, const Duration(days: 30));
     expect(patternMemoryMaxRecords, 30);
+  });
+
+
+  test('retention drops expired and future records and caps history', () {
+    final now = DateTime.utc(2026, 9, 22, 12);
+    final records = <PatternRecord>[
+      PatternRecord(
+        kind: PatternEventKind.pausePractice,
+        occurredAt: now.subtract(const Duration(days: 31)),
+      ),
+      for (var index = 0; index < 35; index += 1)
+        PatternRecord(
+          kind: PatternEventKind.valuesStep,
+          occurredAt: now.subtract(Duration(hours: index)),
+        ),
+      PatternRecord(
+        kind: PatternEventKind.uncertaintyPractice,
+        occurredAt: now.add(const Duration(minutes: 1)),
+      ),
+    ];
+
+    final retained = retainPatternRecords(records, now: now);
+
+    expect(retained, hasLength(patternMemoryMaxRecords));
+    expect(
+      retained.any((record) => record.occurredAt.isAfter(now)),
+      isFalse,
+    );
+    expect(
+      retained.any(
+        (record) =>
+            record.occurredAt.isBefore(now.subtract(patternMemoryRetention)),
+      ),
+      isFalse,
+    );
+  });
+
+  testWidgets('dashboard card opens bounded pattern review', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final store = _FakePatternMemoryStore();
+
+    await tester.pumpWidget(TrueGroundApp(patternMemoryStore: store));
+    await tester.pumpAndSettle();
+
+    final card = find.text('Review patterns when useful');
+    await tester.scrollUntilVisible(
+      card,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(card);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(PatternReviewScreen.screenKey), findsOneWidget);
+    expect(find.byKey(PatternReviewScreen.emptyKey), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('practice completion writes only a structured pattern event', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final store = _FakePatternMemoryStore();
+
+    await tester.pumpWidget(TrueGroundApp(patternMemoryStore: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Practice').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('practice-choice-pause')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Start a brief pause'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    expect(store.records, hasLength(1));
+    expect(store.records.single.kind, PatternEventKind.pausePractice);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('values completion writes one structured values event', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final store = _FakePatternMemoryStore();
+
+    await tester.pumpWidget(TrueGroundApp(patternMemoryStore: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Return to what matters'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Family'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Take my next step'));
+    await tester.pumpAndSettle();
+
+    expect(store.records, hasLength(1));
+    expect(store.records.single.kind, PatternEventKind.valuesStep);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('empty history is reported without invented pattern', (tester) async {

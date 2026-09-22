@@ -73,6 +73,24 @@ abstract interface class PatternMemoryStore {
   Future<void> deleteAll();
 }
 
+List<PatternRecord> retainPatternRecords(
+  List<PatternRecord> records, {
+  required DateTime now,
+}) {
+  final cutoff = now.toUtc().subtract(patternMemoryRetention);
+  final retained = records
+      .where(
+        (record) =>
+            !record.occurredAt.toUtc().isAfter(now.toUtc()) &&
+            !record.occurredAt.toUtc().isBefore(cutoff),
+      )
+      .toList()
+    ..sort((a, b) => a.occurredAt.compareTo(b.occurredAt));
+  return retained.length > patternMemoryMaxRecords
+      ? retained.sublist(retained.length - patternMemoryMaxRecords)
+      : retained;
+}
+
 class SharedPreferencesPatternMemoryStore implements PatternMemoryStore {
   SharedPreferencesPatternMemoryStore({SharedPreferencesAsync? preferences})
     : _preferences = preferences ?? SharedPreferencesAsync();
@@ -84,7 +102,7 @@ class SharedPreferencesPatternMemoryStore implements PatternMemoryStore {
   @override
   Future<List<PatternRecord>> readRecords({required DateTime now}) async {
     final records = await _readRaw();
-    final retained = _retained(records, now: now.toUtc());
+    final retained = retainPatternRecords(records, now: now.toUtc());
     if (retained.length != records.length) {
       await _write(retained);
     }
@@ -97,7 +115,7 @@ class SharedPreferencesPatternMemoryStore implements PatternMemoryStore {
     required DateTime occurredAt,
   }) async {
     final now = occurredAt.toUtc();
-    final records = _retained(await _readRaw(), now: now)
+    final records = retainPatternRecords(await _readRaw(), now: now)
       ..add(PatternRecord(kind: kind, occurredAt: now))
       ..sort((a, b) => a.occurredAt.compareTo(b.occurredAt));
     final bounded = records.length > patternMemoryMaxRecords
@@ -137,24 +155,6 @@ class SharedPreferencesPatternMemoryStore implements PatternMemoryStore {
       records.add(record);
     }
     return records;
-  }
-
-  List<PatternRecord> _retained(
-    List<PatternRecord> records, {
-    required DateTime now,
-  }) {
-    final cutoff = now.subtract(patternMemoryRetention);
-    final retained = records
-        .where(
-          (record) =>
-              !record.occurredAt.isAfter(now) &&
-              !record.occurredAt.isBefore(cutoff),
-        )
-        .toList()
-      ..sort((a, b) => a.occurredAt.compareTo(b.occurredAt));
-    return retained.length > patternMemoryMaxRecords
-        ? retained.sublist(retained.length - patternMemoryMaxRecords)
-        : retained;
   }
 
   Future<void> _write(List<PatternRecord> records) async {
