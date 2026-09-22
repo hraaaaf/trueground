@@ -254,7 +254,7 @@ void main() {
       ];
 
     await _pump(tester, store: store);
-    final removeButtons = find.text('Remove');
+    final removeButtons = find.text('Remove this type');
     expect(removeButtons, findsNWidgets(2));
     await tester.tap(removeButtons.first);
     await tester.pumpAndSettle();

@@ -203,7 +203,7 @@ class _Loaded extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () => onDeleteKind(kind),
-                    child: const Text('Remove'),
+                    child: const Text('Remove this type'),
                   ),
                 ],
               ),
