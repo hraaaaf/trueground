@@ -7,6 +7,7 @@ import '../patterns/pattern_memory_store.dart';
 import '../patterns/pattern_review_screen.dart';
 import '../practice/practice_completion_store.dart';
 import '../practice/practice_screen.dart';
+import '../safety/urgent_support_screen.dart';
 import '../shell/app_shell.dart';
 import '../shell/shell_placeholder_screen.dart';
 import '../support/support_screen.dart';
@@ -21,6 +22,11 @@ GoRouter createTrueGroundRouter({
   return GoRouter(
     initialLocation: '/',
     routes: <RouteBase>[
+      GoRoute(
+        path: '/urgent-support',
+        name: 'urgent-support',
+        builder: (context, state) => const UrgentSupportScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AppShell(navigationShell: navigationShell);
