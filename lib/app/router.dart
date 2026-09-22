@@ -41,6 +41,14 @@ GoRouter createTrueGroundRouter({
                       now: patternNow,
                     ),
                   ),
+                  GoRoute(
+                    path: 'patterns',
+                    name: 'patterns',
+                    builder: (context, state) => PatternReviewScreen(
+                      memoryStore: patternMemoryStore,
+                      now: patternNow,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -69,14 +77,6 @@ GoRouter createTrueGroundRouter({
           ),
           StatefulShellBranch(
             routes: <RouteBase>[
-              GoRoute(
-                path: '/patterns',
-                name: 'patterns',
-                builder: (context, state) => PatternReviewScreen(
-                  memoryStore: patternMemoryStore,
-                  now: patternNow,
-                ),
-              ),
               GoRoute(
                 path: '/support',
                 name: 'support',
