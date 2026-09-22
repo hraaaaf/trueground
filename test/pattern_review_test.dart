@@ -177,9 +177,21 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Return to what matters'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Family'));
+    final family = find.text('Family');
+    await tester.scrollUntilVisible(
+      family,
+      160,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(family);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Take my next step'));
+    final takeNextStep = find.text('Take my next step');
+    await tester.scrollUntilVisible(
+      takeNextStep,
+      160,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(takeNextStep);
     await tester.pumpAndSettle();
 
     expect(store.records, hasLength(1));
@@ -260,12 +272,20 @@ void main() {
       ];
 
     await _pump(tester, store: store);
-    final removeButtons = find.text('Remove this type');
-    expect(removeButtons, findsNWidgets(2));
-    await tester.tap(removeButtons.first);
+    final removePause = find.byKey(
+      const ValueKey('pattern-remove-pause_practice'),
+    );
+    expect(removePause, findsOneWidget);
+    await tester.scrollUntilVisible(
+      removePause,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(removePause);
     await tester.pumpAndSettle();
 
     expect(store.records.length, 1);
+    expect(store.records.single.kind, PatternEventKind.valuesStep);
     expect(find.text('Chose a values-based next step'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -280,7 +300,13 @@ void main() {
       ];
 
     await _pump(tester, store: store);
-    await tester.tap(find.byKey(const ValueKey('pattern-delete-all')));
+    final deleteAll = find.byKey(const ValueKey('pattern-delete-all'));
+    await tester.scrollUntilVisible(
+      deleteAll,
+      120,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(deleteAll);
     await tester.pumpAndSettle();
 
     expect(store.records, isEmpty);
