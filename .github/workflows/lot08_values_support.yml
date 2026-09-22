@@ -1,0 +1,195 @@
+name: LOT 08 Values and Human Support
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  values-support:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format lib test
+          git diff --exit-code
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: LOT08 isolation and copy guard
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -R -n -E 'openai|anthropic|gemini|firebase|supabase|shared_preferences|sqflite|hive|isar' lib/values lib/support; then
+            echo 'Provider, database or persistence marker found in LOT08 scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'TextField|TextFormField|EditableText' lib/values lib/support; then
+            echo 'Unbounded free-text input found in LOT08 scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'clinically proven|treats OCD|cures OCD|definitely safe|everything is safe|nothing bad will happen|your anxiety will|guarantee|contacted successfully' lib/values lib/support; then
+            echo 'Unsupported clinical, reassurance or fake-contact copy found.'
+            exit 1
+          fi
+
+      - name: Focused LOT08 tests
+        run: flutter test test/values_support_test.dart
+
+      - name: Full widget and accessibility regression
+        run: flutter test
+
+      - name: Release web build
+        run: flutter build web --release
+
+      - name: Capture before and after Support route
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          before_dir=/tmp/trueground-lot08-before
+          rm -rf "$before_dir"
+          git worktree add "$before_dir" 25f08540b3f8d3bd53147f069b83e2da6f53d320
+
+          cleanup() {
+            kill "${after_pid:-}" >/dev/null 2>&1 || true
+            kill "${before_pid:-}" >/dev/null 2>&1 || true
+            git worktree remove --force "$before_dir" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          (
+            cd "$before_dir"
+            flutter pub get
+            flutter build web --release
+          )
+
+          python3 -m http.server 7367 --bind 127.0.0.1 --directory build/web > /tmp/lot08-after-web.log 2>&1 &
+          after_pid=$!
+
+          python3 -m http.server 7368 --bind 127.0.0.1 --directory "$before_dir/build/web" > /tmp/lot08-before-web.log 2>&1 &
+          before_pid=$!
+
+          for port in 7367 7368; do
+            booted=0
+            for _ in $(seq 1 30); do
+              if curl --fail --silent --show-error "http://127.0.0.1:$port/" >/dev/null; then
+                booted=1
+                break
+              fi
+              sleep 1
+            done
+            if [ "$booted" -ne 1 ]; then
+              cat /tmp/lot08-after-web.log || true
+              cat /tmp/lot08-before-web.log || true
+              exit 1
+            fi
+          done
+
+          chrome_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_bin" ]; then
+            echo 'No headless Chrome/Chromium binary found on runner.'
+            exit 1
+          fi
+
+          mkdir -p build/lot08/screenshots
+
+          for spec in "360 800" "390 844"; do
+            set -- $spec
+            width=$1
+            height=$2
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/before_support_${width}.png"               "http://127.0.0.1:7368/#/support"
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/after_support_${width}.png"               "http://127.0.0.1:7367/#/support"
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/reference_dashboard_${width}.png"               "http://127.0.0.1:7368/#/"
+
+            timeout 45s "$chrome_bin"               --headless               --disable-gpu               --no-sandbox               --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot08/screenshots/after_values_choose_${width}.png"               "http://127.0.0.1:7367/#/values"
+
+            node .github/scripts/lot08_browser_capture.mjs \
+              "$chrome_bin" \
+              "http://127.0.0.1:7367" \
+              "$width" \
+              "$height" \
+              "build/lot08/screenshots"
+          done
+
+          test -s build/lot08/screenshots/before_support_360.png
+          test -s build/lot08/screenshots/after_support_360.png
+          test -s build/lot08/screenshots/before_support_390.png
+          test -s build/lot08/screenshots/after_support_390.png
+          test -s build/lot08/screenshots/reference_dashboard_360.png
+          test -s build/lot08/screenshots/reference_dashboard_390.png
+          test -s build/lot08/screenshots/after_values_choose_360.png
+          test -s build/lot08/screenshots/after_values_choose_390.png
+
+          sha256sum build/lot08/screenshots/before_support_*.png
+          sha256sum build/lot08/screenshots/after_support_*.png
+          sha256sum build/lot08/screenshots/reference_dashboard_*.png
+          sha256sum build/lot08/screenshots/after_values_choose_*.png
+
+          for width in 360 390; do
+            test -s "build/lot08/screenshots/browser_values_${width}_choose.png"
+            test -s "build/lot08/screenshots/browser_values_${width}_action.png"
+            test -s "build/lot08/screenshots/browser_values_${width}_terminal.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_menu.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_trusted.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_care.png"
+            test -s "build/lot08/screenshots/browser_support_${width}_local.png"
+          done
+          sha256sum build/lot08/screenshots/browser_*.png
+
+      - name: Capture LOT08 visual evidence
+        run: |
+          flutter test test/values_support_visual_evidence.dart
+          for width in 360 390; do
+            test -s "build/lot08/screenshots/values_${width}_choose_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_action_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_terminal_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_menu_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_trusted_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_care_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_local_widget.png"
+
+            test -s "build/lot08/screenshots/values_${width}_choose_text200_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_action_text200_widget.png"
+            test -s "build/lot08/screenshots/values_${width}_terminal_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_menu_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_trusted_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_care_text200_widget.png"
+            test -s "build/lot08/screenshots/support_${width}_local_text200_widget.png"
+          done
+          sha256sum build/lot08/screenshots/*_widget.png
+
+      - name: Upload LOT 08 visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot08-values-support-evidence
+          path: build/lot08/screenshots/
+          if-no-files-found: warn
+          retention-days: 14

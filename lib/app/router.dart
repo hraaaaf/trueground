@@ -7,6 +7,8 @@ import '../practice/practice_completion_store.dart';
 import '../practice/practice_screen.dart';
 import '../shell/app_shell.dart';
 import '../shell/shell_placeholder_screen.dart';
+import '../support/support_screen.dart';
+import '../values/values_screen.dart';
 
 GoRouter createTrueGroundRouter({
   PracticeCompletionStore? practiceCompletionStore,
@@ -26,6 +28,13 @@ GoRouter createTrueGroundRouter({
                 path: '/',
                 name: 'home',
                 builder: (context, state) => const DashboardV3Screen(),
+                routes: <RouteBase>[
+                  GoRoute(
+                    path: 'values',
+                    name: 'values',
+                    builder: (context, state) => const ValuesScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -55,12 +64,7 @@ GoRouter createTrueGroundRouter({
               GoRoute(
                 path: '/support',
                 name: 'support',
-                builder: (context, state) => const ShellPlaceholderScreen(
-                  key: ValueKey('screen-support'),
-                  title: 'Support',
-                  description:
-                      'Support behavior is intentionally not implemented in this lot.',
-                ),
+                builder: (context, state) => const SupportScreen(),
               ),
             ],
           ),
