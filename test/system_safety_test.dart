@@ -6,6 +6,7 @@ import 'package:trueground/compulsion_firewall/compulsion_firewall.dart';
 import 'package:trueground/loop/loop_flow_policy.dart';
 import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/patterns/pattern_review_screen.dart';
+import 'package:trueground/safety/high_risk_boundary.dart';
 
 class _UnavailableMemoryStore implements PatternMemoryStore {
   @override
@@ -145,6 +146,45 @@ void main() {
         expect(danger.isRedirect, isFalse);
       },
     );
+  });
+
+  group('LOT10 high-risk routing boundary', () {
+    test('explicit immediate danger routes to urgent support', () {
+      for (final message in <String>[
+        'I am in immediate danger.',
+        'I am going to kill myself.',
+        'I took an overdose.',
+        'I cannot keep myself safe.',
+        'I am going to hurt someone.',
+        'Someone is attacking me right now.',
+        'This is a medical emergency.',
+      ]) {
+        final decision = HighRiskBoundary.evaluate(message);
+        expect(decision.routesToUrgentSupport, isTrue, reason: message);
+        expect(decision.route, HighRiskBoundary.urgentSupportRoute);
+      }
+    });
+
+    test('OCD intrusive-thought themes do not imply urgent intent', () {
+      for (final message in <String>[
+        'What if I hurt my family?',
+        'What if I kill someone even though I do not want to?',
+        'I have an intrusive thought about stabbing someone.',
+        'I have an unwanted sexual intrusive thought.',
+        'Does this thought mean I am dangerous?',
+        'Am I a bad person because I thought something violent?',
+      ]) {
+        final decision = HighRiskBoundary.evaluate(message);
+        expect(decision.routesToUrgentSupport, isFalse, reason: message);
+      }
+    });
+
+    test('ordinary OCD uncertainty stays in the OCD flow', () {
+      final decision = HighRiskBoundary.evaluate(
+        'Are you sure this contamination thought means something?',
+      );
+      expect(decision.routesToUrgentSupport, isFalse);
+    });
   });
 
   group('LOT10 memory truthfulness', () {
