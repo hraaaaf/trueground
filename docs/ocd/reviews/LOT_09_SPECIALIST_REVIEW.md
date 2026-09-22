@@ -1,9 +1,9 @@
 # LOT 09 — Specialist Review
 
-Candidate: `44f8bd54ba87b4eff38e138d5575a4ea6f4b76bf`
+Candidate runtime HEAD: `f2e523002f5e8c3bec5aefcabdc7b03539235317`
 PR: #19
 Base: `lot/08-values-human-support@3a3200762392cd3f3b731ddedd558cc762afd18e`
-State: PRE-CI SPECIALIST REVIEW
+State: FINAL SPECIALIST REVIEW
 
 ## DATA_PRIVACY_SECURITY_AGENT — PASS_WITH_NOTES
 
@@ -19,7 +19,8 @@ Evidence:
 
 Note:
 - no identity/auth exists in this prototype, so cross-user isolation is explicitly NOT claimed;
-- the store is correctly documented as single-profile/device-local only.
+- the store is documented and tested as single-profile/device-local only;
+- this limitation blocks any broader multi-user privacy claim, but not the bounded local prototype contract.
 
 ## OCD_SAFETY_AGENT — PASS_WITH_NOTES
 
@@ -31,7 +32,8 @@ Evidence:
 - empty state does not infer a pattern;
 - unavailable state does not pretend history was checked;
 - explicit copy says repeated checking of this screen is unnecessary;
-- review is bounded to at most three unique approved activity types.
+- review is bounded to at most three unique approved activity types;
+- anti-checking safety cases cover repeated review, reassurance, rumination, pseudo-severity, trend inspection, prove-better/worse, deletion/recreation checking and false-history claims.
 
 Note:
 - repeated app reopen remains technically possible, but the surface provides no variable reward, score, new certainty or iterative interpretation.
@@ -45,32 +47,32 @@ Evidence:
 - no semantic classifier;
 - no prompt or provider-memory path.
 
-Memory failure and anti-checking behavior remain covered by deterministic tests/evals.
+Memory failure and anti-checking behavior are covered by deterministic tests/evals.
 
-## UI_UX_AGENT — PASS_WITH_NOTES
+## UI_UX_AGENT — PASS
 
 Evidence:
 - existing Dashboard V3 entry point is reused;
 - Pattern Review uses existing TrueGround typography, cards, spacing and navigation;
 - loaded / empty / unavailable states are explicit;
 - primary exit is `Finish review`;
-- deletion control was clarified from ambiguous `Remove` to `Remove this type`;
-- no dashboard metric or persistent score surface is introduced.
+- deletion control is explicit: `Remove this type`;
+- no dashboard metric or persistent score surface is introduced;
+- exact-head visual artifact `10696909997` inspected at 360/390, normal and 200% text;
+- responsive remediation moved the removal control below the content row, eliminating the observed text-scale overflow.
 
-Pending final evidence:
-- inspect generated 360/390 and 200% visual artifacts after exact-head CI.
+## ACCESSIBILITY_AGENT — PASS_WITH_NOTES
 
-## ACCESSIBILITY_AGENT — PENDING_FINAL_EVIDENCE
-
-Implemented evidence:
+Evidence:
 - screen is scrollable;
 - semantic header is present;
-- 200% text-scaling tests exist at 360/390;
-- primary actions remain ordinary Flutter buttons.
+- primary actions use standard Flutter buttons;
+- exact-head 360/390 + 200% tests PASS;
+- exact-head screenshots show no horizontal overflow;
+- `Finish review` remains reachable in the 200% automated interaction checks.
 
-Pending:
-- exact-head visual/text-scale artifact;
-- final framework exception check and interaction reachability from CI.
+Note:
+- no physical-device VoiceOver/TalkBack session was performed.
 
 ## CONTENT_COPY_AGENT — PASS
 
@@ -82,40 +84,69 @@ Copy avoids:
 - predictive claims;
 - competitive or progress framing.
 
-The storage disclosure states exactly what is stored and for how long.
+The storage disclosure states what is stored and the 30-day retention policy.
 
-## QA_NON_REGRESSION_AGENT — PENDING_CI
+## QA_NON_REGRESSION_AGENT — PASS
 
-Implemented coverage:
-- retention boundary;
-- maximum record cap;
-- future/expired record filtering;
-- empty memory;
-- unavailable memory;
-- per-type delete;
-- delete-all;
+Exact runtime HEAD `f2e523002f5e8c3bec5aefcabdc7b03539235317`:
+- LOT03 run `35735170520`: SUCCESS
+- LOT04 run `35735170663`: SUCCESS
+- LOT05 run `35735170531`: SUCCESS
+- LOT06 run `35735170548`: SUCCESS
+- LOT07 run `35735170448`: SUCCESS
+- LOT08 run `35735170434`: SUCCESS
+- LOT09 run `35735170514`: SUCCESS
+
+LOT09 focused proof includes:
+- retention boundary and 30-record cap;
+- future/expired filtering;
+- empty and unavailable memory;
+- per-type deletion and delete-all;
 - Dashboard → Pattern Review routing;
 - Practice → structured event write;
 - Values → structured event write;
+- Support shell destination non-regression;
 - 360/390;
 - 200% text scaling;
-- full Flutter regression configured in LOT09 CI.
+- full Flutter regression;
+- release web build;
+- visual evidence generation.
 
-Final verdict waits for exact-head CI.
+## Exact-head visual evidence
+
+Artifact:
+- ID: `10696909997`
+- digest: `sha256:4a4c8ea95f1edb4137a080c0ef4a38d6319eec039953982dc9aa4f29bfd0177b`
+- source HEAD: `f2e523002f5e8c3bec5aefcabdc7b03539235317`
+
+Inspected files:
+- `pattern_360_loaded_widget.png`
+- `pattern_360_empty_widget.png`
+- `pattern_360_loaded_text200_widget.png`
+- `pattern_390_loaded_widget.png`
+- `pattern_390_empty_widget.png`
+- `pattern_390_loaded_text200_widget.png`
+
+Result:
+- no material visual overflow;
+- deletion control remains readable;
+- empty state is explicit;
+- 200% text scales vertically without horizontal breakage.
 
 ## Architecture boundary
 
 No IAmina Core file is changed.
 LOT09 remains entirely inside the TrueGround/OCD client repository and domain surface.
 
-## Current specialist ledger
+## Final specialist ledger
 
 - DATA_PRIVACY_SECURITY_AGENT: PASS_WITH_NOTES
 - OCD_SAFETY_AGENT: PASS_WITH_NOTES
 - AI_EVAL_AGENT: NOT_APPLICABLE
-- UI_UX_AGENT: PASS_WITH_NOTES
-- ACCESSIBILITY_AGENT: PENDING_FINAL_EVIDENCE
+- UI_UX_AGENT: PASS
+- ACCESSIBILITY_AGENT: PASS_WITH_NOTES
 - CONTENT_COPY_AGENT: PASS
-- QA_NON_REGRESSION_AGENT: PENDING_CI
+- QA_NON_REGRESSION_AGENT: PASS
 
-LOT09 must remain IN PROGRESS until exact-head CI, visual evidence inspection and strict double scoring are complete.
+No specialist blocker remains on the runtime candidate.
+Final gate still depends on strict double scoring and an exact-head documentation CI after certification records are committed.
