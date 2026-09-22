@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../dashboard/dashboard_v3_screen.dart';
 import '../loop/loop_flow_screen.dart';
+import '../patterns/pattern_memory_store.dart';
+import '../patterns/pattern_review_screen.dart';
 import '../practice/practice_completion_store.dart';
 import '../practice/practice_screen.dart';
 import '../shell/app_shell.dart';
@@ -13,6 +15,8 @@ import '../values/values_screen.dart';
 GoRouter createTrueGroundRouter({
   PracticeCompletionStore? practiceCompletionStore,
   DateTime Function()? practiceNow,
+  PatternMemoryStore? patternMemoryStore,
+  DateTime Function()? patternNow,
 }) {
   return GoRouter(
     initialLocation: '/',
@@ -32,7 +36,10 @@ GoRouter createTrueGroundRouter({
                   GoRoute(
                     path: 'values',
                     name: 'values',
-                    builder: (context, state) => const ValuesScreen(),
+                    builder: (context, state) => ValuesScreen(
+                      memoryStore: patternMemoryStore,
+                      now: patternNow,
+                    ),
                   ),
                 ],
               ),
@@ -55,12 +62,21 @@ GoRouter createTrueGroundRouter({
                 builder: (context, state) => PracticeScreen(
                   completionStore: practiceCompletionStore,
                   now: practiceNow,
+                  patternMemoryStore: patternMemoryStore,
                 ),
               ),
             ],
           ),
           StatefulShellBranch(
             routes: <RouteBase>[
+              GoRoute(
+                path: '/patterns',
+                name: 'patterns',
+                builder: (context, state) => PatternReviewScreen(
+                  memoryStore: patternMemoryStore,
+                  now: patternNow,
+                ),
+              ),
               GoRoute(
                 path: '/support',
                 name: 'support',

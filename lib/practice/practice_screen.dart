@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../patterns/pattern_memory_store.dart';
 import 'practice_completion_store.dart';
 
 enum _PracticeView {
@@ -19,10 +20,16 @@ enum _PracticeView {
 }
 
 class PracticeScreen extends StatefulWidget {
-  const PracticeScreen({super.key, this.completionStore, this.now});
+  const PracticeScreen({
+    super.key,
+    this.completionStore,
+    this.now,
+    this.patternMemoryStore,
+  });
 
   final PracticeCompletionStore? completionStore;
   final DateTime Function()? now;
+  final PatternMemoryStore? patternMemoryStore;
 
   static const screenKey = ValueKey('screen-practice');
   static const menuKey = ValueKey('practice-menu');
@@ -43,6 +50,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
   _PracticeView _view = _PracticeView.menu;
   late final PracticeCompletionStore _completionStore =
       widget.completionStore ?? SharedPreferencesPracticeCompletionStore();
+  late final PatternMemoryStore _patternMemoryStore =
+      widget.patternMemoryStore ?? SharedPreferencesPatternMemoryStore();
   bool _completionStateLoaded = false;
   bool _completionStateUnavailable = false;
   bool _pauseCompleted = false;
@@ -109,6 +118,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Future<void> _persistPauseCompletion(DateTime completedAt) async {
     try {
       await _completionStore.writePauseCompletedAt(completedAt);
+      await _patternMemoryStore.append(
+        PatternEventKind.pausePractice,
+        occurredAt: completedAt,
+      );
     } catch (_) {
       // The in-session anti-replay state remains active even if local storage
       // is unavailable. No clinical or user-entered data is involved.
@@ -127,6 +140,10 @@ class _PracticeScreenState extends State<PracticeScreen> {
   Future<void> _persistUncertaintyCompletion(DateTime completedAt) async {
     try {
       await _completionStore.writeUncertaintyCompletedAt(completedAt);
+      await _patternMemoryStore.append(
+        PatternEventKind.uncertaintyPractice,
+        occurredAt: completedAt,
+      );
     } catch (_) {
       // Keep the bounded flow usable without crashing; current-session
       // anti-replay remains active.

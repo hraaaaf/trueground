@@ -175,12 +175,14 @@ class _TargetDashboard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         left: 19,
                         right: 19,
                         top: 629,
                         height: 61,
-                        child: _ReviewCard(),
+                        child: _ReviewCard(
+                          onTap: () => context.go('/patterns'),
+                        ),
                       ),
                     ],
                   ),
@@ -280,7 +282,7 @@ class _AccessibleDashboard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const _ReviewCard(),
+          _ReviewCard(onTap: () => context.go('/patterns')),
         ],
       ),
     );
@@ -686,16 +688,21 @@ class _WideCard extends StatelessWidget {
 }
 
 class _ReviewCard extends StatelessWidget {
-  const _ReviewCard();
+  const _ReviewCard({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      button: true,
       label:
           'Review patterns when useful. Look at recurring themes, without judgment.',
       excludeSemantics: true,
+      onTap: onTap,
       child: _GlassPanel(
         accent: const Color(0xFF62A8B8),
+        onTap: onTap,
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
