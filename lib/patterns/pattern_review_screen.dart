@@ -183,23 +183,33 @@ class _Loaded extends StatelessWidget {
             margin: EdgeInsets.zero,
             child: Padding(
               padding: const EdgeInsets.all(TrueGroundSpacing.md),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  const Icon(
-                    Icons.circle_outlined,
-                    color: TrueGroundColors.primary,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.circle_outlined,
+                        color: TrueGroundColors.primary,
+                      ),
+                      const SizedBox(width: TrueGroundSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          kind.userLabel,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: TrueGroundSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      kind.userLabel,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                  const SizedBox(height: TrueGroundSpacing.xs),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      key: ValueKey('pattern-remove-${kind.storageValue}'),
+                      onPressed: () => onDeleteKind(kind),
+                      child: const Text('Remove this type'),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () => onDeleteKind(kind),
-                    child: const Text('Remove this type'),
                   ),
                 ],
               ),
