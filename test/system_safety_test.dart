@@ -7,6 +7,8 @@ import 'package:trueground/loop/loop_flow_policy.dart';
 import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/patterns/pattern_review_screen.dart';
 import 'package:trueground/safety/high_risk_boundary.dart';
+import 'package:trueground/safety/urgent_support_screen.dart';
+import 'package:trueground/app/trueground_app.dart';
 
 class _UnavailableMemoryStore implements PatternMemoryStore {
   @override
@@ -155,6 +157,8 @@ void main() {
         'I am going to kill myself.',
         'I took an overdose.',
         'I cannot keep myself safe.',
+        "I'm not sure I can stay safe.",
+        "I don't know if I can keep myself safe.",
         'I am going to hurt someone.',
         'Someone is attacking me right now.',
         'This is a medical emergency.',
@@ -177,6 +181,34 @@ void main() {
         final decision = HighRiskBoundary.evaluate(message);
         expect(decision.routesToUrgentSupport, isFalse, reason: message);
       }
+    });
+
+    testWidgets('urgent support route renders at 360 px and 200% text', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(360, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      tester.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+      await tester.pumpWidget(const TrueGroundApp());
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(TrueGroundApp));
+      Navigator.of(context);
+      final router = Router.of(context).routerDelegate;
+      expect(router, isNotNull);
+
+      final appRouter = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(appRouter.routerConfig, isNotNull);
+      appRouter.routerConfig!.go('/urgent-support');
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(UrgentSupportScreen.screenKey), findsOneWidget);
+      expect(find.text('Use urgent real-world help'), findsOneWidget);
+      expect(find.textContaining('cannot determine'), findsOneWidget);
+      expect(find.textContaining('has not contacted anyone'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     test('ordinary OCD uncertainty stays in the OCD flow', () {
