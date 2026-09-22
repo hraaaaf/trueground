@@ -67,6 +67,11 @@ abstract final class HighRiskBoundary {
     "i don't think i can stay safe",
     'i cannot stay safe right now',
     "i can't stay safe right now",
+    'i am not sure i can stay safe',
+    "i'm not sure i can stay safe",
+    'i do not know if i can keep myself safe',
+    "i don't know if i can keep myself safe",
+    'i may not be able to stay safe',
   ];
 
   static const List<String> _intrusiveThoughtMarkers = <String>[
