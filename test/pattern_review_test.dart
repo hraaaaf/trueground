@@ -3,6 +3,28 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/patterns/pattern_review_screen.dart';
+import 'package:trueground/practice/practice_completion_store.dart';
+
+class _FakePracticeCompletionStore implements PracticeCompletionStore {
+  DateTime? pauseCompletedAt;
+  DateTime? uncertaintyCompletedAt;
+
+  @override
+  Future<DateTime?> readPauseCompletedAt() async => pauseCompletedAt;
+
+  @override
+  Future<DateTime?> readUncertaintyCompletedAt() async => uncertaintyCompletedAt;
+
+  @override
+  Future<void> writePauseCompletedAt(DateTime completedAt) async {
+    pauseCompletedAt = completedAt;
+  }
+
+  @override
+  Future<void> writeUncertaintyCompletedAt(DateTime completedAt) async {
+    uncertaintyCompletedAt = completedAt;
+  }
+}
 
 class _FakePatternMemoryStore implements PatternMemoryStore {
   List<PatternRecord> records = <PatternRecord>[];
@@ -120,7 +142,12 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final store = _FakePatternMemoryStore();
 
-    await tester.pumpWidget(TrueGroundApp(patternMemoryStore: store));
+    await tester.pumpWidget(
+      TrueGroundApp(
+        patternMemoryStore: store,
+        practiceCompletionStore: _FakePracticeCompletionStore(),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.text('Practice').first);
     await tester.pumpAndSettle();
