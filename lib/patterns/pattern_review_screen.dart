@@ -7,11 +7,7 @@ import '../design/app_theme.dart';
 import 'pattern_memory_store.dart';
 
 class PatternReviewScreen extends StatefulWidget {
-  const PatternReviewScreen({
-    super.key,
-    this.memoryStore,
-    this.now,
-  });
+  const PatternReviewScreen({super.key, this.memoryStore, this.now});
 
   final PatternMemoryStore? memoryStore;
   final DateTime Function()? now;
@@ -217,10 +213,7 @@ class _Loaded extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(
-          onPressed: onHome,
-          child: const Text('Finish review'),
-        ),
+        FilledButton(onPressed: onHome, child: const Text('Finish review')),
         const SizedBox(height: TrueGroundSpacing.sm),
         TextButton(
           key: const ValueKey('pattern-delete-all'),

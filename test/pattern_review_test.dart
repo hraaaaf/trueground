@@ -13,7 +13,8 @@ class _FakePracticeCompletionStore implements PracticeCompletionStore {
   Future<DateTime?> readPauseCompletedAt() async => pauseCompletedAt;
 
   @override
-  Future<DateTime?> readUncertaintyCompletedAt() async => uncertaintyCompletedAt;
+  Future<DateTime?> readUncertaintyCompletedAt() async =>
+      uncertaintyCompletedAt;
 
   @override
   Future<void> writePauseCompletedAt(DateTime completedAt) async {
@@ -31,7 +32,10 @@ class _FakePatternMemoryStore implements PatternMemoryStore {
   bool failReads = false;
 
   @override
-  Future<void> append(PatternEventKind kind, {required DateTime occurredAt}) async {
+  Future<void> append(
+    PatternEventKind kind, {
+    required DateTime occurredAt,
+  }) async {
     records.add(PatternRecord(kind: kind, occurredAt: occurredAt));
   }
 
@@ -73,11 +77,13 @@ Future<void> _pump(
 }
 
 void main() {
-  test('retention duration is product storage policy, not a clinical schedule', () {
-    expect(patternMemoryRetention, const Duration(days: 30));
-    expect(patternMemoryMaxRecords, 30);
-  });
-
+  test(
+    'retention duration is product storage policy, not a clinical schedule',
+    () {
+      expect(patternMemoryRetention, const Duration(days: 30));
+      expect(patternMemoryMaxRecords, 30);
+    },
+  );
 
   test('retention drops expired and future records and caps history', () {
     final now = DateTime.utc(2026, 9, 22, 12);
@@ -100,10 +106,7 @@ void main() {
     final retained = retainPatternRecords(records, now: now);
 
     expect(retained, hasLength(patternMemoryMaxRecords));
-    expect(
-      retained.any((record) => record.occurredAt.isAfter(now)),
-      isFalse,
-    );
+    expect(retained.any((record) => record.occurredAt.isAfter(now)), isFalse);
     expect(
       retained.any(
         (record) =>
@@ -184,7 +187,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('empty history is reported without invented pattern', (tester) async {
+  testWidgets('empty history is reported without invented pattern', (
+    tester,
+  ) async {
     await _pump(tester, store: _FakePatternMemoryStore());
 
     expect(find.byKey(PatternReviewScreen.emptyKey), findsOneWidget);
@@ -206,37 +211,38 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('review shows bounded unique types without counts dates or trend', (
-    tester,
-  ) async {
-    final store = _FakePatternMemoryStore()
-      ..records = <PatternRecord>[
-        PatternRecord(
-          kind: PatternEventKind.pausePractice,
-          occurredAt: DateTime.utc(2026, 9, 20),
-        ),
-        PatternRecord(
-          kind: PatternEventKind.pausePractice,
-          occurredAt: DateTime.utc(2026, 9, 21),
-        ),
-        PatternRecord(
-          kind: PatternEventKind.valuesStep,
-          occurredAt: DateTime.utc(2026, 9, 22),
-        ),
-      ];
+  testWidgets(
+    'review shows bounded unique types without counts dates or trend',
+    (tester) async {
+      final store = _FakePatternMemoryStore()
+        ..records = <PatternRecord>[
+          PatternRecord(
+            kind: PatternEventKind.pausePractice,
+            occurredAt: DateTime.utc(2026, 9, 20),
+          ),
+          PatternRecord(
+            kind: PatternEventKind.pausePractice,
+            occurredAt: DateTime.utc(2026, 9, 21),
+          ),
+          PatternRecord(
+            kind: PatternEventKind.valuesStep,
+            occurredAt: DateTime.utc(2026, 9, 22),
+          ),
+        ];
 
-    await _pump(tester, store: store);
+      await _pump(tester, store: store);
 
-    expect(find.byKey(PatternReviewScreen.loadedKey), findsOneWidget);
-    expect(find.text('Paused before an urge-driven action'), findsOneWidget);
-    expect(find.text('Chose a values-based next step'), findsOneWidget);
-    expect(find.textContaining('2 times'), findsNothing);
-    expect(find.textContaining('September'), findsNothing);
-    expect(find.textContaining('better'), findsOneWidget);
-    expect(find.textContaining('score'), findsOneWidget);
-    expect(find.textContaining('trend'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
+      expect(find.byKey(PatternReviewScreen.loadedKey), findsOneWidget);
+      expect(find.text('Paused before an urge-driven action'), findsOneWidget);
+      expect(find.text('Chose a values-based next step'), findsOneWidget);
+      expect(find.textContaining('2 times'), findsNothing);
+      expect(find.textContaining('September'), findsNothing);
+      expect(find.textContaining('better'), findsOneWidget);
+      expect(find.textContaining('score'), findsOneWidget);
+      expect(find.textContaining('trend'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('one activity type can be removed without deleting others', (
     tester,

@@ -5,11 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 const Duration patternMemoryRetention = Duration(days: 30);
 const int patternMemoryMaxRecords = 30;
 
-enum PatternEventKind {
-  pausePractice,
-  uncertaintyPractice,
-  valuesStep,
-}
+enum PatternEventKind { pausePractice, uncertaintyPractice, valuesStep }
 
 extension PatternEventKindCopy on PatternEventKind {
   String get storageValue => switch (this) {
@@ -20,7 +16,8 @@ extension PatternEventKindCopy on PatternEventKind {
 
   String get userLabel => switch (this) {
     PatternEventKind.pausePractice => 'Paused before an urge-driven action',
-    PatternEventKind.uncertaintyPractice => 'Practiced leaving uncertainty unresolved',
+    PatternEventKind.uncertaintyPractice =>
+      'Practiced leaving uncertainty unresolved',
     PatternEventKind.valuesStep => 'Chose a values-based next step',
   };
 
@@ -78,14 +75,15 @@ List<PatternRecord> retainPatternRecords(
   required DateTime now,
 }) {
   final cutoff = now.toUtc().subtract(patternMemoryRetention);
-  final retained = records
-      .where(
-        (record) =>
-            !record.occurredAt.toUtc().isAfter(now.toUtc()) &&
-            !record.occurredAt.toUtc().isBefore(cutoff),
-      )
-      .toList()
-    ..sort((a, b) => a.occurredAt.compareTo(b.occurredAt));
+  final retained =
+      records
+          .where(
+            (record) =>
+                !record.occurredAt.toUtc().isAfter(now.toUtc()) &&
+                !record.occurredAt.toUtc().isBefore(cutoff),
+          )
+          .toList()
+        ..sort((a, b) => a.occurredAt.compareTo(b.occurredAt));
   return retained.length > patternMemoryMaxRecords
       ? retained.sublist(retained.length - patternMemoryMaxRecords)
       : retained;
@@ -150,7 +148,9 @@ class SharedPreferencesPatternMemoryStore implements PatternMemoryStore {
     for (final item in decoded) {
       final record = PatternRecord.fromJson(item);
       if (record == null) {
-        throw const FormatException('Pattern memory contains an invalid record.');
+        throw const FormatException(
+          'Pattern memory contains an invalid record.',
+        );
       }
       records.add(record);
     }

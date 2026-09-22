@@ -14,7 +14,10 @@ class _VisualPatternMemoryStore implements PatternMemoryStore {
   final List<PatternRecord> records;
 
   @override
-  Future<void> append(PatternEventKind kind, {required DateTime occurredAt}) async {}
+  Future<void> append(
+    PatternEventKind kind, {
+    required DateTime occurredAt,
+  }) async {}
 
   @override
   Future<void> deleteAll() async => records.clear();
