@@ -1,0 +1,89 @@
+name: LOT 09 Memory Pattern Review
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  memory-pattern-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format lib test
+          git diff --exit-code
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: LOT09 storage and copy guard
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -R -n -E 'TextField|TextFormField|EditableText' lib/patterns; then
+            echo 'Free-text input found in LOT09 pattern-review scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'openai|anthropic|gemini|firebase|supabase|sqflite|hive|isar' lib/patterns; then
+            echo 'Unapproved provider or persistence dependency found in LOT09 scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'clinically proven|treats OCD|cures OCD|severity level|you are getting better|you are getting worse|guarantee|prediction says' lib/patterns; then
+            echo 'Unsupported clinical, severity or predictive copy found.'
+            exit 1
+          fi
+
+          grep -R -n "trueground.pattern_review.records.v1" lib/patterns
+          grep -R -n "Duration(days: 30)" lib/patterns
+          grep -R -n "patternMemoryMaxRecords = 30" lib/patterns
+
+      - name: Focused LOT09 tests
+        run: flutter test test/pattern_review_test.dart
+
+      - name: Full widget and accessibility regression
+        run: flutter test
+
+      - name: Release web build
+        run: flutter build web --release
+
+      - name: Capture LOT09 visual evidence
+        run: |
+          flutter test test/pattern_review_visual_evidence.dart
+          for width in 360 390; do
+            test -s "build/lot09/screenshots/pattern_${width}_loaded_widget.png"
+            test -s "build/lot09/screenshots/pattern_${width}_empty_widget.png"
+            test -s "build/lot09/screenshots/pattern_${width}_loaded_text200_widget.png"
+          done
+          sha256sum build/lot09/screenshots/*.png
+
+      - name: Upload LOT09 visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot09-memory-pattern-evidence
+          path: build/lot09/screenshots/
+          if-no-files-found: warn
+          retention-days: 14
