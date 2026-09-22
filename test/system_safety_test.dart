@@ -8,7 +8,8 @@ import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/patterns/pattern_review_screen.dart';
 import 'package:trueground/safety/high_risk_boundary.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
-import 'package:trueground/app/trueground_app.dart';
+import 'package:trueground/app/router.dart';
+import 'package:trueground/design/app_theme.dart';
 
 class _UnavailableMemoryStore implements PatternMemoryStore {
   @override
@@ -191,17 +192,14 @@ void main() {
       tester.platformDispatcher.textScaleFactorTestValue = 2;
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
-      await tester.pumpWidget(const TrueGroundApp());
-      await tester.pumpAndSettle();
-
-      final context = tester.element(find.byType(TrueGroundApp));
-      Navigator.of(context);
-      final router = Router.of(context).routerDelegate;
-      expect(router, isNotNull);
-
-      final appRouter = tester.widget<MaterialApp>(find.byType(MaterialApp));
-      expect(appRouter.routerConfig, isNotNull);
-      appRouter.routerConfig!.go('/urgent-support');
+      final router = createTrueGroundRouter()..go('/urgent-support');
+      addTearDown(router.dispose);
+      await tester.pumpWidget(
+        MaterialApp.router(
+          theme: TrueGroundTheme.light,
+          routerConfig: router,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(UrgentSupportScreen.screenKey), findsOneWidget);
