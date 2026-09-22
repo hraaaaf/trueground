@@ -57,85 +57,120 @@ void _expectRepeatedLoopIsBounded(String first, String second) {
   expect(decision.isRedirect, isTrue);
   expect(decision.redirectRoute, '/loop');
   expect(decision.userFacingCopy.toLowerCase(), isNot(contains('guarantee')));
-  expect(decision.userFacingCopy.toLowerCase(), isNot(contains('definitely safe')));
+  expect(
+    decision.userFacingCopy.toLowerCase(),
+    isNot(contains('definitely safe')),
+  );
 }
 
 void main() {
   group('LOT10 canonical deterministic safety families', () {
     test('neutral informational repetition remains allowed', () {
       final session = CompulsionFirewallSession();
-      expect(session.evaluate('Where is the support screen?').isRedirect, isFalse);
-      expect(session.evaluate('Where is the support screen?').isRedirect, isFalse);
+      expect(
+        session.evaluate('Where is the support screen?').isRedirect,
+        isFalse,
+      );
+      expect(
+        session.evaluate('Where is the support screen?').isRedirect,
+        isFalse,
+      );
     });
 
-    test('reassurance, checking, rumination and confession repeats are bounded', () {
-      final cases = <(String, String)>[
-        ('Are you sure I am not dangerous?', 'Can you guarantee I am not dangerous?'),
-        ('Please check again that I locked the door.', 'Double check that I locked the door.'),
-        ('I need to analyze again what this means.', 'Keep analyzing what this means for me.'),
-        ('I forgot to mention another detail.', 'One more detail I need to confess again.'),
-        ('What if this means something terrible?', 'What if this means something terrible?'),
-      ];
-      for (final pair in cases) {
-        _expectRepeatedLoopIsBounded(pair.$1, pair.$2);
-      }
-    });
+    test(
+      'reassurance, checking, rumination and confession repeats are bounded',
+      () {
+        final cases = <(String, String)>[
+          (
+            'Are you sure I am not dangerous?',
+            'Can you guarantee I am not dangerous?',
+          ),
+          (
+            'Please check again that I locked the door.',
+            'Double check that I locked the door.',
+          ),
+          (
+            'I need to analyze again what this means.',
+            'Keep analyzing what this means for me.',
+          ),
+          (
+            'I forgot to mention another detail.',
+            'One more detail I need to confess again.',
+          ),
+          (
+            'What if this means something terrible?',
+            'What if this means something terrible?',
+          ),
+        ];
+        for (final pair in cases) {
+          _expectRepeatedLoopIsBounded(pair.$1, pair.$2);
+        }
+      },
+    );
 
-    test('canonical OCD themes stay inside the same anti-certainty boundary', () {
-      final themeCases = <String>[
-        'Are you sure contamination means I am dangerous?',
-        'Are you sure this harm thought means I am dangerous?',
-        'Are you sure this relationship doubt means I am dangerous?',
-        'Are you sure this religious thought means I am a bad person?',
-        'Are you sure this sexual intrusive thought means I am dangerous?',
-        'Are you sure things being uneven means something bad?',
-        'Are you sure this health fear means I am definitely ill?',
-        'Are you sure this existential doubt has a definite answer?',
-      ];
-      for (final message in themeCases) {
-        _expectRepeatedLoopIsBounded(message, message);
-      }
-    });
+    test(
+      'canonical OCD themes stay inside the same anti-certainty boundary',
+      () {
+        final themeCases = <String>[
+          'Are you sure contamination means I am dangerous?',
+          'Are you sure this harm thought means I am dangerous?',
+          'Are you sure this relationship doubt means I am dangerous?',
+          'Are you sure this religious thought means I am a bad person?',
+          'Are you sure this sexual intrusive thought means I am dangerous?',
+          'Are you sure things being uneven means something bad?',
+          'Are you sure this health fear means I am definitely ill?',
+          'Are you sure this existential doubt has a definite answer?',
+        ];
+        for (final message in themeCases) {
+          _expectRepeatedLoopIsBounded(message, message);
+        }
+      },
+    );
 
     test('intrusive-thought policy does not infer intent or diagnosis', () {
-      final copy = loopPatternContent[LoopPattern.intrusive]!.framing.toLowerCase();
+      final copy = loopPatternContent[LoopPattern.intrusive]!.framing
+          .toLowerCase();
       expect(copy, contains('will not infer intent'));
       expect(copy, contains('diagnosis'));
     });
 
-    test('explicit immediate danger is not swallowed by the compulsion firewall', () {
-      final session = CompulsionFirewallSession();
-      session.evaluate('Are you sure I am not dangerous?');
-      final danger = session.evaluate('I am in immediate danger and need support');
-      expect(danger.isRedirect, isFalse);
-    });
+    test(
+      'explicit immediate danger is not swallowed by the compulsion firewall',
+      () {
+        final session = CompulsionFirewallSession();
+        session.evaluate('Are you sure I am not dangerous?');
+        final danger = session.evaluate(
+          'I am in immediate danger and need support',
+        );
+        expect(danger.isRedirect, isFalse);
+      },
+    );
   });
 
   group('LOT10 memory truthfulness', () {
     test('stale and future records are excluded from bounded memory', () {
       final now = DateTime.utc(2026, 9, 22, 12);
-      final retained = retainPatternRecords(
-        <PatternRecord>[
-          PatternRecord(
-            kind: PatternEventKind.pausePractice,
-            occurredAt: now.subtract(const Duration(days: 31)),
-          ),
-          PatternRecord(
-            kind: PatternEventKind.valuesStep,
-            occurredAt: now.subtract(const Duration(hours: 1)),
-          ),
-          PatternRecord(
-            kind: PatternEventKind.uncertaintyPractice,
-            occurredAt: now.add(const Duration(minutes: 1)),
-          ),
-        ],
-        now: now,
-      );
+      final retained = retainPatternRecords(<PatternRecord>[
+        PatternRecord(
+          kind: PatternEventKind.pausePractice,
+          occurredAt: now.subtract(const Duration(days: 31)),
+        ),
+        PatternRecord(
+          kind: PatternEventKind.valuesStep,
+          occurredAt: now.subtract(const Duration(hours: 1)),
+        ),
+        PatternRecord(
+          kind: PatternEventKind.uncertaintyPractice,
+          occurredAt: now.add(const Duration(minutes: 1)),
+        ),
+      ], now: now);
       expect(retained, hasLength(1));
       expect(retained.single.kind, PatternEventKind.valuesStep);
     });
 
-    testWidgets('unavailable memory is disclosed without false retrieval', (tester) async {
+    testWidgets('unavailable memory is disclosed without false retrieval', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
