@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 import 'loop_flow_policy.dart';
 
 enum _LoopStage { pattern, action, complete }
@@ -85,7 +86,7 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
               Semantics(
                 header: true,
                 child: Text(
-                  "I'm stuck in a loop",
+                  context.tr("I'm stuck in a loop"),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: TrueGroundColors.primary,
                   ),
@@ -93,7 +94,7 @@ class _LoopFlowScreenState extends State<LoopFlowScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                loopBoundedNotice,
+                context.tr(loopBoundedNotice),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 12),
@@ -128,7 +129,7 @@ class _SupportEscapeHatch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '$loopSupportTitle. $loopSupportHelper Open Support.',
+      label: '${context.tr(loopSupportTitle)}. ${context.tr(loopSupportHelper)} ${context.tr('Open Support')}.',
       excludeSemantics: true,
       child: Material(
         color: Colors.white.withValues(alpha: 0.72),
@@ -137,7 +138,7 @@ class _SupportEscapeHatch extends StatelessWidget {
           key: LoopFlowScreen.supportEscapeKey,
           onTap: onSupport,
           borderRadius: BorderRadius.circular(TrueGroundRadii.control),
-          child: const Padding(
+          child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               children: <Widget>[
@@ -148,7 +149,7 @@ class _SupportEscapeHatch extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        loopSupportTitle,
+                        context.tr(loopSupportTitle),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -157,7 +158,7 @@ class _SupportEscapeHatch extends StatelessWidget {
                       ),
                       SizedBox(height: 2),
                       Text(
-                        loopSupportHelper,
+                        context.tr(loopSupportHelper),
                         style: TextStyle(
                           fontSize: 13,
                           color: TrueGroundColors.inkMuted,
@@ -193,21 +194,21 @@ class _PatternStep extends StatelessWidget {
         Semantics(
           header: true,
           child: Text(
-            'Choose the closest fit.',
+            context.tr('Choose the closest fit.'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         const SizedBox(height: 6),
         Text(
-          'Pick one pattern only. You can move on without giving the full story.',
+          context.tr('Pick one pattern only. You can move on without giving the full story.'),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 12),
         for (final pattern in LoopPattern.values) ...<Widget>[
           _ChoiceCard(
             key: ValueKey('loop-pattern-${pattern.name}'),
-            title: loopPatternContent[pattern]!.title,
-            helper: loopPatternContent[pattern]!.helper,
+            title: context.tr(loopPatternContent[pattern]!.title),
+            helper: context.tr(loopPatternContent[pattern]!.helper),
             onTap: () => onSelected(pattern),
           ),
           const SizedBox(height: 8),
@@ -239,31 +240,31 @@ class _ActionStep extends StatelessWidget {
           header: true,
           liveRegion: true,
           child: Text(
-            'Notice the pattern',
+            context.tr('Notice the pattern'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         const SizedBox(height: 10),
-        _FramingCard(title: content.title, body: content.framing),
+        _FramingCard(title: context.tr(content.title), body: context.tr(content.framing)),
         const SizedBox(height: 18),
         Semantics(
           header: true,
           child: Text(
-            'Choose one next move.',
+            context.tr('Choose one next move.'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         const SizedBox(height: 6),
         Text(
-          'This check-in ends after you choose. It will not keep asking for more detail.',
+          context.tr('This check-in ends after you choose. It will not keep asking for more detail.'),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 12),
         for (final action in LoopNextAction.values) ...<Widget>[
           _ChoiceCard(
             key: ValueKey('loop-action-${action.name}'),
-            title: loopActionContent[action]!.title,
-            helper: loopActionContent[action]!.helper,
+            title: context.tr(loopActionContent[action]!.title),
+            helper: context.tr(loopActionContent[action]!.helper),
             onTap: () => onSelected(action),
           ),
           const SizedBox(height: 8),
@@ -272,7 +273,7 @@ class _ActionStep extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: TextButton(
             onPressed: onBack,
-            child: const Text('Choose a different pattern'),
+            child: Text(context.tr('Choose a different pattern')),
           ),
         ),
       ],
@@ -297,22 +298,22 @@ class _CompleteStep extends StatelessWidget {
           header: true,
           liveRegion: true,
           child: Text(
-            'Next move chosen',
+            context.tr('Next move chosen'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         const SizedBox(height: 10),
-        _FramingCard(title: content.title, body: loopCompletionCopy),
+        _FramingCard(title: context.tr(content.title), body: context.tr(loopCompletionCopy)),
         const SizedBox(height: 16),
         FilledButton(
           key: const ValueKey('loop-continue-action'),
           onPressed: onContinue,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(content.continueLabel),
+          child: Text(context.tr(content.continueLabel)),
         ),
         const SizedBox(height: 10),
         Text(
-          'There is no restart button here. If the question still feels unresolved, that does not require another pass through this check-in.',
+          context.tr('There is no restart button here. If the question still feels unresolved, that does not require another pass through this check-in.'),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
