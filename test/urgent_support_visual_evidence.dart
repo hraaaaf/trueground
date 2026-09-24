@@ -111,12 +111,7 @@ void main() {
     testWidgets(
       'LOT10 urgent support visual 200% text ${size.width.toInt()} px',
       (tester) async {
-        await _scenario(
-          tester,
-          size,
-          textScale: 2,
-          suffix: 'text200_widget',
-        );
+        await _scenario(tester, size, textScale: 2, suffix: 'text200_widget');
       },
     );
   }
