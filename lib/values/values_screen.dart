@@ -145,13 +145,25 @@ class _BoundaryCard extends StatelessWidget {
       color: TrueGroundColors.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(TrueGroundSpacing.md),
-        child: Text(
-          'This is not a way to prove you are safe or make uncertainty '
-          'disappear. The app will not choose your values or generate the '
-          'perfect action for you.',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: TrueGroundColors.ink),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Icon(
+              Icons.explore_outlined,
+              color: TrueGroundColors.primary,
+            ),
+            const SizedBox(width: TrueGroundSpacing.sm),
+            Expanded(
+              child: Text(
+                'This is not a way to prove you are safe or make uncertainty '
+                'disappear. The app will not choose your values or generate the '
+                'perfect action for you.',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: TrueGroundColors.ink),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -291,8 +303,19 @@ class _ChoiceCard extends StatelessWidget {
       label: label,
       excludeSemantics: true,
       onTap: onTap,
-      child: Card(
-        margin: EdgeInsets.zero,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: TrueGroundColors.surface,
+          borderRadius: BorderRadius.circular(TrueGroundRadii.card),
+          border: Border.all(color: TrueGroundColors.outline),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: TrueGroundColors.primary.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: InkWell(
           borderRadius: BorderRadius.circular(TrueGroundRadii.card),
           onTap: onTap,
@@ -303,6 +326,20 @@ class _ChoiceCard extends StatelessWidget {
             ),
             child: Row(
               children: <Widget>[
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(
+                    color: TrueGroundColors.iconWash,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.north_east_rounded,
+                    size: 18,
+                    color: TrueGroundColors.primary,
+                  ),
+                ),
+                const SizedBox(width: TrueGroundSpacing.sm),
                 Expanded(
                   child: Text(
                     label,
