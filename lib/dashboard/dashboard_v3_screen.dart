@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 
 class DashboardV3Screen extends StatelessWidget {
   const DashboardV3Screen({super.key});
@@ -15,7 +16,12 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
-    return largeText ? const _AccessibleDashboard() : const _TargetDashboard();
+    final language = TrueGroundLocaleScope.of(context).language;
+    final flexibleCopyLayout =
+        largeText || language == TrueGroundLanguage.fr;
+    return flexibleCopyLayout
+        ? const _AccessibleDashboard()
+        : const _TargetDashboard();
   }
 }
 
@@ -49,11 +55,11 @@ class _TargetDashboard extends StatelessWidget {
                         height: 38,
                         child: _BrandHeader(),
                       ),
-                      const Positioned(
+                      Positioned(
                         left: 20,
                         top: 58,
                         child: Text(
-                          'Good evening',
+                          context.tr('Good evening'),
                           style: TextStyle(
                             fontSize: 14.2,
                             height: 1,
@@ -63,12 +69,12 @@ class _TargetDashboard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         left: 19,
                         right: 19,
                         top: 78,
                         child: Text(
-                          'Choose your next move.',
+                          context.tr('Choose your next move.'),
                           maxLines: 1,
                           style: TextStyle(
                             fontSize: 28.5,
@@ -79,12 +85,12 @@ class _TargetDashboard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         left: 20,
                         right: 19,
                         top: 112,
                         child: Text(
-                          'Make room for uncertainty.\nChoose what matters.',
+                          context.tr('Make room for uncertainty.\nChoose what matters.'),
                           style: TextStyle(
                             fontSize: 15.6,
                             height: 1.25,
@@ -209,13 +215,13 @@ class _AccessibleDashboard extends StatelessWidget {
         children: <Widget>[
           const _BrandHeader(),
           const SizedBox(height: 16),
-          const Text(
-            'Good evening',
+          Text(
+            context.tr('Good evening'),
             style: TextStyle(color: TrueGroundColors.inkMuted),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Choose your next move.',
+          Text(
+            context.tr('Choose your next move.'),
             style: TextStyle(
               fontSize: 28,
               height: 1.05,
@@ -224,8 +230,8 @@ class _AccessibleDashboard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Make room for uncertainty.\nChoose what matters.',
+          Text(
+            context.tr('Make room for uncertainty.\nChoose what matters.'),
             style: TextStyle(
               fontSize: 16,
               height: 1.3,
@@ -351,7 +357,7 @@ class _HeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
+      label: context.tr("I'm stuck in a loop. Notice the urge. Pause before the ritual."),
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -472,13 +478,13 @@ class _HeroCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "I'm stuck in a loop",
+                                context.tr("I'm stuck in a loop"),
                                 maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 19,
@@ -490,7 +496,7 @@ class _HeroCard extends StatelessWidget {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                'Notice the urge. Pause before the ritual.',
+                                context.tr('Notice the urge. Pause before the ritual.'),
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontSize: 11.3,
@@ -541,7 +547,7 @@ class _TargetCard extends StatelessWidget {
     return Semantics(
       button: true,
       label:
-          '${title.replaceAll('\n', ' ')}. ${description.replaceAll('\n', ' ')}',
+          '${context.tr(title).replaceAll('\n', ' ')}. ${context.tr(description).replaceAll('\n', ' ')}',
       excludeSemantics: true,
       child: _GlassPanel(
         accent: accent,
@@ -559,7 +565,7 @@ class _TargetCard extends StatelessWidget {
               top: 55,
               height: 43,
               child: Text(
-                title,
+                context.tr(title),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -577,7 +583,7 @@ class _TargetCard extends StatelessWidget {
               top: 102,
               height: 40,
               child: Text(
-                description,
+                context.tr(description),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -651,7 +657,7 @@ class _WideCard extends StatelessWidget {
               top: 52,
               height: 30,
               child: Text(
-                title,
+                context.tr(title),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -669,7 +675,7 @@ class _WideCard extends StatelessWidget {
               top: 84,
               height: 28,
               child: Text(
-                description,
+                context.tr(description),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -696,14 +702,15 @@ class _ReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label:
-          'Review patterns when useful. Look at recurring themes, without judgment.',
+      label: context.tr(
+        'Review patterns when useful. Look at recurring themes, without judgment.',
+      ),
       excludeSemantics: true,
       onTap: onTap,
       child: _GlassPanel(
         accent: const Color(0xFF62A8B8),
         onTap: onTap,
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: <Widget>[
@@ -719,7 +726,7 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Review patterns when useful',
+                      context.tr('Review patterns when useful'),
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 13.7,
@@ -731,7 +738,7 @@ class _ReviewCard extends StatelessWidget {
                     ),
                     SizedBox(height: 3),
                     Text(
-                      'Look at recurring themes, without judgment.',
+                      context.tr('Look at recurring themes, without judgment.'),
                       maxLines: 1,
                       style: TextStyle(
                         fontSize: 10.8,
@@ -786,7 +793,7 @@ class _AccessibleCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    title,
+                    context.tr(title),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -795,7 +802,7 @@ class _AccessibleCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    description,
+                    context.tr(description),
                     style: const TextStyle(
                       fontSize: 15,
                       height: 1.3,
