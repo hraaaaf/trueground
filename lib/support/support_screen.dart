@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 
 enum _SupportStep { menu, trustedPerson, careTeam, localProfessional }
 
@@ -54,14 +55,15 @@ class _SupportScreenState extends State<SupportScreen> {
               Semantics(
                 header: true,
                 child: Text(
-                  'Need a person, not an answer?',
+                  context.tr('Need a person, not an answer?'),
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               Text(
-                'Choose a real-world route. TrueGround does not place calls, '
-                'send messages, or notify anyone from this screen.',
+                context.tr(
+                  'Choose a real-world route. TrueGround does not place calls, send messages, or notify anyone from this screen.',
+                ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: TrueGroundSpacing.lg),
@@ -201,20 +203,20 @@ class _SupportDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
+        Text(context.tr(title), style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: TrueGroundSpacing.md),
         for (final paragraph in paragraphs) ...<Widget>[
-          Text(paragraph, style: Theme.of(context).textTheme.bodyLarge),
+          Text(context.tr(paragraph), style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: TrueGroundSpacing.md),
         ],
         OutlinedButton(
           onPressed: onBack,
-          child: const Text('Back to support choices'),
+          child: Text(context.tr('Back to support choices')),
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         TextButton(
           onPressed: () => context.go('/'),
-          child: const Text('Back to Home'),
+          child: Text(context.tr('Back to Home')),
         ),
       ],
     );
@@ -238,7 +240,7 @@ class _SupportChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '$title. $description',
+      label: '${context.tr(title)}. ${context.tr(description)}',
       excludeSemantics: true,
       onTap: onTap,
       child: Card(
@@ -258,12 +260,12 @@ class _SupportChoiceCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        title,
+                        context.tr(title),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: TrueGroundSpacing.xs),
                       Text(
-                        description,
+                        context.tr(description),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
