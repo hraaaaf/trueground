@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../dashboard/dashboard_v3_screen.dart';
+import '../localization/language_screen.dart';
 import '../loop/loop_flow_screen.dart';
 import '../patterns/pattern_memory_store.dart';
 import '../patterns/pattern_review_screen.dart';
@@ -9,7 +10,6 @@ import '../practice/practice_completion_store.dart';
 import '../practice/practice_screen.dart';
 import '../safety/urgent_support_screen.dart';
 import '../shell/app_shell.dart';
-import '../shell/shell_placeholder_screen.dart';
 import '../support/support_screen.dart';
 import '../values/values_screen.dart';
 
@@ -95,12 +95,7 @@ GoRouter createTrueGroundRouter({
               GoRoute(
                 path: '/profile',
                 name: 'profile',
-                builder: (context, state) => const ShellPlaceholderScreen(
-                  key: ValueKey('screen-profile'),
-                  title: 'Profile',
-                  description:
-                      'Profile behavior is intentionally not implemented in this lot.',
-                ),
+                builder: (context, state) => const LanguageScreen(),
               ),
             ],
           ),
