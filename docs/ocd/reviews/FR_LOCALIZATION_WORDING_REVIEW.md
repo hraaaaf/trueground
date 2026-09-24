@@ -85,7 +85,7 @@ EN:
 > TrueGround has not contacted anyone or dispatched help for you.
 
 FR:
-> TrueGround n’a contacté personne et n’a envoyé aucune aide pour vous.
+> TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.
 
 Rationale:
 - preserves exact operational truth;
