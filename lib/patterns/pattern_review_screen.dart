@@ -325,7 +325,7 @@ class _Unavailable extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(onPressed: onHome, child: const Text('Back to Home')),
+        FilledButton(onPressed: onHome, child: Text(context.tr('Back to Home'))),
       ],
     );
   }
