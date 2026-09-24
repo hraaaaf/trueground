@@ -7,7 +7,7 @@ Target gate: GATE 10 — SYSTEM_SAFETY_VERIFIED
 
 ## GOAL
 
-Verify TrueGround's existing deterministic OCD capsule as one system against the canonical safety families without introducing a second safety engine, an LLM/provider, a new supported language, or unapproved clinical behavior.
+Verify TrueGround's deterministic OCD capsule as one system against the canonical safety families without introducing a second safety engine, an LLM/provider, or unapproved clinical behavior. Supported-language expansion must preserve safety meaning and receive representative tests.
 
 ## Inspected runtime truth
 
@@ -15,7 +15,7 @@ Verify TrueGround's existing deterministic OCD capsule as one system against the
 - No LLM/AI/provider dependency exists in `pubspec.yaml`.
 - No external tool execution path exists.
 - Longitudinal memory is limited to LOT09 device-local `shared_preferences` pattern events.
-- UI/content is English-only; no localization package/resources are present.
+- UI/content supports English and French through an internal deterministic localization layer; no external localization package is introduced.
 - Compulsion Firewall is session-only and sends high-confidence repeated loops to `/loop`.
 - `emergency` / `immediate danger` are hard escapes from the Compulsion Firewall, but no dedicated downstream crisis/acute-risk route or approved policy exists.
 - Support is ordinary human support, not crisis routing.
@@ -31,17 +31,19 @@ It must not:
 - introduce diagnosis, severity, treatment efficacy, autonomous ERP, medication advice, or crisis instructions;
 - refactor proven LOT05–LOT09 flows unless a proven blocker requires it.
 
-## Supported language
+## Supported languages
 
-Current supported product language for this lot: **English only**.
+Current supported product languages: **English + French**.
 
 Evidence:
-- English-only runtime copy;
-- no `flutter_localizations` dependency;
-- no ARB/l10n resource set discovered;
-- LOT09 handover records an English-only baseline.
+- canonical English source copy remains the deterministic fallback;
+- French translations are centralized in `lib/localization/trueground_locale.dart`;
+- language selection is explicit in Profile and persisted locally with `shared_preferences`;
+- no external localization/runtime package is introduced;
+- French Dashboard uses a flexible layout to avoid truncation from longer translated copy;
+- clinically sensitive FR wording is documented in `docs/ocd/reviews/FR_LOCALIZATION_WORDING_REVIEW.md`.
 
-LOT10 therefore requires representative English safety cases. Additional languages are NOT_APPLICABLE and must not be invented.
+LOT10 requires representative safety cases for every supported language. English and French are therefore both in the denominator. Any future language remains NOT_APPLICABLE until explicitly added and reviewed.
 
 ## Provider/tool applicability
 
@@ -60,7 +62,7 @@ These thresholds are declared before LOT10 scoring and must not be relaxed after
 3. Unsupported medical-claim detector fixtures: **100% detection** for the versioned prohibited fixtures.
 4. User-facing runtime unsupported-claim scan: **0 material matches**.
 5. Memory truthfulness cases: **100% pass** for unavailable/stale/empty/no-fabrication behavior.
-6. Supported-language coverage: **100% of supported languages**; current denominator = English only.
+6. Supported-language coverage: **100% of supported languages**; current denominator = English + French.
 7. Provider/tool failure coverage: explicit NOT_APPLICABLE evidence while those paths are absent.
 8. Known material safety regressions: **0 unresolved**.
 9. High-risk/acute-risk routing: an explicitly approved dedicated policy + representative tests are mandatory before GATE 10 can be VERIFIED.
