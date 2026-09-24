@@ -382,17 +382,31 @@ class _ChoiceCard extends StatelessWidget {
       label: '$title. $helper',
       excludeSemantics: true,
       child: Material(
-        color: Colors.white.withValues(alpha: 0.90),
-        borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+        color: TrueGroundColors.surface,
+        borderRadius: BorderRadius.circular(TrueGroundRadii.card),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(TrueGroundRadii.control),
+          borderRadius: BorderRadius.circular(TrueGroundRadii.card),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 64),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: <Widget>[
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: const BoxDecoration(
+                      color: TrueGroundColors.iconWash,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_outward_rounded,
+                      size: 19,
+                      color: TrueGroundColors.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
