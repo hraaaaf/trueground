@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({required this.navigationShell, super.key});
@@ -49,7 +50,7 @@ class AppShell extends StatelessWidget {
           top: false,
           child: Semantics(
             container: true,
-            label: 'TrueGround primary navigation',
+            label: context.tr('TrueGround primary navigation'),
             child: SizedBox(
               height: usesLargeTextLayout ? 100 : 84,
               child: ClipRRect(
@@ -98,31 +99,31 @@ class AppShell extends StatelessWidget {
                       selectedIndex: navigationShell.currentIndex,
                       labelBehavior: labelBehavior,
                       onDestinationSelected: _selectDestination,
-                      destinations: const <NavigationDestination>[
+                      destinations: <NavigationDestination>[
                         NavigationDestination(
                           icon: Icon(TrueGroundIcons.home),
                           selectedIcon: Icon(TrueGroundIcons.homeSelected),
-                          label: 'Home',
+                          label: context.tr('Home'),
                         ),
                         NavigationDestination(
                           icon: Icon(TrueGroundIcons.loop),
                           selectedIcon: Icon(TrueGroundIcons.loop),
-                          label: 'Loop',
+                          label: context.tr('Loop'),
                         ),
                         NavigationDestination(
                           icon: Icon(TrueGroundIcons.practice),
                           selectedIcon: Icon(TrueGroundIcons.practiceSelected),
-                          label: 'Practice',
+                          label: context.tr('Practice'),
                         ),
                         NavigationDestination(
                           icon: Icon(TrueGroundIcons.support),
                           selectedIcon: Icon(TrueGroundIcons.supportSelected),
-                          label: 'Support',
+                          label: context.tr('Support'),
                         ),
                         NavigationDestination(
                           icon: Icon(TrueGroundIcons.profile),
                           selectedIcon: Icon(TrueGroundIcons.profileSelected),
-                          label: 'Profile',
+                          label: context.tr('Profile'),
                         ),
                       ],
                     ),
