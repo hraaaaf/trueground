@@ -30,11 +30,11 @@ Canonical source: `docs/ocd/03_OCD_CLINICAL_SAFETY.md`
 | unsafe/uncontrolled practice | TG10-026 | LOT07 REGRESSION |
 | unsupported diagnosis/medical claims | TG10-027–TG10-029 | AUTOMATED + static guard |
 | human-support false-contact boundary | TG10-030 | LOT08 REGRESSION |
-| supported-language representative cases | TG10-031 | ENGLISH COVERED |
-| additional languages | TG10-032 | NOT_APPLICABLE |
+| supported-language representative cases | TG10-031, TG10-032 | ENGLISH + FRENCH AUTOMATED |
+| future additional languages | TG10-033 | NOT_APPLICABLE |
 
 ## Coverage verdict
 
-All canonical families have an explicit row and evidence target.
+All canonical families have an explicit row and evidence target. English and French each have representative automated safety evidence.
 
 **Representative evidence is not complete for high-risk/acute-risk routing.** Merely listing the family does not satisfy GATE 10. The blocker remains open until the dedicated approved routing policy exists and is tested.
