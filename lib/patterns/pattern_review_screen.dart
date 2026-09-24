@@ -124,11 +124,23 @@ class _PatternReviewScreenState extends State<PatternReviewScreen> {
                 color: TrueGroundColors.primaryContainer,
                 child: Padding(
                   padding: const EdgeInsets.all(TrueGroundSpacing.md),
-                  child: Text(
-                    'TrueGround stores only structured activity types and timestamps '
-                    'for this review. No thought, fear, trigger or free-text content is saved here. '
-                    'Records expire after 30 days.',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.lock_outline_rounded,
+                        color: TrueGroundColors.primary,
+                      ),
+                      const SizedBox(width: TrueGroundSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          'TrueGround stores only structured activity types and timestamps '
+                          'for this review. No thought, fear, trigger or free-text content is saved here. '
+                          'Records expire after 30 days.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -179,8 +191,19 @@ class _Loaded extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         for (final kind in kinds) ...<Widget>[
-          Card(
-            margin: EdgeInsets.zero,
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: TrueGroundColors.surface,
+              borderRadius: BorderRadius.circular(TrueGroundRadii.card),
+              border: Border.all(color: TrueGroundColors.outline),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: TrueGroundColors.primary.withValues(alpha: 0.04),
+                  blurRadius: 14,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
             child: Padding(
               padding: const EdgeInsets.all(TrueGroundSpacing.md),
               child: Column(
@@ -189,9 +212,18 @@ class _Loaded extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Icon(
-                        Icons.circle_outlined,
-                        color: TrueGroundColors.primary,
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: TrueGroundColors.iconWash,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.history_rounded,
+                          size: 19,
+                          color: TrueGroundColors.primary,
+                        ),
                       ),
                       const SizedBox(width: TrueGroundSpacing.sm),
                       Expanded(
@@ -225,10 +257,19 @@ class _Loaded extends StatelessWidget {
         const SizedBox(height: TrueGroundSpacing.lg),
         FilledButton(onPressed: onHome, child: const Text('Finish review')),
         const SizedBox(height: TrueGroundSpacing.sm),
-        TextButton(
-          key: const ValueKey('pattern-delete-all'),
-          onPressed: onDeleteAll,
-          child: const Text('Delete all saved activity'),
+        Container(
+          padding: const EdgeInsets.only(top: TrueGroundSpacing.xs),
+          decoration: const BoxDecoration(
+            border: Border(
+              top: BorderSide(color: TrueGroundColors.outline),
+            ),
+          ),
+          child: TextButton.icon(
+            key: const ValueKey('pattern-delete-all'),
+            onPressed: onDeleteAll,
+            icon: const Icon(Icons.delete_outline_rounded, size: 19),
+            label: const Text('Delete all saved activity'),
+          ),
         ),
       ],
     );
