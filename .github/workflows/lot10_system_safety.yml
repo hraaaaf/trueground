@@ -46,14 +46,16 @@ jobs:
           test -f docs/ocd/evals/LOT_10_KNOWN_FAILURE_REGISTER.md
           grep -q 'KF-01' docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
           grep -q 'GATE 10 BLOCKED' docs/ocd/evals/LOT_10_KNOWN_FAILURE_REGISTER.md
-          grep -q 'English only' docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
+          grep -q 'English + French' docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
+          test -f lib/localization/trueground_locale.dart
+          test -f docs/ocd/reviews/FR_LOCALIZATION_WORDING_REVIEW.md
           if grep -Ei 'openai|anthropic|gemini|google_generative_ai|firebase_ai' pubspec.yaml; then
             echo 'Unapproved AI/provider dependency found.'
             exit 1
           fi
 
       - name: Focused LOT10 system safety tests
-        run: flutter test test/system_safety_test.dart
+        run: flutter test test/system_safety_test.dart test/localization_test.dart
 
       - name: Full widget and accessibility regression
         run: flutter test
