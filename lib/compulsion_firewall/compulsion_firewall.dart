@@ -114,6 +114,8 @@ class CompulsionFirewallSession {
 
     if (current.riskFamily != _RiskFamily.none &&
         previous.riskFamily != _RiskFamily.none &&
+        !(current.riskFamily == _RiskFamily.confession &&
+            previous.riskFamily == _RiskFamily.confession) &&
         similarity >= 0.58) {
       return FirewallReasonCode.paraphrasedRepeat;
     }
