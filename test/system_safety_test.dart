@@ -195,10 +195,7 @@ void main() {
       final router = createTrueGroundRouter()..go('/urgent-support');
       addTearDown(router.dispose);
       await tester.pumpWidget(
-        MaterialApp.router(
-          theme: TrueGroundTheme.light,
-          routerConfig: router,
-        ),
+        MaterialApp.router(theme: TrueGroundTheme.light, routerConfig: router),
       );
       await tester.pumpAndSettle();
 
