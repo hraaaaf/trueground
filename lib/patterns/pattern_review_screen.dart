@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 import 'pattern_memory_store.dart';
 
 class PatternReviewScreen extends StatefulWidget {
@@ -109,14 +110,15 @@ class _PatternReviewScreenState extends State<PatternReviewScreen> {
               Semantics(
                 header: true,
                 child: Text(
-                  'Review patterns when useful',
+                  context.tr('Review patterns when useful'),
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               Text(
-                'This is a brief look at saved activity on this device. '
-                'It is not a diagnosis, severity score, progress grade or prediction.',
+                context.tr(
+                  'This is a brief look at saved activity on this device. It is not a diagnosis, severity score, progress grade or prediction.',
+                ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: TrueGroundSpacing.md),
@@ -134,9 +136,9 @@ class _PatternReviewScreenState extends State<PatternReviewScreen> {
                       const SizedBox(width: TrueGroundSpacing.sm),
                       Expanded(
                         child: Text(
-                          'TrueGround stores only structured activity types and timestamps '
-                          'for this review. No thought, fear, trigger or free-text content is saved here. '
-                          'Records expire after 30 days.',
+                          context.tr(
+                            'TrueGround stores only structured activity types and timestamps for this review. No thought, fear, trigger or free-text content is saved here. Records expire after 30 days.',
+                          ),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
@@ -186,7 +188,7 @@ class _Loaded extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'Recent saved activity includes:',
+          context.tr('Recent saved activity includes:'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
@@ -228,7 +230,7 @@ class _Loaded extends StatelessWidget {
                       const SizedBox(width: TrueGroundSpacing.sm),
                       Expanded(
                         child: Text(
-                          kind.userLabel,
+                          context.tr(kind.userLabel),
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ),
@@ -240,7 +242,7 @@ class _Loaded extends StatelessWidget {
                     child: TextButton(
                       key: ValueKey('pattern-remove-${kind.storageValue}'),
                       onPressed: () => onDeleteKind(kind),
-                      child: const Text('Remove this type'),
+                      child: Text(context.tr('Remove this type')),
                     ),
                   ),
                 ],
@@ -250,12 +252,13 @@ class _Loaded extends StatelessWidget {
           const SizedBox(height: TrueGroundSpacing.sm),
         ],
         Text(
-          'No frequency, streak, trend or better/worse conclusion is shown. '
-          'You do not need to keep checking this screen.',
+          context.tr(
+            'No frequency, streak, trend or better/worse conclusion is shown. You do not need to keep checking this screen.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(onPressed: onHome, child: const Text('Finish review')),
+        FilledButton(onPressed: onHome, child: Text(context.tr('Finish review'))),
         const SizedBox(height: TrueGroundSpacing.sm),
         Container(
           padding: const EdgeInsets.only(top: TrueGroundSpacing.xs),
@@ -266,7 +269,7 @@ class _Loaded extends StatelessWidget {
             key: const ValueKey('pattern-delete-all'),
             onPressed: onDeleteAll,
             icon: const Icon(Icons.delete_outline_rounded, size: 19),
-            label: const Text('Delete all saved activity'),
+            label: Text(context.tr('Delete all saved activity')),
           ),
         ),
       ],
@@ -286,16 +289,16 @@ class _Empty extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'No saved activity is available to review.',
+          context.tr('No saved activity is available to review.'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Text(
-          'TrueGround will not infer a pattern from missing history.',
+          context.tr('TrueGround will not infer a pattern from missing history.'),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(onPressed: onHome, child: const Text('Back to Home')),
+        FilledButton(onPressed: onHome, child: Text(context.tr('Back to Home'))),
       ],
     );
   }
@@ -313,12 +316,12 @@ class _Unavailable extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'Saved activity could not be checked.',
+          context.tr('Saved activity could not be checked.'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Text(
-          'TrueGround will not guess what your history contains.',
+          context.tr('TrueGround will not guess what your history contains.'),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
