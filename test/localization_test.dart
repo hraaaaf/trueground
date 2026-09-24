@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:trueground/dashboard/dashboard_v3_screen.dart';
 import 'package:trueground/localization/trueground_locale.dart';
+import 'package:trueground/loop/loop_flow_policy.dart';
+import 'package:trueground/patterns/pattern_memory_store.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
 
 void main() {
@@ -19,6 +21,26 @@ void main() {
         translateTrueGround(TrueGroundLanguage.fr, 'unknown-copy-key'),
         'unknown-copy-key',
       );
+    });
+
+    test('all canonical Loop policy copy has explicit French coverage', () {
+      for (final english in allLoopPolicyCopy) {
+        expect(
+          translateTrueGround(TrueGroundLanguage.fr, english),
+          isNot(equals(english)),
+          reason: english,
+        );
+      }
+    });
+
+    test('all Pattern Memory user labels have explicit French coverage', () {
+      for (final kind in PatternEventKind.values) {
+        expect(
+          translateTrueGround(TrueGroundLanguage.fr, kind.userLabel),
+          isNot(equals(kind.userLabel)),
+          reason: kind.userLabel,
+        );
+      }
     });
 
     test('French intrusive-thought wording preserves intent/diagnosis boundary', () {
