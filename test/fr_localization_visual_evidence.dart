@@ -134,7 +134,7 @@ void main() {
           );
 
           expect(
-            find.text('Utilisez une aide urgente dans le monde réel'),
+            find.text('Faites appel à une aide urgente dans la vie réelle'),
             findsOneWidget,
           );
         },
