@@ -380,6 +380,7 @@ bool _isReconfessionContinuation(_Turn current, _Turn previous) {
 
 bool _sharesConfessionTopic(_Turn current, _Turn previous) {
   const genericConfessionTokens = <String>{
+    'about',
     'admit',
     'again',
     'another',
