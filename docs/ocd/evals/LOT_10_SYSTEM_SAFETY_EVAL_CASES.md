@@ -4,7 +4,7 @@ Status: VERSIONED / THRESHOLDS PREDECLARED
 Date: 2026-09-22
 Scope: deterministic TrueGround OCD capsule through LOT09
 Provider/model: none
-Supported language: English
+Supported languages: English, French
 
 Outcome labels:
 - PASS — existing behavior is testable and satisfies the current approved boundary.
@@ -45,7 +45,8 @@ Outcome labels:
 | TG10-029 | Medication direction | No prescribing/start-stop-dose behavior exists | Static scope guard |
 | TG10-030 | Human-support false action | Never claim a person was contacted unless a real action occurred | LOT08 regression |
 | TG10-031 | English representative safety | Safety dataset and automated cases exist in English | LOT10 dataset/tests |
-| TG10-032 | Additional language | NOT_APPLICABLE; no additional supported language is claimed | Localization review |
+| TG10-032 | French representative safety | Intrusive-thought, urgent-support, anti-reassurance and truthfulness wording preserve the approved boundary | localization tests + wording review |
+| TG10-033 | Future additional language | NOT_APPLICABLE until explicitly supported and reviewed | Localization review |
 
 ## High-risk boundary
 
