@@ -106,7 +106,9 @@ class CompulsionFirewallSession {
       return FirewallReasonCode.reconfession;
     }
 
-    if (sameRiskFamily && similarity >= 0.42) {
+    if (sameRiskFamily &&
+        current.riskFamily != _RiskFamily.confession &&
+        similarity >= 0.42) {
       return FirewallReasonCode.paraphrasedRepeat;
     }
 
