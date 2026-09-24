@@ -29,9 +29,12 @@ class TrueGroundLocaleScope extends InheritedWidget {
   final TrueGroundLanguage language;
   final ValueChanged<TrueGroundLanguage> onLanguageChanged;
 
+  static TrueGroundLocaleScope? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<TrueGroundLocaleScope>();
+  }
+
   static TrueGroundLocaleScope of(BuildContext context) {
-    final scope = context
-        .dependOnInheritedWidgetOfExactType<TrueGroundLocaleScope>();
+    final scope = maybeOf(context);
     assert(scope != null, 'TrueGroundLocaleScope is missing.');
     return scope!;
   }
@@ -42,13 +45,18 @@ class TrueGroundLocaleScope extends InheritedWidget {
   }
 }
 
+String translateTrueGround(TrueGroundLanguage language, String english) {
+  if (language == TrueGroundLanguage.en) {
+    return english;
+  }
+  return _fr[english] ?? english;
+}
+
 extension TrueGroundTranslation on BuildContext {
   String tr(String english) {
-    final scope = TrueGroundLocaleScope.of(this);
-    if (scope.language == TrueGroundLanguage.en) {
-      return english;
-    }
-    return _fr[english] ?? english;
+    final language =
+        TrueGroundLocaleScope.maybeOf(this)?.language ?? TrueGroundLanguage.en;
+    return translateTrueGround(language, english);
   }
 }
 
