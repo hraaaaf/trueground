@@ -37,8 +37,7 @@ void main() {
     expect(find.text('Faith or meaning'), findsOneWidget);
     expect(find.text('Something else that matters'), findsOneWidget);
 
-    await tester.tap(find.text('Family'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Family'));
 
     expect(find.byKey(ValuesScreen.chooseActionKey), findsOneWidget);
     expect(find.text('Take my next step'), findsOneWidget);
@@ -70,8 +69,7 @@ void main() {
     await tester.tap(find.text('Return to what matters'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Family'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Family'));
     expect(find.text('I tapped the wrong area'), findsOneWidget);
     expect(find.textContaining('better choice'), findsNothing);
     expect(find.textContaining('right choice'), findsNothing);
@@ -80,8 +78,7 @@ void main() {
     await _tapScrollable(tester, find.text('I tapped the wrong area'));
     expect(find.byKey(ValuesScreen.chooseAreaKey), findsOneWidget);
 
-    await tester.tap(find.text('Family'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Family'));
     expect(find.text('Take my next step'), findsOneWidget);
     expect(find.text('Leave for now'), findsOneWidget);
     expect(find.text('I tapped the wrong area'), findsNothing);
@@ -96,8 +93,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Return to what matters'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Family'));
-    await tester.pumpAndSettle();
+    await _tapScrollable(tester, find.text('Family'));
     await _tapScrollable(tester, find.text('Leave for now'));
     expect(find.byKey(ValuesScreen.screenKey), findsNothing);
     expect(find.text('Return to what matters'), findsOneWidget);
