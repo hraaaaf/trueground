@@ -148,10 +148,7 @@ class _BoundaryCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Icon(
-              Icons.explore_outlined,
-              color: TrueGroundColors.primary,
-            ),
+            const Icon(Icons.explore_outlined, color: TrueGroundColors.primary),
             const SizedBox(width: TrueGroundSpacing.sm),
             Expanded(
               child: Text(
