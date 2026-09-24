@@ -178,7 +178,7 @@ const Map<String, String> _fr = <String, String>{
   'TrueGround does not grade how the pause went. Choose your next ordinary action when you leave.':
       'TrueGround ne note pas le déroulement de la pause. En quittant cet écran, choisissez votre prochaine action ordinaire.',
   'This is a brief practice in leaving a question unresolved — not in proving that a feared outcome is safe or unsafe.':
-      'Il s’agit d’une brève pratique consistant à laisser une question non résolue — et non à prouver qu’une issue redoutée est sûre ou dangereuse.',
+      'Il s’agit d’une brève pratique consistant à laisser une question non résolue — et non à prouver qu’une issue redoutée est sûre ou non sûre.',
   'Begin': 'Commencer',
   'Notice the pull to get a definite answer.':
       'Remarquez l’envie d’obtenir une réponse définitive.',
@@ -203,7 +203,7 @@ const Map<String, String> _fr = <String, String>{
   'Uncertainty practice finished for now':
       'Pratique de l’incertitude terminée pour le moment',
   'Leave a question unresolved without trying to prove it safe or unsafe.':
-      'Laissez une question non résolue sans essayer de prouver qu’elle est sûre ou dangereuse.',
+      'Laissez une question non résolue sans essayer de prouver qu’elle est sûre ou non sûre.',
   'Saved practice is not available yet.':
       'La pratique enregistrée n’est pas encore disponible.',
   'Practice does not diagnose a compulsion or decide whether a real-world safety check is necessary.':
@@ -295,7 +295,7 @@ const Map<String, String> _fr = <String, String>{
   'Chose a values-based next step':
       'Choix d’une prochaine étape guidée par ses valeurs',
 
-  'Use urgent real-world help': 'Utilisez une aide urgente dans le monde réel',
+  'Use urgent real-world help': 'Faites appel à une aide urgente dans la vie réelle',
   'TrueGround cannot determine whether this is an emergency or assess your immediate safety.':
       'TrueGround ne peut pas déterminer s’il s’agit d’une urgence ni évaluer votre sécurité immédiate.',
   'If there is immediate danger, or you cannot stay safe, contact the emergency services available where you are or go to the nearest emergency department now.':
@@ -303,7 +303,7 @@ const Map<String, String> _fr = <String, String>{
   'If possible, stay with or contact a trusted person or health professional while you get urgent help.':
       'Si possible, restez avec une personne de confiance ou contactez-la, ou contactez un professionnel de santé pendant que vous cherchez une aide urgente.',
   'TrueGround has not contacted anyone or dispatched help for you.':
-      'TrueGround n’a contacté personne et n’a envoyé aucune aide pour vous.',
+      'TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.',
   'Open regular Support': 'Ouvrir le soutien habituel',
 
   'Loading': 'Chargement',
