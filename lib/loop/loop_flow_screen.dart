@@ -380,7 +380,7 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '$title. $helper',
+      label: '${context.tr(title)}. ${context.tr(helper)}',
       excludeSemantics: true,
       child: Material(
         color: TrueGroundColors.surface,
