@@ -127,6 +127,30 @@ void main() {
       expect(decision.reasonCode, FirewallReasonCode.reconfession);
     });
 
+    test('reconfession with low lexical overlap still redirects', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('I forgot to mention another detail.');
+
+      final decision = firewall.evaluate(
+        'One more detail I need to confess again.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.redirectToBoundedLoop);
+      expect(decision.reasonCode, FirewallReasonCode.reconfession);
+    });
+
+    test('distinct confession topics are not collapsed without an anchor', () {
+      final firewall = CompulsionFirewallSession();
+      firewall.evaluate('I need to confess another detail about my homework.');
+
+      final decision = firewall.evaluate(
+        'I need to confess again about a completely unrelated friendship issue.',
+      );
+
+      expect(decision.disposition, FirewallDisposition.allow);
+      expect(decision.reasonCode, FirewallReasonCode.none);
+    });
+
     test('adversarial one-last-time wording does not bypass firewall', () {
       final firewall = CompulsionFirewallSession();
       firewall.evaluate('Can you check whether I made a mistake?');

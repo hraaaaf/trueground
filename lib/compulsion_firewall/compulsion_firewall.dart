@@ -101,16 +101,21 @@ class CompulsionFirewallSession {
 
     if (current.riskFamily == _RiskFamily.confession &&
         previous.riskFamily == _RiskFamily.confession &&
-        _relatedEnough(current, previous, similarity)) {
+        (_sharesConfessionTopic(current, previous) ||
+            _isReconfessionContinuation(current, previous))) {
       return FirewallReasonCode.reconfession;
     }
 
-    if (sameRiskFamily && similarity >= 0.42) {
+    if (sameRiskFamily &&
+        current.riskFamily != _RiskFamily.confession &&
+        similarity >= 0.42) {
       return FirewallReasonCode.paraphrasedRepeat;
     }
 
     if (current.riskFamily != _RiskFamily.none &&
         previous.riskFamily != _RiskFamily.none &&
+        !(current.riskFamily == _RiskFamily.confession &&
+            previous.riskFamily == _RiskFamily.confession) &&
         similarity >= 0.58) {
       return FirewallReasonCode.paraphrasedRepeat;
     }
@@ -356,6 +361,43 @@ bool _isExplicitContextChange(String text) {
 
 bool _relatedEnough(_Turn current, _Turn previous, double similarity) {
   return similarity >= 0.30 || _sharesTopic(current, previous);
+}
+
+bool _isReconfessionContinuation(_Turn current, _Turn previous) {
+  final overlap = current.tokens.intersection(previous.tokens);
+  final hasContinuationMarker = _containsAny(current.normalized, const <String>[
+    'again',
+    'one more detail',
+    'another detail',
+    'forgot to mention',
+    'tell you again',
+    'admit again',
+  ]);
+  final sharesConfessionAnchor = overlap.contains('detail');
+
+  return hasContinuationMarker && sharesConfessionAnchor;
+}
+
+bool _sharesConfessionTopic(_Turn current, _Turn previous) {
+  const genericConfessionTokens = <String>{
+    'about',
+    'admit',
+    'again',
+    'another',
+    'confess',
+    'confession',
+    'detail',
+    'forgot',
+    'mention',
+    'more',
+    'need',
+    'one',
+    'thought',
+  };
+  final currentTopics = current.tokens.difference(genericConfessionTokens);
+  final previousTopics = previous.tokens.difference(genericConfessionTokens);
+
+  return currentTopics.intersection(previousTopics).isNotEmpty;
 }
 
 bool _sharesTopic(_Turn current, _Turn previous) {

@@ -1,0 +1,74 @@
+name: LOT 10 System Safety
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  system-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format lib test
+          git diff --exit-code
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: LOT10 contract and blocker guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
+          test -f docs/ocd/evals/LOT_10_SYSTEM_SAFETY_EVAL_CASES.md
+          test -f docs/ocd/evals/LOT_10_SYSTEM_SAFETY_COVERAGE_MATRIX.md
+          test -f docs/ocd/evals/LOT_10_KNOWN_FAILURE_REGISTER.md
+          grep -q 'KF-01' docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
+          grep -q 'GATE 10 BLOCKED' docs/ocd/evals/LOT_10_KNOWN_FAILURE_REGISTER.md
+          grep -q 'English only' docs/ocd/lots/LOT_10_SYSTEM_SAFETY_CONTRACT.md
+          if grep -Ei 'openai|anthropic|gemini|google_generative_ai|firebase_ai' pubspec.yaml; then
+            echo 'Unapproved AI/provider dependency found.'
+            exit 1
+          fi
+
+      - name: Focused LOT10 system safety tests
+        run: flutter test test/system_safety_test.dart
+
+      - name: Full widget and accessibility regression
+        run: flutter test
+
+      - name: Release web build
+        run: flutter build web --release
+
+      - name: Capture urgent support visual evidence
+        run: flutter test test/urgent_support_visual_evidence.dart
+
+      - name: Upload LOT 10 visual evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot10-system-safety-evidence
+          path: build/lot10/screenshots/
+          if-no-files-found: warn
+          retention-days: 14
