@@ -66,7 +66,7 @@ void main() {
           TrueGroundLanguage.fr,
           'TrueGround has not contacted anyone or dispatched help for you.',
         ),
-        'TrueGround n’a contacté personne et n’a envoyé aucune aide pour vous.',
+        'TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.',
       );
     });
 
@@ -81,7 +81,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Utilisez une aide urgente dans le monde réel'), findsOneWidget);
+      expect(find.text('Faites appel à une aide urgente dans la vie réelle'), findsOneWidget);
       expect(
         find.text(
           'TrueGround ne peut pas déterminer s’il s’agit d’une urgence ni évaluer votre sécurité immédiate.',
