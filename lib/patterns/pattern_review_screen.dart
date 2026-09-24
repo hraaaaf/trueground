@@ -260,9 +260,7 @@ class _Loaded extends StatelessWidget {
         Container(
           padding: const EdgeInsets.only(top: TrueGroundSpacing.xs),
           decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: TrueGroundColors.outline),
-            ),
+            border: Border(top: BorderSide(color: TrueGroundColors.outline)),
           ),
           child: TextButton.icon(
             key: const ValueKey('pattern-delete-all'),
