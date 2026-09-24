@@ -101,7 +101,7 @@ class CompulsionFirewallSession {
 
     if (current.riskFamily == _RiskFamily.confession &&
         previous.riskFamily == _RiskFamily.confession &&
-        (_relatedEnough(current, previous, similarity) ||
+        (_sharesConfessionTopic(current, previous) ||
             _isReconfessionContinuation(current, previous))) {
       return FirewallReasonCode.reconfession;
     }
@@ -369,10 +369,30 @@ bool _isReconfessionContinuation(_Turn current, _Turn previous) {
     'tell you again',
     'admit again',
   ]);
-  final sharesConfessionAnchor =
-      overlap.contains('detail') || overlap.contains('confess');
+  final sharesConfessionAnchor = overlap.contains('detail');
 
   return hasContinuationMarker && sharesConfessionAnchor;
+}
+
+bool _sharesConfessionTopic(_Turn current, _Turn previous) {
+  const genericConfessionTokens = <String>{
+    'admit',
+    'again',
+    'another',
+    'confess',
+    'confession',
+    'detail',
+    'forgot',
+    'mention',
+    'more',
+    'need',
+    'one',
+    'thought',
+  };
+  final currentTopics = current.tokens.difference(genericConfessionTokens);
+  final previousTopics = previous.tokens.difference(genericConfessionTokens);
+
+  return currentTopics.intersection(previousTopics).isNotEmpty;
 }
 
 bool _sharesTopic(_Turn current, _Turn previous) {
