@@ -1,13 +1,7 @@
-enum HighRiskBoundaryDisposition {
-  continueOcdFlow,
-  routeToUrgentSupport,
-}
+enum HighRiskBoundaryDisposition { continueOcdFlow, routeToUrgentSupport }
 
 class HighRiskBoundaryDecision {
-  const HighRiskBoundaryDecision({
-    required this.disposition,
-    this.route,
-  });
+  const HighRiskBoundaryDecision({required this.disposition, this.route});
 
   final HighRiskBoundaryDisposition disposition;
   final String? route;
