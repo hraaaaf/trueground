@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 import '../patterns/pattern_memory_store.dart';
 
 enum _ValuesStep { chooseArea, chooseAction, leaveFlow }
@@ -105,14 +106,15 @@ class _ValuesScreenState extends State<ValuesScreen> {
               Semantics(
                 header: true,
                 child: Text(
-                  'Return to what matters',
+                  context.tr('Return to what matters'),
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               Text(
-                'Choose a direction that matters to you, then take the next '
-                'step outside this flow.',
+                context.tr(
+                  'Choose a direction that matters to you, then take the next step outside this flow.',
+                ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: TrueGroundSpacing.md),
@@ -152,9 +154,9 @@ class _BoundaryCard extends StatelessWidget {
             const SizedBox(width: TrueGroundSpacing.sm),
             Expanded(
               child: Text(
-                'This is not a way to prove you are safe or make uncertainty '
-                'disappear. The app will not choose your values or generate the '
-                'perfect action for you.',
+                context.tr(
+                  'This is not a way to prove you are safe or make uncertainty disappear. The app will not choose your values or generate the perfect action for you.',
+                ),
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: TrueGroundColors.ink),
@@ -179,12 +181,12 @@ class _ChooseAreaStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'Pick one area for right now.',
+          context.tr('Pick one area for right now.'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(
-          'There is no best answer. Choose the one you want to move toward.',
+          context.tr('There is no best answer. Choose the one you want to move toward.'),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.md),
@@ -214,34 +216,35 @@ class _ChooseActionStep extends StatelessWidget {
       key: ValuesScreen.chooseActionKey,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text('You chose', style: Theme.of(context).textTheme.bodyMedium),
+        Text(context.tr('You chose'), style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: TrueGroundSpacing.xs),
-        Text(area, style: Theme.of(context).textTheme.titleMedium),
+        Text(context.tr(area), style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: TrueGroundSpacing.md),
         Text(
-          'Keep the next step ordinary and yours.',
+          context.tr('Keep the next step ordinary and yours.'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(
-          'Pick one small action yourself. It does not need to feel certain '
-          'or perfect before you leave this flow.',
+          context.tr(
+            'Pick one small action yourself. It does not need to feel certain or perfect before you leave this flow.',
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
         FilledButton(
           onPressed: onConfirm,
-          child: const Text('Take my next step'),
+          child: Text(context.tr('Take my next step')),
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         TextButton(
           onPressed: () => context.go('/'),
-          child: const Text('Leave for now'),
+          child: Text(context.tr('Leave for now')),
         ),
         if (onBack != null)
           TextButton(
             onPressed: onBack,
-            child: const Text('I tapped the wrong area'),
+            child: Text(context.tr('I tapped the wrong area')),
           ),
       ],
     );
@@ -260,12 +263,12 @@ class _LeaveFlowStep extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          'Take the step outside TrueGround.',
+          context.tr('Take the step outside TrueGround.'),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Text(
-          area,
+          context.tr(area),
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: TrueGroundColors.primary,
             fontWeight: FontWeight.w600,
@@ -273,14 +276,15 @@ class _LeaveFlowStep extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Text(
-          'Uncertainty does not have to be settled first. This flow ends here '
-          'so the next move can happen in real life.',
+          context.tr(
+            'Uncertainty does not have to be settled first. This flow ends here so the next move can happen in real life.',
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
         FilledButton(
           onPressed: () => context.go('/'),
-          child: const Text('Back to Home'),
+          child: Text(context.tr('Back to Home')),
         ),
       ],
     );
@@ -297,7 +301,7 @@ class _ChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: label,
+      label: context.tr(label),
       excludeSemantics: true,
       onTap: onTap,
       child: DecoratedBox(
@@ -339,7 +343,7 @@ class _ChoiceCard extends StatelessWidget {
                 const SizedBox(width: TrueGroundSpacing.sm),
                 Expanded(
                   child: Text(
-                    label,
+                    context.tr(label),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
