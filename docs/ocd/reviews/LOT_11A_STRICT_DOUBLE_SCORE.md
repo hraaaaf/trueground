@@ -3,7 +3,7 @@
 Project: TrueGround OCD
 Lot: LOT11-A
 Date: 2026-09-25
-Substantive candidate reviewed: `c865d031e56652abff2e2328d1e887738c1c1af0`
+Substantive candidate reviewed after scientific rebalance + specialist refresh: `9445ce8c10b6b0ba7dd68f97bc27f58144a470a9`
 Review independence: same model/session, adversarial second pass
 Maximum permitted score under protocol: **9.4 / 10**
 Runtime AI/provider: NONE
@@ -30,7 +30,7 @@ It does not score a conversational runtime, model, provider, chat UI, crisis pro
 | Product coherence | 9.4 | Useful conversation remains allowed; support/values/human routes are first-class; no engagement-at-all-costs objective. |
 | Contract consistency / functional spec | 9.3 | Required families have dispositions, repetition bounds, failure behavior and routing. |
 | OCD safety | 9.2 | Strong anti-reassurance/checking/rumination/confession policy; intrusive-thought distinction explicit; crisis remains correctly gated. |
-| Evidence quality / transfer discipline | 9.3 | Primary studies + meta-analyses + limitations; structured ICBT is not conflated with open LLM chat. |
+| Evidence quality / transfer discipline | 9.3 | Primary studies + meta-analyses + limitations; positive GenAI evidence and safety/validation gaps are both represented; non-OCD findings are not generalized to OCD. |
 | Architecture | 9.3 | Pre-model policy + provider abstraction + post-model guard; Core/capsule separation preserved. |
 | Privacy / security | 9.3 | No raw chat persistence by default; no raw logs/analytics; provider context minimized. |
 | Evaluation design | 9.4 | 70 cases frozen before outputs; 2/5/10-turn persistence; false positives; EN/FR; failures; claims; memory. |
@@ -148,6 +148,19 @@ Provider approval remains a separate privacy/security gate.
 
 Deduction: **-0.10**
 
+#### B8 — scientific confirmation-bias challenge
+
+The initial scientific narrative was more explicit about GenAI safety gaps than about recent positive controlled evidence.
+
+Mitigation:
+Before this rescore, the baseline was amended to include PMID 41401240 and PMID 41540194 and to state explicitly that the evidence is promising in mental health generally while remaining non-OCD-specific and insufficient to validate unrestricted reassurance-sensitive chat.
+
+Residual:
+The broader GenAI literature is evolving quickly and future provider decisions will require a dated evidence refresh.
+
+Disposition:
+**Corrected before rescore; no additional retained deduction beyond the existing evidence-transfer uncertainty.**
+
 ### PASS B axis floor
 
 | Critical axis | Adversarial score |
@@ -210,6 +223,19 @@ Any subsequent LOT11-A change must trigger re-review if it changes:
 - intended population.
 
 A documentation-only handover that does not change these decisions does not alter the substantive score, but final exact-head non-regression proof is still required.
+
+## Post-amendment rescore
+
+The scientific rebalance was treated as a material evidence-interpretation change and therefore triggered a fresh adversarial review before final verification.
+
+Result after correction:
+- Pass A remains **9.2 / 10**;
+- Pass B remains **9.0 / 10**;
+- retained score remains **9.0 / 10**;
+- same-session ceiling remains **9.4 / 10**.
+
+Reason the score does not increase:
+the correction improves scientific balance but does not remove the dominant runtime uncertainties: no provider eval, no implemented multilingual router, no reviewed crisis policy, no chat UX evidence and no genuinely independent external reviewer.
 
 ## Final scoring verdict
 
