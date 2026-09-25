@@ -17,7 +17,8 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
-    final language = TrueGroundLocaleScope.of(context).language;
+    final language =
+        TrueGroundLocaleScope.maybeOf(context)?.language ?? TrueGroundLanguage.en;
     final flexibleCopyLayout = largeText || language == TrueGroundLanguage.fr;
     return flexibleCopyLayout
         ? const _AccessibleDashboard()
