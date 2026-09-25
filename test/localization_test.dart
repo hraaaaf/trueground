@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:trueground/app/trueground_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:trueground/dashboard/dashboard_v3_screen.dart';
@@ -101,8 +100,23 @@ void main() {
     testWidgets('header FR EN toggle switches language without navigation', (
       tester,
     ) async {
-      await tester.pumpWidget(const TrueGroundApp());
-      await tester.pumpAndSettle();
+      var language = TrueGroundLanguage.en;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (context, setState) {
+            return TrueGroundLocaleScope(
+              language: language,
+              onLanguageChanged: (next) {
+                setState(() {
+                  language = next;
+                });
+              },
+              child: const MaterialApp(home: DashboardV3Screen()),
+            );
+          },
+        ),
+      );
 
       expect(find.text('Choose your next move.'), findsOneWidget);
       expect(find.text('FR'), findsOneWidget);
