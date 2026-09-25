@@ -97,7 +97,9 @@ Required before runtime release:
 The target architecture places deterministic routing before the future provider and deterministic output checks after it.
 
 Verdict:
-**PASS.**
+**PASS_WITH_NOTES.**
+
+The output guard is defense in depth only. Deterministic lexical/rule checks cannot be treated as complete semantic validation of arbitrary model text; disallowed capabilities must be blocked pre-model and the whole composed system must still pass adversarial evals.
 
 Required invariant:
 - provider can propose text only within an already approved capability mode;
@@ -126,7 +128,16 @@ Verdict:
 
 No IAmina Core change is authorized by LOT11-A.
 
-## Finding F — raw conversation storage must remain opt-in, not default
+## Finding F — intended population must not expand silently
+
+The current Practice scientific contract defines an adults-only V1 boundary. A conversational interface could otherwise broaden apparent product scope merely by accepting free text.
+
+Verdict:
+**PASS_WITH_NOTES after contract hardening.**
+
+LOT11-A now states that pediatric/minor conversational use is not authorized. Any future expansion requires separate safeguarding, clinical, privacy and content review.
+
+## Finding G — raw conversation storage must remain opt-in, not default
 
 Current LOT09 memory is a narrow local store of structured event types and timestamps. It is not raw dialogue memory.
 
@@ -148,7 +159,7 @@ Future work requiring longitudinal chat memory must be a separate approved data 
 - derived-cache deletion;
 - provider implications.
 
-## Finding G — provider data-flow cannot be approved before provider selection
+## Finding H — provider data-flow cannot be approved before provider selection
 
 No provider is selected in LOT11-A.
 
