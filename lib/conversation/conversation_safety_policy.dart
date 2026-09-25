@@ -131,10 +131,7 @@ class ConversationSafetySession {
 
     final claimBoundary = _claimBoundary(normalized);
     if (claimBoundary != null) {
-      return _remember(
-        _SafetyTurn.fromNormalized(normalized),
-        claimBoundary,
-      );
+      return _remember(_SafetyTurn.fromNormalized(normalized), claimBoundary);
     }
 
     if (_isHiddenDataRequest(normalized)) {
@@ -288,8 +285,7 @@ ConversationDecision _loopDecision(ConversationLoopFamily family) {
 
 ConversationReasonCode _reasonForFamily(ConversationLoopFamily family) {
   return switch (family) {
-    ConversationLoopFamily.reassurance =>
-      ConversationReasonCode.reassurance,
+    ConversationLoopFamily.reassurance => ConversationReasonCode.reassurance,
     ConversationLoopFamily.checking => ConversationReasonCode.checking,
     ConversationLoopFamily.rumination => ConversationReasonCode.rumination,
     ConversationLoopFamily.confession => ConversationReasonCode.confession,
@@ -379,11 +375,11 @@ ConversationDecision? _claimBoundary(String text) {
   }
 
   if (_containsAny(text, const <String>[
-        'does this prove i have disease',
-        'does this mean i have disease',
-        'est ce que cela prouve que j ai une maladie',
-        'est ce que ca prouve que j ai une maladie',
-      ])) {
+    'does this prove i have disease',
+    'does this mean i have disease',
+    'est ce que cela prouve que j ai une maladie',
+    'est ce que ca prouve que j ai une maladie',
+  ])) {
     return const ConversationDecision(
       outcome: ConversationOutcome.claimBoundary,
       reasonCode: ConversationReasonCode.diagnosisBoundary,
@@ -537,9 +533,7 @@ class _PivotKey {
 
   @override
   bool operator ==(Object other) {
-    return other is _PivotKey &&
-        other.family == family &&
-        other.theme == theme;
+    return other is _PivotKey && other.family == family && other.theme == theme;
   }
 
   @override
