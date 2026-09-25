@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
 import '../localization/trueground_locale.dart';
 import '../patterns/pattern_memory_store.dart';
 import 'practice_completion_store.dart';
@@ -169,12 +170,19 @@ class _PracticeScreenState extends State<PracticeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(
-                'TrueGround',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: TrueGroundColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'TrueGround',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: TrueGroundColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const LanguageToggle(),
+                ],
               ),
               const SizedBox(height: 18),
               Semantics(
