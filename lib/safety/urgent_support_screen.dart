@@ -15,28 +15,28 @@ class UrgentSupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: TrueGroundColors.background,
       body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            SingleChildScrollView(
-              key: screenKey,
-              padding: const EdgeInsets.fromLTRB(
-                TrueGroundSpacing.lg,
-                60,
-                TrueGroundSpacing.lg,
-                TrueGroundSpacing.lg,
-              ),
+        child: SingleChildScrollView(
+          key: screenKey,
+          padding: const EdgeInsets.all(TrueGroundSpacing.lg),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Text(
-                    'TrueGround',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: TrueGroundColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          'TrueGround',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: TrueGroundColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      const LanguageToggle(),
+                    ],
                   ),
                   const SizedBox(height: TrueGroundSpacing.lg),
                   Container(
@@ -106,7 +106,9 @@ class UrgentSupportScreen extends StatelessWidget {
                         const SizedBox(width: TrueGroundSpacing.sm),
                         Expanded(
                           child: Text(
-                            context.tr('TrueGround has not contacted anyone or dispatched help for you.'),
+                            context.tr(
+                              'TrueGround has not contacted anyone or dispatched help for you.',
+                            ),
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -127,12 +129,7 @@ class UrgentSupportScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const Positioned(
-              top: 8,
-              right: 12,
-              child: LanguageToggle(),
-            ),
-          ],
+          ),
         ),
       ),
     );
