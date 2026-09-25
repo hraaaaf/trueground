@@ -63,6 +63,60 @@ jobs:
       - name: Release web build
         run: flutter build web --release
 
+      - name: Capture French web visual evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("build/web/index.html")
+          html = p.read_text()
+          injection = """<script>
+          localStorage.setItem('flutter.trueground.language.v1', JSON.stringify('fr'));
+          </script>"""
+          html = html.replace("</head>", injection + "\n</head>", 1)
+          p.write_text(html)
+          PY
+
+          python3 -m http.server 7358 --bind 127.0.0.1 --directory build/web > /tmp/trueground-fr-web.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" >/dev/null 2>&1 || true' EXIT
+
+          booted=0
+          for _ in $(seq 1 30); do
+            if curl --fail --silent --show-error http://127.0.0.1:7358/ > /tmp/trueground-fr-index.html; then
+              booted=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              cat /tmp/trueground-fr-web.log
+              exit 1
+            fi
+            sleep 1
+          done
+
+          if [ "$booted" -ne 1 ]; then
+            cat /tmp/trueground-fr-web.log
+            exit 1
+          fi
+
+          chrome_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome_bin" ]; then
+            echo 'No headless Chrome/Chromium binary found on runner.'
+            exit 1
+          fi
+
+          mkdir -p build/fr/web-screenshots
+
+          timeout 45s "$chrome_bin"             --headless             --disable-gpu             --no-sandbox             --hide-scrollbars             --force-device-scale-factor=1             --run-all-compositor-stages-before-draw             --virtual-time-budget=5000             --window-size=360,800             --screenshot=build/fr/web-screenshots/fr_dashboard_360_web.png             http://127.0.0.1:7358/
+
+          timeout 45s "$chrome_bin"             --headless             --disable-gpu             --no-sandbox             --hide-scrollbars             --force-device-scale-factor=1             --run-all-compositor-stages-before-draw             --virtual-time-budget=5000             --window-size=390,844             --screenshot=build/fr/web-screenshots/fr_dashboard_390_web.png             http://127.0.0.1:7358/
+
+          test -s build/fr/web-screenshots/fr_dashboard_360_web.png
+          test -s build/fr/web-screenshots/fr_dashboard_390_web.png
+          file build/fr/web-screenshots/fr_dashboard_360_web.png build/fr/web-screenshots/fr_dashboard_390_web.png
+
       - name: Capture urgent support visual evidence
         run: flutter test test/urgent_support_visual_evidence.dart
 
@@ -77,5 +131,6 @@ jobs:
           path: |
             build/lot10/screenshots/
             build/fr/screenshots/
+            build/fr/web-screenshots/
           if-no-files-found: warn
           retention-days: 14
