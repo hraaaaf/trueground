@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
 import '../localization/trueground_locale.dart';
 
 class DashboardV3Screen extends StatelessWidget {
@@ -331,15 +332,9 @@ class _BrandHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Align(
+            const Align(
               alignment: Alignment.centerRight,
-              child: ExcludeSemantics(
-                child: Icon(
-                  Icons.dark_mode_rounded,
-                  size: 21,
-                  color: TrueGroundColors.primary,
-                ),
-              ),
+              child: LanguageToggle(),
             ),
           ],
         ),
