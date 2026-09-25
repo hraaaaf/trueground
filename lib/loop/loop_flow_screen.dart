@@ -137,7 +137,8 @@ class _SupportEscapeHatch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '${context.tr(loopSupportTitle)}. ${context.tr(loopSupportHelper)} ${context.tr('Open Support')}.',
+      label:
+          '${context.tr(loopSupportTitle)}. ${context.tr(loopSupportHelper)} ${context.tr('Open Support')}.',
       excludeSemantics: true,
       child: Material(
         color: Colors.white.withValues(alpha: 0.72),
@@ -208,7 +209,9 @@ class _PatternStep extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          context.tr('Pick one pattern only. You can move on without giving the full story.'),
+          context.tr(
+            'Pick one pattern only. You can move on without giving the full story.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 12),
@@ -253,7 +256,10 @@ class _ActionStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        _FramingCard(title: context.tr(content.title), body: context.tr(content.framing)),
+        _FramingCard(
+          title: context.tr(content.title),
+          body: context.tr(content.framing),
+        ),
         const SizedBox(height: 18),
         Semantics(
           header: true,
@@ -264,7 +270,9 @@ class _ActionStep extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          context.tr('This check-in ends after you choose. It will not keep asking for more detail.'),
+          context.tr(
+            'This check-in ends after you choose. It will not keep asking for more detail.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: 12),
@@ -311,7 +319,10 @@ class _CompleteStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        _FramingCard(title: context.tr(content.title), body: context.tr(loopCompletionCopy)),
+        _FramingCard(
+          title: context.tr(content.title),
+          body: context.tr(loopCompletionCopy),
+        ),
         const SizedBox(height: 16),
         FilledButton(
           key: const ValueKey('loop-continue-action'),
@@ -321,7 +332,9 @@ class _CompleteStep extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          context.tr('There is no restart button here. If the question still feels unresolved, that does not require another pass through this check-in.'),
+          context.tr(
+            'There is no restart button here. If the question still feels unresolved, that does not require another pass through this check-in.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
