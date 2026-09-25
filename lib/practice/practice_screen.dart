@@ -196,7 +196,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                context.tr('Choose one brief practice. Each one has a clear end.'),
+                context.tr(
+                  'Choose one brief practice. Each one has a clear end.',
+                ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 18),
@@ -369,7 +371,9 @@ class _PracticeMenu extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          context.tr('Practice does not diagnose a compulsion or decide whether a real-world safety check is necessary.'),
+          context.tr(
+            'Practice does not diagnose a compulsion or decide whether a real-world safety check is necessary.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
@@ -405,7 +409,10 @@ class _PracticeStep extends StatelessWidget {
         Semantics(
           header: true,
           liveRegion: true,
-          child: Text(context.tr(title), style: Theme.of(context).textTheme.titleMedium),
+          child: Text(
+            context.tr(title),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         const SizedBox(height: 10),
         _PracticePanel(body: body),
@@ -488,7 +495,9 @@ class _PlannedPracticeEmpty extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _PracticePanel(
-          body: context.tr('No saved practice is available in this version.\n\nNothing has been stored to resume yet.'),
+          body: context.tr(
+            'No saved practice is available in this version.\n\nNothing has been stored to resume yet.',
+          ),
         ),
         const SizedBox(height: 18),
         FilledButton(
@@ -619,7 +628,10 @@ class _PracticePanel extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text(context.tr(body), style: Theme.of(context).textTheme.bodyLarge),
+        child: Text(
+          context.tr(body),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
       ),
     );
   }
