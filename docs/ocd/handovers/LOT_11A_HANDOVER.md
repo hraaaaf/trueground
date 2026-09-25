@@ -4,7 +4,7 @@ Date: 2026-09-25
 Repository: `hraaaaf/trueground`
 LOT11-A branch: `lot/11a-conversational-safety-contract`
 Parent handover HEAD: `7e5f56af8767c5888f1938ac73c16a39b1cd417a`
-Substantive pre-handover score candidate: `58e07072851b18ed9b46c5580910565571e22e01`
+Substantive pre-handover score candidate after scientific rebalance: `75bcb43eb9cf9f79764fe2f9b0708fa19b5db033`
 Merge: NOT AUTHORIZED / NOT PERFORMED
 Deployment: NOT AUTHORIZED / NOT PERFORMED
 Provider/model runtime: NONE
@@ -75,11 +75,17 @@ Evidence supports the product-safety direction that:
 - support seeking must not be confused with certainty seeking;
 - repeated digital reassurance is a relevant product risk;
 - structured internet-delivered CBT evidence does not validate unrestricted generative chat;
-- current GenAI mental-health evidence does not justify treatment-efficacy or autonomous clinical claims.
+- recent GenAI mental-health evidence includes positive meta-analytic and randomized-trial signals, but these are not OCD-specific and do not justify unrestricted reassurance-sensitive chat, OCD treatment-efficacy claims or autonomous clinical behavior.
 
 Evidence limitations are explicit.
 
 The IOCDF 2026 digital-reassurance article is treated as professional commentary. Its specific self-help examples are not imported into TrueGround.
+
+Post-review scientific balance correction:
+- PMID 41401240 added to represent the 2025 GenAI mental-health chatbot systematic review/meta-analysis;
+- PMID 41540194 added to represent the 2026 randomized GenAI-enabled CBT-app trial;
+- the specialist review and strict double score were rerun after this evidence-interpretation change;
+- retained score remains 9.0/10 rather than being increased by the correction.
 
 ## Architecture decision
 
