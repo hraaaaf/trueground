@@ -53,7 +53,7 @@ class _TargetDashboard extends StatelessWidget {
                         left: 19,
                         right: 19,
                         top: 10,
-                        height: 38,
+                        height: 48,
                         child: _BrandHeader(),
                       ),
                       Positioned(
