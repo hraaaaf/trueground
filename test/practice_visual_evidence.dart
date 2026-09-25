@@ -41,10 +41,7 @@ Future<void> _jumpToTop(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-Future<void> _tapScrollable(
-  WidgetTester tester,
-  Finder finder,
-) async {
+Future<void> _tapScrollable(WidgetTester tester, Finder finder) async {
   await tester.scrollUntilVisible(
     finder,
     140,
