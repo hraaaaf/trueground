@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
 import '../localization/trueground_locale.dart';
 
 class UrgentSupportScreen extends StatelessWidget {
@@ -14,9 +15,16 @@ class UrgentSupportScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: TrueGroundColors.background,
       body: SafeArea(
-        child: SingleChildScrollView(
-          key: screenKey,
-          padding: const EdgeInsets.all(TrueGroundSpacing.lg),
+        child: Stack(
+          children: <Widget>[
+            SingleChildScrollView(
+              key: screenKey,
+              padding: const EdgeInsets.fromLTRB(
+                TrueGroundSpacing.lg,
+                60,
+                TrueGroundSpacing.lg,
+                TrueGroundSpacing.lg,
+              ),
           child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
@@ -119,7 +127,12 @@ class UrgentSupportScreen extends StatelessWidget {
                 ],
               ),
             ),
-          ),
+            const Positioned(
+              top: 8,
+              right: 12,
+              child: LanguageToggle(),
+            ),
+          ],
         ),
       ),
     );
