@@ -194,7 +194,9 @@ class _ChooseAreaStep extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(
-          context.tr('There is no best answer. Choose the one you want to move toward.'),
+          context.tr(
+            'There is no best answer. Choose the one you want to move toward.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.md),
@@ -224,7 +226,10 @@ class _ChooseActionStep extends StatelessWidget {
       key: ValuesScreen.chooseActionKey,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(context.tr('You chose'), style: Theme.of(context).textTheme.bodyMedium),
+        Text(
+          context.tr('You chose'),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
         const SizedBox(height: TrueGroundSpacing.xs),
         Text(context.tr(area), style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: TrueGroundSpacing.md),
