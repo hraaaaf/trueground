@@ -18,8 +18,7 @@ class DashboardV3Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
     final language = TrueGroundLocaleScope.of(context).language;
-    final flexibleCopyLayout =
-        largeText || language == TrueGroundLanguage.fr;
+    final flexibleCopyLayout = largeText || language == TrueGroundLanguage.fr;
     return flexibleCopyLayout
         ? const _AccessibleDashboard()
         : const _TargetDashboard();
@@ -91,7 +90,9 @@ class _TargetDashboard extends StatelessWidget {
                         right: 19,
                         top: 112,
                         child: Text(
-                          context.tr('Make room for uncertainty.\nChoose what matters.'),
+                          context.tr(
+                            'Make room for uncertainty.\nChoose what matters.',
+                          ),
                           style: TextStyle(
                             fontSize: 15.6,
                             height: 1.25,
@@ -352,7 +353,9 @@ class _HeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: context.tr("I'm stuck in a loop. Notice the urge. Pause before the ritual."),
+      label: context.tr(
+        "I'm stuck in a loop. Notice the urge. Pause before the ritual.",
+      ),
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: BoxDecoration(
@@ -491,7 +494,9 @@ class _HeroCard extends StatelessWidget {
                               ),
                               SizedBox(height: 5),
                               Text(
-                                context.tr('Notice the urge. Pause before the ritual.'),
+                                context.tr(
+                                  'Notice the urge. Pause before the ritual.',
+                                ),
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontSize: 11.3,
