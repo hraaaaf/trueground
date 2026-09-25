@@ -14,6 +14,7 @@ class LanguageToggle extends StatelessWidget {
     if (scope == null) {
       return const SizedBox.shrink();
     }
+
     return Semantics(
       key: toggleKey,
       container: true,
@@ -33,27 +34,20 @@ class LanguageToggle extends StatelessWidget {
             ),
           ],
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              _LanguageSegment(
-                label: 'FR',
-                selected: language == TrueGroundLanguage.fr,
-                onTap: onLanguageChanged == null
-                    ? null
-                    : () => onLanguageChanged(TrueGroundLanguage.fr),
-              ),
-              _LanguageSegment(
-                label: 'EN',
-                selected: language == TrueGroundLanguage.en,
-                onTap: onLanguageChanged == null
-                    ? null
-                    : () => onLanguageChanged(TrueGroundLanguage.en),
-              ),
-            ],
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            _LanguageSegment(
+              label: 'FR',
+              selected: scope.language == TrueGroundLanguage.fr,
+              onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
+            ),
+            _LanguageSegment(
+              label: 'EN',
+              selected: scope.language == TrueGroundLanguage.en,
+              onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
+            ),
+          ],
         ),
       ),
     );
@@ -69,33 +63,39 @@ class _LanguageSegment extends StatelessWidget {
 
   final String label;
   final bool selected;
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      button: onTap != null,
+      button: true,
       selected: selected,
       label: label,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          constraints: const BoxConstraints(minWidth: 38, minHeight: 32),
-          padding: const EdgeInsets.symmetric(horizontal: 9),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: selected ? TrueGroundColors.primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Text(
-            label,
-            textScaler: TextScaler.noScaling,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: selected ? Colors.white : TrueGroundColors.primary,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.2,
+      child: SizedBox(
+        width: 48,
+        height: 48,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(999),
+          child: Center(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 140),
+              width: 38,
+              height: 32,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? TrueGroundColors.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                label,
+                textScaler: TextScaler.noScaling,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: selected ? Colors.white : TrueGroundColors.primary,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
+              ),
             ),
           ),
         ),
