@@ -81,10 +81,7 @@ Future<void> _pumpFrench(
       onLanguageChanged: (_) {},
       child: RepaintBoundary(
         key: boundaryKey,
-        child: MaterialApp(
-          theme: TrueGroundTheme.light,
-          home: child,
-        ),
+        child: MaterialApp(theme: TrueGroundTheme.light, home: child),
       ),
     ),
   );
@@ -102,24 +99,19 @@ void main() {
     for (final scale in <double>[1, 2]) {
       final suffix = scale == 1 ? 'widget' : 'text200_widget';
 
-      testWidgets(
-        'FR dashboard visual ${size.width.toInt()} px scale $scale',
-        (tester) async {
-          await _pumpFrench(
-            tester,
-            const DashboardV3Screen(),
-            size,
-            textScale: scale,
-            filename:
-                'fr_dashboard_${size.width.toInt()}_$suffix.png',
-          );
+      testWidgets('FR dashboard visual ${size.width.toInt()} px scale $scale', (
+        tester,
+      ) async {
+        await _pumpFrench(
+          tester,
+          const DashboardV3Screen(),
+          size,
+          textScale: scale,
+          filename: 'fr_dashboard_${size.width.toInt()}_$suffix.png',
+        );
 
-          expect(
-            find.text('Choisissez votre prochaine action.'),
-            findsOneWidget,
-          );
-        },
-      );
+        expect(find.text('Choisissez votre prochaine action.'), findsOneWidget);
+      });
 
       testWidgets(
         'FR urgent support visual ${size.width.toInt()} px scale $scale',
@@ -129,8 +121,7 @@ void main() {
             const UrgentSupportScreen(),
             size,
             textScale: scale,
-            filename:
-                'fr_urgent_support_${size.width.toInt()}_$suffix.png',
+            filename: 'fr_urgent_support_${size.width.toInt()}_$suffix.png',
           );
 
           expect(
