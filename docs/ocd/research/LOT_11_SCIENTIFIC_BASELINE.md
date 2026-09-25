@@ -89,6 +89,9 @@ Parsons et al. (2025, PMID 40795489) examined online versus interpersonal reassu
 Source:
 https://pubmed.ncbi.nlm.nih.gov/40795489/
 
+Transfer caution:
+The IOCDF article is expert/professional-organization commentary, not a TrueGround protocol. Its specific self-help examples (including timers or exposure suggestions) are **not imported into the app**; LOT07's existing no-autonomous-ERP/no-unvalidated-timer boundary still governs.
+
 LOT11 interpretation:
 - "More messages" is not inherently a success metric.
 - The companion must not optimize for reopening an unresolved certainty loop.
