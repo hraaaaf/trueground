@@ -40,13 +40,17 @@ class LanguageToggle extends StatelessWidget {
             children: <Widget>[
               _LanguageSegment(
                 label: 'FR',
-                selected: scope.language == TrueGroundLanguage.fr,
-                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
+                selected: language == TrueGroundLanguage.fr,
+                onTap: onLanguageChanged == null
+                    ? null
+                    : () => onLanguageChanged(TrueGroundLanguage.fr),
               ),
               _LanguageSegment(
                 label: 'EN',
-                selected: scope.language == TrueGroundLanguage.en,
-                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
+                selected: language == TrueGroundLanguage.en,
+                onTap: onLanguageChanged == null
+                    ? null
+                    : () => onLanguageChanged(TrueGroundLanguage.en),
               ),
             ],
           ),
@@ -65,12 +69,12 @@ class _LanguageSegment extends StatelessWidget {
 
   final String label;
   final bool selected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      button: true,
+      button: onTap != null,
       selected: selected,
       label: label,
       child: InkWell(
