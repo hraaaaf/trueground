@@ -10,7 +10,10 @@ class LanguageToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scope = TrueGroundLocaleScope.of(context);
+    final scope = TrueGroundLocaleScope.maybeOf(context);
+    if (scope == null) {
+      return const SizedBox.shrink();
+    }
     return Semantics(
       key: toggleKey,
       container: true,
