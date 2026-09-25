@@ -39,6 +39,13 @@ Current runtime truth:
 - LOT09 longitudinal memory stores only structured event types and timestamps; no raw chat exists.
 - Current `CompulsionFirewallSession` and `HighRiskBoundary` use English lexical markers. They are **not proven multilingual safety routers** for a future EN/FR chat.
 - The urgent-support surface exists technically, but the acute-risk/crisis policy remains not clinically/regional-policy validated.
+- The existing Practice scientific contract defines the current V1 intended population as adults; LOT11-A does not expand that population.
+
+## Population boundary
+
+LOT11-A inherits the existing adults-only V1 boundary from the approved Practice scientific contract.
+
+It does not authorize conversational behavior targeted to children or adolescents. Any future pediatric/minor scope requires a separate product, clinical, safeguarding, privacy and content decision before runtime support is claimed.
 
 ## Governance decision — numbering
 
@@ -245,6 +252,8 @@ It must not receive by default:
 
 Provider response must be treated as untrusted text until Output Guard approval.
 
+Full raw conversation history is **off by default**. When prior context is truly necessary, prefer the smallest policy-safe summary/state over replaying the transcript; any raw prior turn sent to a provider remains sensitive provider data and must be covered by the selected provider's approved data-flow contract.
+
 The provider must not be able to invoke arbitrary tools or change routes directly in the initial implementation.
 
 ## Deterministic Output Guard requirements
@@ -264,6 +273,8 @@ Before any generated text is shown, future LOT11 implementation must reject or r
 - instruction that professional care is unnecessary.
 
 A guard failure must fail closed to a deterministic bounded fallback. It must never expose the rejected unsafe text and then append a disclaimer.
+
+The Output Guard is **defense in depth, not a semantic safety proof**. A lexical/rule guard cannot be assumed to catch every unsafe paraphrase. The pre-model capability policy must prevent disallowed tasks from reaching the model in the first place, and whole-system adversarial evals remain mandatory even when every deterministic guard passes.
 
 ## Privacy / data-flow contract
 
