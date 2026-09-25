@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
-import '../localization/language_toggle.dart';
 import '../localization/trueground_locale.dart';
 
 class AppShell extends StatelessWidget {
@@ -37,18 +36,15 @@ class AppShell extends StatelessWidget {
             ? Colors.transparent
             : TrueGroundColors.background,
         body: SafeArea(
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              if (onHome) const _HomeGlassBackdrop(),
-              navigationShell,
-              const Positioned(
-                top: 8,
-                right: 12,
-                child: LanguageToggle(),
-              ),
-            ],
-          ),
+          child: onHome
+              ? Stack(
+                  fit: StackFit.expand,
+                  children: <Widget>[
+                    const _HomeGlassBackdrop(),
+                    navigationShell,
+                  ],
+                )
+              : navigationShell,
         ),
         bottomNavigationBar: SafeArea(
           top: false,
