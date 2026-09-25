@@ -110,7 +110,7 @@ class _ValuesScreenState extends State<ValuesScreen> {
                   const LanguageToggle(),
                 ],
               ),
-              const SizedBox(height: TrueGroundSpacing.lg),
+              const SizedBox(height: TrueGroundSpacing.sm),
               Semantics(
                 header: true,
                 child: Text(
