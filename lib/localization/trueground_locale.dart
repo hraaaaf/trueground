@@ -322,4 +322,3 @@ const Map<String, String> _fr = <String, String>{
   'Try again when you are ready.': 'Réessayez lorsque vous êtes prêt.',
   'Try again': 'Réessayer',
 };
-
