@@ -73,7 +73,7 @@ jobs:
           p = Path("build/web/index.html")
           html = p.read_text()
           injection = """<script>
-          localStorage.setItem('flutter.trueground.language.v1', JSON.stringify('fr'));
+          localStorage.setItem('flutter.trueground.language.v1', 'fr');
           </script>"""
           html = html.replace("</head>", injection + "\n</head>", 1)
           p.write_text(html)
