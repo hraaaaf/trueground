@@ -308,7 +308,7 @@ class _BrandHeader extends StatelessWidget {
       label: 'TrueGround',
       excludeSemantics: true,
       child: SizedBox(
-        height: 38,
+        height: 48,
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
