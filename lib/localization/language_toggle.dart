@@ -23,33 +23,33 @@ class LanguageToggle extends StatelessWidget {
         type: MaterialType.transparency,
         child: DecoratedBox(
           decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.86),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(
-            color: TrueGroundColors.outline.withValues(alpha: 0.9),
+            color: Colors.white.withValues(alpha: 0.86),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: TrueGroundColors.outline.withValues(alpha: 0.9),
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: TrueGroundColors.primary.withValues(alpha: 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: TrueGroundColors.primary.withValues(alpha: 0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            _LanguageSegment(
-              label: 'FR',
-              selected: scope.language == TrueGroundLanguage.fr,
-              onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
-            ),
-            _LanguageSegment(
-              label: 'EN',
-              selected: scope.language == TrueGroundLanguage.en,
-              onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
-            ),
-          ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _LanguageSegment(
+                label: 'FR',
+                selected: scope.language == TrueGroundLanguage.fr,
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
+              ),
+              _LanguageSegment(
+                label: 'EN',
+                selected: scope.language == TrueGroundLanguage.en,
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
+              ),
+            ],
           ),
         ),
       ),
