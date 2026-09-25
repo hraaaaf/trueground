@@ -278,6 +278,8 @@ The Output Guard is **defense in depth, not a semantic safety proof**. A lexical
 
 ## Privacy / data-flow contract
 
+**NO RAW CHAT PERSISTENCE BY DEFAULT.**
+
 Conversation text is treated as high-sensitivity data.
 
 ### LOT11-A
