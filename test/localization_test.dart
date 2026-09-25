@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trueground/app/trueground_app.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:trueground/dashboard/dashboard_v3_screen.dart';
@@ -89,6 +90,28 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Use urgent real-world help'), findsNothing);
+    });
+
+    testWidgets('header FR EN toggle switches language without navigation', (
+      tester,
+    ) async {
+      await tester.pumpWidget(const TrueGroundApp());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your next move.'), findsOneWidget);
+      expect(find.text('FR'), findsOneWidget);
+      expect(find.text('EN'), findsOneWidget);
+
+      await tester.tap(find.text('FR'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choisissez votre prochaine action.'), findsOneWidget);
+      expect(find.text('Choose your next move.'), findsNothing);
+
+      await tester.tap(find.text('EN'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose your next move.'), findsOneWidget);
     });
 
     testWidgets('French dashboard uses flexible layout at 390 px', (
