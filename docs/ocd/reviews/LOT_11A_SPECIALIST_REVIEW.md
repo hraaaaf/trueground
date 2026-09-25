@@ -107,6 +107,25 @@ Scientific baseline now explicitly says those examples are not imported; LOT07 n
 Status:
 CLOSED.
 
+### F-11A-06 — scientific baseline risked confirmation bias on GenAI evidence
+
+Finding:
+The first baseline emphasized validation/safety gaps in generative mental-health AI but did not explicitly surface recent positive evidence, including a GenAI mental-health chatbot meta-analysis and a 2026 randomized CBT-app trial.
+
+Risk:
+A safety specification can become scientifically weaker if it cherry-picks only adverse or cautionary evidence.
+
+Correction:
+The baseline now includes:
+- PMID 41401240, a 2025 systematic review/meta-analysis of GenAI mental-health chatbots, with a small average effect across 14 RCTs but moderate risk of bias and wide uncertainty;
+- PMID 41540194, a 2026 RCT in 540 adults with anxiety/depression symptoms showing higher engagement with a GenAI-enabled CBT app but no overall additional symptom reduction versus digital workbooks;
+- the existing reviews documenting validation and safeguard gaps.
+
+The interpretation is now explicitly two-sided: promising mental-health evidence exists, but it is not OCD-specific and does not validate unrestricted reassurance-sensitive chat.
+
+Status:
+CLOSED BEFORE RESCORING.
+
 ## Reviewer ledger
 
 | Reviewer | Verdict | Strongest challenge / evidence |
