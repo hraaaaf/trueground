@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
 import '../localization/trueground_locale.dart';
 
 enum _SupportStep { menu, trustedPerson, careTeam, localProfessional }
@@ -45,11 +46,18 @@ class _SupportScreenState extends State<SupportScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(
-                'TrueGround',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: TrueGroundColors.primary,
-                ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'TrueGround',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: TrueGroundColors.primary,
+                      ),
+                    ),
+                  ),
+                  const LanguageToggle(),
+                ],
               ),
               const SizedBox(height: TrueGroundSpacing.lg),
               Semantics(
