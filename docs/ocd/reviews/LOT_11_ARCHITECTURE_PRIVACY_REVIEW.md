@@ -139,6 +139,8 @@ LOT11-A now states that pediatric/minor conversational use is not authorized. An
 
 ## Finding G — raw conversation storage must remain opt-in, not default
 
+**NO RAW CHAT PERSISTENCE BY DEFAULT.**
+
 Current LOT09 memory is a narrow local store of structured event types and timestamps. It is not raw dialogue memory.
 
 Verdict:
