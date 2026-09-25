@@ -6,7 +6,7 @@ import 'trueground_locale.dart';
 class LanguageScreen extends StatelessWidget {
   const LanguageScreen({super.key});
 
-  static const screenKey = ValueKey('screen-language');
+  static const screenKey = ValueKey('screen-profile');
 
   @override
   Widget build(BuildContext context) {
