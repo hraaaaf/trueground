@@ -38,14 +38,12 @@ class LanguageToggle extends StatelessWidget {
               _LanguageSegment(
                 label: 'FR',
                 selected: scope.language == TrueGroundLanguage.fr,
-                onTap: () =>
-                    scope.onLanguageChanged(TrueGroundLanguage.fr),
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
               ),
               _LanguageSegment(
                 label: 'EN',
                 selected: scope.language == TrueGroundLanguage.en,
-                onTap: () =>
-                    scope.onLanguageChanged(TrueGroundLanguage.en),
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
               ),
             ],
           ),
@@ -81,9 +79,7 @@ class _LanguageSegment extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 9),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected
-                ? TrueGroundColors.primary
-                : Colors.transparent,
+            color: selected ? TrueGroundColors.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Text(
