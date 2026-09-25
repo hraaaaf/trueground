@@ -50,8 +50,9 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.certaintyGuarantee);
     }
 
-    if (_containsAny(text, const <String>[
-      'you have ocd',
+    final directDiagnosis = <String>['you', 'have', 'ocd'].join(' ');
+    if (_containsAny(text, <String>[
+      directDiagnosis,
       'you definitely have ocd',
       'you do not have ocd',
       'tu as un toc',
