@@ -38,7 +38,7 @@ class _TrueGroundAppState extends State<TrueGroundApp> {
     patternNow: widget.patternNow,
   );
 
-  final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
+  SharedPreferencesAsync? _preferences;
   TrueGroundLanguage _language = TrueGroundLanguage.en;
 
   @override
@@ -49,7 +49,8 @@ class _TrueGroundAppState extends State<TrueGroundApp> {
 
   Future<void> _loadLanguage() async {
     try {
-      final saved = await _preferences.getString(_languageKey);
+      final preferences = _preferences ??= SharedPreferencesAsync();
+      final saved = await preferences.getString(_languageKey);
       if (!mounted) return;
       setState(() {
         _language = TrueGroundLanguageCode.fromCode(saved);
@@ -69,7 +70,8 @@ class _TrueGroundAppState extends State<TrueGroundApp> {
 
   Future<void> _persistLanguage(TrueGroundLanguage language) async {
     try {
-      await _preferences.setString(_languageKey, language.code);
+      final preferences = _preferences ??= SharedPreferencesAsync();
+      await preferences.setString(_languageKey, language.code);
     } catch (_) {
       // The selected language remains active for the current session.
     }
