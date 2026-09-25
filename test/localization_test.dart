@@ -44,15 +44,18 @@ void main() {
       }
     });
 
-    test('French intrusive-thought wording preserves intent/diagnosis boundary', () {
-      expect(
-        translateTrueGround(
-          TrueGroundLanguage.fr,
-          'This tool will not infer intent or make a diagnosis from an intrusive thought or image.',
-        ),
-        'Cet outil ne déduira pas une intention et ne posera pas de diagnostic à partir d’une pensée ou d’une image intrusive.',
-      );
-    });
+    test(
+      'French intrusive-thought wording preserves intent/diagnosis boundary',
+      () {
+        expect(
+          translateTrueGround(
+            TrueGroundLanguage.fr,
+            'This tool will not infer intent or make a diagnosis from an intrusive thought or image.',
+          ),
+          'Cet outil ne déduira pas une intention et ne posera pas de diagnostic à partir d’une pensée ou d’une image intrusive.',
+        );
+      },
+    );
 
     test('French urgent wording does not claim dispatch or risk assessment', () {
       expect(
@@ -82,7 +85,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Faites appel à une aide urgente dans la vie réelle'), findsOneWidget);
+      expect(
+        find.text('Faites appel à une aide urgente dans la vie réelle'),
+        findsOneWidget,
+      );
       expect(
         find.text(
           'TrueGround ne peut pas déterminer s’il s’agit d’une urgence ni évaluer votre sécurité immédiate.',
