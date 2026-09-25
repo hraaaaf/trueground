@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
+import '../localization/trueground_locale.dart';
 import '../patterns/pattern_memory_store.dart';
 import 'practice_completion_store.dart';
 
@@ -168,18 +170,25 @@ class _PracticeScreenState extends State<PracticeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Text(
-                'TrueGround',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: TrueGroundColors.primary,
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      'TrueGround',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: TrueGroundColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const LanguageToggle(),
+                ],
               ),
               const SizedBox(height: 18),
               Semantics(
                 header: true,
                 child: Text(
-                  'Practice',
+                  context.tr('Practice'),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: TrueGroundColors.primary,
                   ),
@@ -187,7 +196,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Choose one brief practice. Each one has a clear end.',
+                context.tr(
+                  'Choose one brief practice. Each one has a clear end.',
+                ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 18),
@@ -360,7 +371,9 @@ class _PracticeMenu extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Practice does not diagnose a compulsion or decide whether a real-world safety check is necessary.',
+          context.tr(
+            'Practice does not diagnose a compulsion or decide whether a real-world safety check is necessary.',
+          ),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ],
@@ -396,7 +409,10 @@ class _PracticeStep extends StatelessWidget {
         Semantics(
           header: true,
           liveRegion: true,
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          child: Text(
+            context.tr(title),
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
         ),
         const SizedBox(height: 10),
         _PracticePanel(body: body),
@@ -408,13 +424,13 @@ class _PracticeStep extends StatelessWidget {
         FilledButton(
           onPressed: onPrimary,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: Text(primaryLabel),
+          child: Text(context.tr(primaryLabel)),
         ),
         const SizedBox(height: 8),
         TextButton(
           onPressed: onSecondary,
           style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-          child: Text(secondaryLabel),
+          child: Text(context.tr(secondaryLabel)),
         ),
       ],
     );
@@ -436,7 +452,7 @@ class _PracticeEnd extends StatelessWidget {
           header: true,
           liveRegion: true,
           child: Text(
-            'Practice ends here.',
+            context.tr('Practice ends here.'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
@@ -447,7 +463,7 @@ class _PracticeEnd extends StatelessWidget {
           key: const ValueKey('practice-return-home'),
           onPressed: onHome,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: const Text('Return to Home'),
+          child: Text(context.tr('Return to Home')),
         ),
       ],
     );
@@ -473,28 +489,29 @@ class _PlannedPracticeEmpty extends StatelessWidget {
           header: true,
           liveRegion: true,
           child: Text(
-            'Continue planned practice',
+            context.tr('Continue planned practice'),
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         const SizedBox(height: 10),
-        const _PracticePanel(
-          body:
-              'No saved practice is available in this version.\n\nNothing has been stored to resume yet.',
+        _PracticePanel(
+          body: context.tr(
+            'No saved practice is available in this version.\n\nNothing has been stored to resume yet.',
+          ),
         ),
         const SizedBox(height: 18),
         FilledButton(
           key: const ValueKey('practice-planned-back'),
           onPressed: onBack,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: const Text('Back to Practice'),
+          child: Text(context.tr('Back to Practice')),
         ),
         const SizedBox(height: 8),
         TextButton(
           key: const ValueKey('practice-planned-home'),
           onPressed: onHome,
           style: TextButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-          child: const Text('Return to Home'),
+          child: Text(context.tr('Return to Home')),
         ),
       ],
     );
@@ -521,7 +538,7 @@ class _PracticeChoiceCard extends StatelessWidget {
     return Semantics(
       button: enabled,
       enabled: enabled,
-      label: '$title. $helper',
+      label: '${context.tr(title)}. ${context.tr(helper)}',
       excludeSemantics: true,
       child: Material(
         color: enabled
@@ -552,12 +569,12 @@ class _PracticeChoiceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          title,
+                          context.tr(title),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          helper,
+                          context.tr(helper),
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -611,7 +628,10 @@ class _PracticePanel extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text(body, style: Theme.of(context).textTheme.bodyLarge),
+        child: Text(
+          context.tr(body),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
       ),
     );
   }
@@ -625,7 +645,7 @@ class _SafetyNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: text,
+      label: context.tr(text),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: TrueGroundColors.primaryContainer.withValues(alpha: 0.60),
@@ -646,7 +666,7 @@ class _SafetyNote extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  text,
+                  context.tr(text),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

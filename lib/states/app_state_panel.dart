@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../design/app_theme.dart';
+import '../localization/trueground_locale.dart';
 
 enum AppStateKind { loading, empty, error }
 
@@ -39,7 +40,7 @@ class AppStatePanel extends StatelessWidget {
             if (kind == AppStateKind.loading)
               Semantics(
                 liveRegion: true,
-                label: 'Loading',
+                label: context.tr('Loading'),
                 child: const SizedBox.square(
                   dimension: 32,
                   child: CircularProgressIndicator(strokeWidth: 3),
@@ -55,13 +56,13 @@ class AppStatePanel extends StatelessWidget {
               ),
             const SizedBox(height: TrueGroundSpacing.md),
             Text(
-              config.$2,
+              context.tr(config.$2),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: TrueGroundSpacing.sm),
             Text(
-              config.$3,
+              context.tr(config.$3),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
@@ -69,7 +70,7 @@ class AppStatePanel extends StatelessWidget {
               const SizedBox(height: TrueGroundSpacing.md),
               FilledButton.tonal(
                 onPressed: onRetry,
-                child: const Text('Try again'),
+                child: Text(context.tr('Try again')),
               ),
             ],
           ],

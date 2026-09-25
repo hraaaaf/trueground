@@ -41,6 +41,17 @@ Future<void> _jumpToTop(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+Future<void> _tapScrollable(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(
+    finder,
+    140,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+  await tester.pumpAndSettle();
+}
+
 class _EmptyPracticeCompletionStore implements PracticeCompletionStore {
   @override
   Future<DateTime?> readPauseCompletedAt() async => null;
@@ -90,12 +101,11 @@ void main() {
       expect(find.byKey(PracticeScreen.pauseMomentKey), findsOneWidget);
       await _capture(tester, boundaryKey, 'practice_${width}_pause_widget.png');
 
-      await tester.tap(find.text('Exit practice'));
-      await tester.pumpAndSettle();
-      await tester.tap(
+      await _tapScrollable(tester, find.text('Exit practice'));
+      await _tapScrollable(
+        tester,
         find.byKey(const ValueKey('practice-choice-uncertainty')),
       );
-      await tester.pumpAndSettle();
       await tester.tap(find.text('Begin'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Continue'));
@@ -109,8 +119,7 @@ void main() {
         'practice_${width}_uncertainty_widget.png',
       );
 
-      await tester.tap(find.text('Exit practice'));
-      await tester.pumpAndSettle();
+      await _tapScrollable(tester, find.text('Exit practice'));
       final planned = find.byKey(const ValueKey('practice-choice-planned'));
       await tester.scrollUntilVisible(
         planned,

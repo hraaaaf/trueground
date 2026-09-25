@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../design/app_theme.dart';
+import '../localization/language_toggle.dart';
+import '../localization/trueground_locale.dart';
 
 class UrgentSupportScreen extends StatelessWidget {
   const UrgentSupportScreen({super.key});
@@ -22,12 +24,20 @@ class UrgentSupportScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  Text(
-                    'TrueGround',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: TrueGroundColors.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          'TrueGround',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: TrueGroundColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                        ),
+                      ),
+                      const LanguageToggle(),
+                    ],
                   ),
                   const SizedBox(height: TrueGroundSpacing.lg),
                   Container(
@@ -46,23 +56,24 @@ class UrgentSupportScreen extends StatelessWidget {
                   Semantics(
                     header: true,
                     child: Text(
-                      'Use urgent real-world help',
+                      context.tr('Use urgent real-world help'),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
                   const SizedBox(height: TrueGroundSpacing.sm),
                   Text(
-                    'TrueGround cannot determine whether this is an emergency '
-                    'or assess your immediate safety.',
+                    context.tr(
+                      'TrueGround cannot determine whether this is an emergency or assess your immediate safety.',
+                    ),
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: TrueGroundSpacing.lg),
                   _UrgentActionCard(
                     icon: Icons.local_hospital_outlined,
                     child: Text(
-                      'If there is immediate danger, or you cannot stay safe, '
-                      'contact the emergency services available where you are or '
-                      'go to the nearest emergency department now.',
+                      context.tr(
+                        'If there is immediate danger, or you cannot stay safe, contact the emergency services available where you are or go to the nearest emergency department now.',
+                      ),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
@@ -70,8 +81,9 @@ class UrgentSupportScreen extends StatelessWidget {
                   _UrgentActionCard(
                     icon: Icons.people_outline_rounded,
                     child: Text(
-                      'If possible, stay with or contact a trusted person or '
-                      'health professional while you get urgent help.',
+                      context.tr(
+                        'If possible, stay with or contact a trusted person or health professional while you get urgent help.',
+                      ),
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
@@ -95,7 +107,9 @@ class UrgentSupportScreen extends StatelessWidget {
                         const SizedBox(width: TrueGroundSpacing.sm),
                         Expanded(
                           child: Text(
-                            'TrueGround has not contacted anyone or dispatched help for you.',
+                            context.tr(
+                              'TrueGround has not contacted anyone or dispatched help for you.',
+                            ),
                             style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         ),
@@ -106,12 +120,12 @@ class UrgentSupportScreen extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () => context.go('/support'),
                     icon: const Icon(Icons.people_outline_rounded),
-                    label: const Text('Open regular Support'),
+                    label: Text(context.tr('Open regular Support')),
                   ),
                   const SizedBox(height: TrueGroundSpacing.sm),
                   TextButton(
                     onPressed: () => context.go('/'),
-                    child: const Text('Back to Home'),
+                    child: Text(context.tr('Back to Home')),
                   ),
                 ],
               ),
