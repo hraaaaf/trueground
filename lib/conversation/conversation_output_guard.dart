@@ -2,6 +2,7 @@ enum OutputGuardDisposition { allow, reject }
 
 enum OutputGuardViolation {
   none,
+  emptyOutput,
   certaintyGuarantee,
   unsupportedDiagnosis,
   medicationInstruction,
@@ -32,7 +33,7 @@ abstract final class DeterministicConversationOutputGuard {
     if (text.isEmpty) {
       return const OutputGuardDecision(
         disposition: OutputGuardDisposition.reject,
-        violation: OutputGuardViolation.fabricatedMemoryClaim,
+        violation: OutputGuardViolation.emptyOutput,
       );
     }
 
