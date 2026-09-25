@@ -310,8 +310,8 @@ class _BrandHeader extends StatelessWidget {
         height: 38,
         child: Stack(
           alignment: Alignment.center,
-          children: const <Widget>[
-            Row(
+          children: <Widget>[
+            const Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 SizedBox(
@@ -333,7 +333,7 @@ class _BrandHeader extends StatelessWidget {
                 ),
               ],
             ),
-            Align(
+            const Align(
               alignment: Alignment.centerRight,
               child: LanguageToggle(),
             ),
