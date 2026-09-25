@@ -266,7 +266,10 @@ class _Loaded extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(onPressed: onHome, child: Text(context.tr('Finish review'))),
+        FilledButton(
+          onPressed: onHome,
+          child: Text(context.tr('Finish review')),
+        ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Container(
           padding: const EdgeInsets.only(top: TrueGroundSpacing.xs),
@@ -302,11 +305,16 @@ class _Empty extends StatelessWidget {
         ),
         const SizedBox(height: TrueGroundSpacing.sm),
         Text(
-          context.tr('TrueGround will not infer a pattern from missing history.'),
+          context.tr(
+            'TrueGround will not infer a pattern from missing history.',
+          ),
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: TrueGroundSpacing.lg),
-        FilledButton(onPressed: onHome, child: Text(context.tr('Back to Home'))),
+        FilledButton(
+          onPressed: onHome,
+          child: Text(context.tr('Back to Home')),
+        ),
       ],
     );
   }
