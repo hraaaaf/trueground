@@ -335,7 +335,7 @@ class _BrandHeader extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.centerRight,
-              child: const LanguageToggle(),
+              child: LanguageToggle(),
             ),
           ],
         ),
