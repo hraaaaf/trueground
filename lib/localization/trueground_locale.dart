@@ -122,7 +122,8 @@ const Map<String, String> _fr = <String, String>{
   'There is no restart button here. If the question still feels unresolved, that does not require another pass through this check-in.':
       'Il n’y a pas de bouton pour recommencer ici. Si la question semble encore non résolue, cela ne nécessite pas un nouveau passage par cette étape.',
   'I want certainty': 'Je veux une certitude',
-  'I keep wanting a definite answer.': 'Je continue à vouloir une réponse définitive.',
+  'I keep wanting a definite answer.':
+      'Je continue à vouloir une réponse définitive.',
   'This may be a certainty-seeking loop. This tool will not settle the question for you.':
       'Cela peut ressembler à une boucle de recherche de certitude. Cet outil ne tranchera pas la question à votre place.',
   'I want to check': 'Je veux vérifier',
@@ -130,7 +131,8 @@ const Map<String, String> _fr = <String, String>{
   'This may be a checking loop. This tool will not verify the answer for you.':
       'Cela peut ressembler à une boucle de vérification. Cet outil ne vérifiera pas la réponse à votre place.',
   "I'm stuck analyzing": 'Je suis coincé dans l’analyse',
-  'I keep trying to solve it mentally.': 'Je continue à essayer de résoudre la question mentalement.',
+  'I keep trying to solve it mentally.':
+      'Je continue à essayer de résoudre la question mentalement.',
   'This may be a rumination loop. More analysis is not the goal of this check-in.':
       'Cela peut ressembler à une boucle de rumination. Le but de cette étape n’est pas d’analyser davantage.',
   "I'm repeating or confessing": 'Je répète ou je ressens le besoin d’avouer',
@@ -143,7 +145,8 @@ const Map<String, String> _fr = <String, String>{
   'This tool will not infer intent or make a diagnosis from an intrusive thought or image.':
       'Cet outil ne déduira pas une intention et ne posera pas de diagnostic à partir d’une pensée ou d’une image intrusive.',
   'Something else': 'Autre chose',
-  'I still want a bounded next step.': 'Je veux tout de même une prochaine étape limitée.',
+  'I still want a bounded next step.':
+      'Je veux tout de même une prochaine étape limitée.',
   'We do not need to label the pattern precisely to choose a bounded next step.':
       'Il n’est pas nécessaire de nommer précisément le schéma pour choisir une prochaine étape limitée.',
   'Leave the question unresolved for now and move to the Practice area.':
@@ -226,7 +229,8 @@ const Map<String, String> _fr = <String, String>{
       'Trouver un soutien professionnel en dehors de TrueGround',
   'Use a verified local health service or professional directory.':
       'Utilisez un service de santé local vérifié ou un annuaire professionnel.',
-  'Reach someone you trust': 'Contactez une personne en qui vous avez confiance',
+  'Reach someone you trust':
+      'Contactez une personne en qui vous avez confiance',
   'Choose the person yourself and use the phone or messaging route you normally use. TrueGround has not contacted them.':
       'Choisissez vous-même la personne et utilisez le téléphone ou la messagerie que vous utilisez habituellement. TrueGround ne l’a pas contactée.',
   'Ask for company or practical support rather than repeated certainty about the obsession. A trusted person does not need to solve the uncertainty for you.':
@@ -266,7 +270,8 @@ const Map<String, String> _fr = <String, String>{
   'Take my next step': 'Faire ma prochaine étape',
   'Leave for now': 'Quitter pour le moment',
   'I tapped the wrong area': 'J’ai choisi le mauvais domaine',
-  'Take the step outside TrueGround.': 'Faites l’étape en dehors de TrueGround.',
+  'Take the step outside TrueGround.':
+      'Faites l’étape en dehors de TrueGround.',
   'Uncertainty does not have to be settled first. This flow ends here so the next move can happen in real life.':
       'L’incertitude n’a pas besoin d’être résolue d’abord. Ce parcours se termine ici afin que la prochaine action puisse avoir lieu dans la vie réelle.',
 
@@ -274,7 +279,8 @@ const Map<String, String> _fr = <String, String>{
       'Il s’agit d’un bref aperçu de l’activité enregistrée sur cet appareil. Ce n’est ni un diagnostic, ni un score de sévérité, ni une note de progression, ni une prédiction.',
   'TrueGround stores only structured activity types and timestamps for this review. No thought, fear, trigger or free-text content is saved here. Records expire after 30 days.':
       'Pour cette revue, TrueGround enregistre uniquement des types d’activité structurés et des horodatages. Aucune pensée, peur, déclencheur ou texte libre n’est enregistré ici. Les données expirent après 30 jours.',
-  'Recent saved activity includes:': 'L’activité récemment enregistrée comprend :',
+  'Recent saved activity includes:':
+      'L’activité récemment enregistrée comprend :',
   'Remove this type': 'Supprimer ce type',
   'No frequency, streak, trend or better/worse conclusion is shown. You do not need to keep checking this screen.':
       'Aucune fréquence, série, tendance ni conclusion du type « mieux/pire » n’est affichée. Vous n’avez pas besoin de vérifier cet écran à répétition.',
@@ -295,7 +301,8 @@ const Map<String, String> _fr = <String, String>{
   'Chose a values-based next step':
       'Choix d’une prochaine étape guidée par ses valeurs',
 
-  'Use urgent real-world help': 'Faites appel à une aide urgente dans la vie réelle',
+  'Use urgent real-world help':
+      'Faites appel à une aide urgente dans la vie réelle',
   'TrueGround cannot determine whether this is an emergency or assess your immediate safety.':
       'TrueGround ne peut pas déterminer s’il s’agit d’une urgence ni évaluer votre sécurité immédiate.',
   'If there is immediate danger, or you cannot stay safe, contact the emergency services available where you are or go to the nearest emergency department now.':
