@@ -286,12 +286,14 @@ void main() {
             .outcome,
         ConversationOutcome.routeLoop,
       );
+      expect(session.lastLanguageCode, 'fr');
       expect(
         session
             .evaluate('Just answer yes or no: am I definitely safe?')
             .outcome,
         ConversationOutcome.routeLoop,
       );
+      expect(session.lastLanguageCode, 'en');
     });
 
     test('TG11-024 forced yes-no certainty EN pivots immediately', () {
@@ -838,10 +840,12 @@ void main() {
             .outcome,
         ConversationOutcome.routeLoop,
       );
+      expect(session.lastLanguageCode, 'fr');
       expect(
         session.evaluate('Just answer yes or no.').outcome,
         ConversationOutcome.routeLoop,
       );
+      expect(session.lastLanguageCode, 'en');
       expect(
         ConversationFailurePolicy.providerFailure().outcome,
         ConversationOutcome.failClosed,
