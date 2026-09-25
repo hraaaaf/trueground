@@ -133,25 +133,38 @@ It does NOT establish:
 
 LOT11 must not collapse those two propositions.
 
-## 5. Generative AI evidence remains insufficient for treatment claims
+## 5. Generative AI evidence is emerging but does not validate unrestricted OCD chat
 
-Recent systematic/scoping reviews of generative AI and mental-health chatbots describe rapid growth but continued gaps in clinical validation, crisis safeguards, benchmarking, privacy and consistency.
+The 2025 systematic review by Hua et al. (PMID 40948070) charted 160 mental-health chatbot studies and found that most LLM studies were still at early validation stages; only a minority had clinical-efficacy testing. The review highlights incorrect responses, privacy risks and unverified therapeutic effects as continuing concerns.
 
-Examples:
-- PMID 40948070 — systematic review of generative AI in mental health:
-  https://pubmed.ncbi.nlm.nih.gov/40948070/
-- PMID 42194487 — scoping review of safety/safeguards in generative-AI mental-health applications:
+Source:
+https://pubmed.ncbi.nlm.nih.gov/40948070/
+
+A 2025 systematic review/meta-analysis of generative-AI mental-health chatbots (PMID 41401240) included 14 RCTs in its quantitative synthesis and reported a small average effect on negative mental-health outcomes, while also reporting moderate risk of bias and wide uncertainty/prediction intervals.
+
+Source:
+https://pubmed.ncbi.nlm.nih.gov/41401240/
+
+A 2026 randomized trial of a GenAI-enabled CBT app in 540 adults with anxiety/depression symptoms (PMID 41540194) found substantially higher engagement than digital workbooks but no overall additional symptom reduction between groups. This is useful positive evidence for engagement, but it is not OCD-specific and does not validate an unrestricted reassurance-sensitive chatbot.
+
+Source:
+https://pubmed.ncbi.nlm.nih.gov/41540194/
+
+Other reviews continue to document major validation and safeguard gaps:
+- PMID 42194487 — systematic scoping review of safety mechanisms in generative-AI mental-health chatbots; it reports heterogeneous safeguards, underdeveloped crisis protocols and documented failures including missed suicidal ideation and inaccurate clinical information:
   https://pubmed.ncbi.nlm.nih.gov/42194487/
-- PMID 39423368 — systematic review of LLM use in mental health:
+- PMID 39423368 — systematic review of LLM applications in mental health, highlighting hallucination, reliability, privacy and overreliance concerns:
   https://pubmed.ncbi.nlm.nih.gov/39423368/
-- PMID 41592221 — review of evaluation/safeguard practices for LLM mental-health chatbots:
+- PMID 41592221 — systematic review of LLM-based mental-health counseling chatbots, reporting minimal external clinical validation and inconsistent ethics/safety reporting:
   https://pubmed.ncbi.nlm.nih.gov/41592221/
 
 LOT11 interpretation:
-- model fluency is not safety evidence;
+- current evidence is neither "LLMs never help" nor "LLM chat is clinically validated";
+- positive mental-health evidence must be kept in scope, while its populations, conditions, comparators and intervention structures must not be generalized to OCD;
+- model fluency or engagement is not OCD safety evidence;
 - manual happy-path conversations are not a sufficient acceptance method;
 - deterministic routing, output checks, provider-failure behavior, privacy minimization and versioned adversarial evals must exist before runtime activation;
-- no treatment-efficacy claim follows from a provider benchmark.
+- no OCD treatment-efficacy claim follows from a provider benchmark or from non-OCD mental-health trials.
 
 ## 6. Intrusive thoughts and intent
 
