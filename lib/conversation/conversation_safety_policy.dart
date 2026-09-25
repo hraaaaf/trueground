@@ -68,11 +68,15 @@ class ConversationSafetySession {
   final int maxTurns;
   final List<_SafetyTurn> _turns = <_SafetyTurn>[];
   final Set<_PivotKey> _pivoted = <_PivotKey>{};
+  String? _lastLanguageCode;
+
+  String? get lastLanguageCode => _lastLanguageCode;
 
   ConversationDecision evaluate(
     String rawMessage, {
     String languageCode = 'en',
   }) {
+    _lastLanguageCode = languageCode == 'fr' ? 'fr' : 'en';
     final normalized = _normalize(rawMessage);
     if (normalized.isEmpty) {
       return _remember(
@@ -214,6 +218,7 @@ class ConversationSafetySession {
   void reset() {
     _turns.clear();
     _pivoted.clear();
+    _lastLanguageCode = null;
   }
 
   int get rememberedTurnCount => _turns.length;
