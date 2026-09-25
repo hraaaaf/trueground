@@ -45,15 +45,13 @@ class LanguageScreen extends StatelessWidget {
               _LanguageChoice(
                 language: TrueGroundLanguage.en,
                 selected: scope.language == TrueGroundLanguage.en,
-                onTap: () =>
-                    scope.onLanguageChanged(TrueGroundLanguage.en),
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
               ),
               const SizedBox(height: TrueGroundSpacing.sm),
               _LanguageChoice(
                 language: TrueGroundLanguage.fr,
                 selected: scope.language == TrueGroundLanguage.fr,
-                onTap: () =>
-                    scope.onLanguageChanged(TrueGroundLanguage.fr),
+                onTap: () => scope.onLanguageChanged(TrueGroundLanguage.fr),
               ),
               const SizedBox(height: TrueGroundSpacing.lg),
               Card(
@@ -112,9 +110,7 @@ class _LanguageChoice extends StatelessWidget {
                   ),
                 ),
                 Icon(
-                  selected
-                      ? Icons.check_circle_rounded
-                      : Icons.circle_outlined,
+                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
                   color: TrueGroundColors.primary,
                 ),
               ],
