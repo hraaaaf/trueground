@@ -19,8 +19,10 @@ class LanguageToggle extends StatelessWidget {
       key: toggleKey,
       container: true,
       label: context.tr('Language'),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
+      child: Material(
+        type: MaterialType.transparency,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.86),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
@@ -48,6 +50,7 @@ class LanguageToggle extends StatelessWidget {
               onTap: () => scope.onLanguageChanged(TrueGroundLanguage.en),
             ),
           ],
+          ),
         ),
       ),
     );
