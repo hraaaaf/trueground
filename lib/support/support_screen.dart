@@ -214,7 +214,10 @@ class _SupportDetail extends StatelessWidget {
         Text(context.tr(title), style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: TrueGroundSpacing.md),
         for (final paragraph in paragraphs) ...<Widget>[
-          Text(context.tr(paragraph), style: Theme.of(context).textTheme.bodyLarge),
+          Text(
+            context.tr(paragraph),
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
           const SizedBox(height: TrueGroundSpacing.md),
         ],
         OutlinedButton(
