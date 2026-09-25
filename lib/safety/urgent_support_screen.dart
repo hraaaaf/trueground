@@ -29,10 +29,11 @@ class UrgentSupportScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           'TrueGround',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: TrueGroundColors.primary,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: TrueGroundColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
                         ),
                       ),
                       const LanguageToggle(),
