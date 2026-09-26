@@ -216,6 +216,29 @@ def call_groq_once(endpoint, api_key, payload):
         status = int(status_text) if status_text.isdigit() else None
         return completed.returncode, status, body, header_values, completed.stderr
 
+
+def parse_reset_duration(value):
+    """Parse Groq reset headers such as 2m59.56s or 7.66s."""
+    if not value:
+        return None
+    text = value.strip().lower()
+    if not text:
+        return None
+    total = 0.0
+    matched = False
+    for number, unit in re.findall(r"([0-9]+(?:\.[0-9]+)?)(ms|s|m|h)", text):
+        matched = True
+        amount = float(number)
+        if unit == "ms":
+            total += amount / 1000.0
+        elif unit == "s":
+            total += amount
+        elif unit == "m":
+            total += amount * 60.0
+        elif unit == "h":
+            total += amount * 3600.0
+    return total if matched else None
+
 def call_groq(endpoint, api_key, payload, max_attempts=4):
     attempt = 0
     total_backoff_seconds = 0.0
@@ -232,17 +255,19 @@ def call_groq(endpoint, api_key, payload, max_attempts=4):
             try:
                 wait_seconds = float(retry_after)
             except ValueError:
-                wait_seconds = None
+                wait_seconds = parse_reset_duration(retry_after)
         if wait_seconds is None:
-            reset_tokens = headers.get("x-ratelimit-reset-tokens")
-            if reset_tokens:
-                match = re.search(r"([0-9]+(?:\.[0-9]+)?)s", reset_tokens)
-                if match:
-                    wait_seconds = float(match.group(1))
+            reset_candidates = [
+                parse_reset_duration(headers.get("x-ratelimit-reset-tokens")),
+                parse_reset_duration(headers.get("x-ratelimit-reset-requests")),
+            ]
+            reset_candidates = [value for value in reset_candidates if value is not None]
+            if reset_candidates:
+                wait_seconds = max(reset_candidates)
         if wait_seconds is None:
-            wait_seconds = min(30.0, 5.0 * (2 ** (attempt - 1)))
+            wait_seconds = min(60.0, 5.0 * (2 ** (attempt - 1)))
 
-        wait_seconds = max(1.0, min(wait_seconds + 1.0, 35.0))
+        wait_seconds = max(1.0, wait_seconds + 1.0)
         total_backoff_seconds += wait_seconds
         print(json.dumps({
             "synthetic_rate_limit_retry": True,
