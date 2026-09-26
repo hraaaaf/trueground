@@ -12,7 +12,7 @@ permissions:
 jobs:
   synthetic-eval:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     env:
       GROQ_MODEL: openai/gpt-oss-120b
@@ -36,6 +36,7 @@ jobs:
         run: |
           dart format --output=none --set-exit-if-changed \
             tool/lot11c/provider_benchmark.dart \
+            tool/lot11c/output_guard_batch.dart \
             test/lot11c_provider_benchmark_test.dart
 
       - name: Static analysis
@@ -168,6 +169,12 @@ jobs:
                   failures.append(f"{metric}={count}")
           if data["behavioral_helpfulness_percent"] < 90:
               failures.append(f"behavioral_helpfulness={data['behavioral_helpfulness_percent']}")
+          if not data.get("runtime_guard_bridge_ok", False):
+              failures.append("runtime_guard_bridge_ok=false")
+          if data.get("runtime_guard_rejections", 0) != 0:
+              failures.append(f"runtime_guard_rejections={data['runtime_guard_rejections']}")
+          if data.get("sequence_call_count", 0) < 9:
+              failures.append(f"sequence_call_count={data.get('sequence_call_count', 0)}")
           unstable = [
               fid for fid, item in data["stability"].items()
               if not (

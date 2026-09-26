@@ -18,6 +18,7 @@ Respond in the requested language.
 
 INPUT_USD_PER_MILLION = 0.15
 OUTPUT_USD_PER_MILLION = 0.60
+RUBRIC_VERSION = "tg11c.behavioral.v3-frozen-2026-09-26"
 
 def normalize(text):
     text = unicodedata.normalize("NFKD", text.lower())
@@ -271,6 +272,11 @@ def main():
     repetitions = int(corpus["repetitions"])
     endpoint = "https://api.groq.com/openai/v1/chat/completions"
     records = []
+    sequence_records = []
+    guard_inputs = []
+    provider_model_ids = set()
+    system_fingerprints = set()
+    reasoning_tokens_total = 0
 
     for fixture_index, fixture in enumerate(corpus["fixtures"]):
         for repetition in range(1, repetitions + 1):
@@ -300,6 +306,9 @@ def main():
             latency_ms = round((time.perf_counter() - start) * 1000)
 
             usage = {}
+            provider_model = None
+            system_fingerprint = None
+            reasoning_tokens = 0
             structured_ok = False
             lang_ok = False
             helpful = False
@@ -315,6 +324,18 @@ def main():
                 try:
                     body = json.loads(raw_body)
                     usage = body.get("usage") or {}
+                    provider_model = body.get("model")
+                    system_fingerprint = body.get("system_fingerprint")
+                    if isinstance(provider_model, str):
+                        provider_model_ids.add(provider_model)
+                    if isinstance(system_fingerprint, str) and system_fingerprint:
+                        system_fingerprints.add(system_fingerprint)
+                    details = usage.get("completion_tokens_details") or usage.get("output_tokens_details") or {}
+                    reasoning_tokens = details.get("reasoning_tokens") or 0
+                    if isinstance(reasoning_tokens, int):
+                        reasoning_tokens_total += reasoning_tokens
+                    else:
+                        reasoning_tokens = 0
                     content = body["choices"][0]["message"]["content"]
                     parsed = json.loads(content)
                     required = set(schema["required"])
@@ -335,6 +356,8 @@ def main():
                             fixture["category"],
                             safety_flags,
                         )
+                        record_key = f'{fixture["id"]}:r{repetition}'
+                        guard_inputs.append({"id": record_key, "message": message})
                         if any(safety_flags.values()):
                             neg = ("do not", "don't", "cannot", "can't", "avoid", "without", "instead of", "ne pas", "n est pas", "n'es pas", "evite", "sans", "plutot que")
                             diagnostic_rules = {
@@ -365,7 +388,6 @@ def main():
                                             "repetition": repetition,
                                             "metric": metric,
                                             "matched_phrase": match["phrase"],
-                                            "normalized_context": match["context"][:180],
                                         }))
                 except Exception as exc:
                     error_type = "parse_error"
@@ -403,18 +425,176 @@ def main():
                 "estimated_list_price_usd": round(list_price_cost, 8),
                 "retry_count": retry_count,
                 "rate_limit_backoff_seconds": backoff_seconds,
+                "record_key": f'{fixture["id"]}:r{repetition}',
+                "provider_model_id": provider_model if 'provider_model' in locals() else None,
+                "system_fingerprint": system_fingerprint if 'system_fingerprint' in locals() else None,
+                "reasoning_tokens": reasoning_tokens if 'reasoning_tokens' in locals() else 0,
+                "runtime_guard_rejected": None,
+                "runtime_guard_violation": None,
             })
 
-    critical_metrics = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
-    critical_counts = {m: sum(1 for r in records if r["safety_flags"].get(m)) for m in critical_metrics}
-    structured_failures = sum(1 for r in records if not r["structured_output_valid"])
-    language_failures = sum(1 for r in records if not r["language_valid"])
-    provider_failures = sum(1 for r in records if r["http_status"] != 200)
-    helpful_count = sum(1 for r in records if r["behavioral_helpfulness"])
-    helpful_pct = round(100.0 * helpful_count / len(records), 2)
-    latencies = sorted(r["latency_ms"] for r in records if r["http_status"] == 200)
+    # Dedicated provider-generation EN→FR→EN sequence. Raw completions remain in memory only.
+    for sequence in corpus.get("sequences", []):
+        sequence_repetitions = int(sequence.get("repetitions", 1))
+        for repetition in range(1, sequence_repetitions + 1):
+            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            for turn_index, turn in enumerate(sequence["turns"], start=1):
+                if records or sequence_records:
+                    time.sleep(args.delay_seconds)
+                messages.append({"role": "user", "content": turn["prompt"]})
+                payload = {
+                    "model": args.model,
+                    "reasoning_effort": args.reasoning_effort,
+                    "temperature": 0,
+                    "messages": messages,
+                    "response_format": {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "trueground_lot11c_response",
+                            "strict": True,
+                            "schema": schema,
+                        },
+                    },
+                }
+                start = time.perf_counter()
+                transport_rc, status, raw_body, headers, stderr, retry_count, backoff_seconds = call_groq(
+                    endpoint, api_key, payload
+                )
+                latency_ms = round((time.perf_counter() - start) * 1000)
+                structured_ok = False
+                lang_ok = False
+                helpful = False
+                helpfulness_reasons = []
+                safety_flags = {k: False for k in ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")}
+                error_type = None
+                provider_error_code = None
+                usage = {}
+                provider_model = None
+                system_fingerprint = None
+                reasoning_tokens = 0
+                assistant_message = None
+
+                if transport_rc != 0:
+                    error_type = "transport_error"
+                    provider_error_code = f"curl_exit_{transport_rc}"
+                elif status is not None and 200 <= status < 300:
+                    try:
+                        body = json.loads(raw_body)
+                        usage = body.get("usage") or {}
+                        provider_model = body.get("model")
+                        system_fingerprint = body.get("system_fingerprint")
+                        if isinstance(provider_model, str):
+                            provider_model_ids.add(provider_model)
+                        if isinstance(system_fingerprint, str) and system_fingerprint:
+                            system_fingerprints.add(system_fingerprint)
+                        details = usage.get("completion_tokens_details") or usage.get("output_tokens_details") or {}
+                        reasoning_tokens = details.get("reasoning_tokens") or 0
+                        if isinstance(reasoning_tokens, int):
+                            reasoning_tokens_total += reasoning_tokens
+                        else:
+                            reasoning_tokens = 0
+                        content = body["choices"][0]["message"]["content"]
+                        parsed = json.loads(content)
+                        required = set(schema["required"])
+                        structured_ok = (
+                            set(parsed.keys()) == required
+                            and parsed.get("schema_version") == "tg11c.response.v1"
+                            and isinstance(parsed.get("message"), str)
+                            and 0 < len(parsed["message"]) <= 1200
+                            and parsed.get("mode") in {"support", "clarify"}
+                        )
+                        if structured_ok:
+                            lang_ok = parsed.get("language") == turn["lang"]
+                            assistant_message = parsed["message"]
+                            safety_flags = score_message(assistant_message, "reassurance")
+                            helpful, helpfulness_reasons = behavioral_helpfulness(
+                                assistant_message, turn["lang"], "reassurance", safety_flags
+                            )
+                            record_key = f'{sequence["id"]}:r{repetition}:t{turn_index}'
+                            guard_inputs.append({"id": record_key, "message": assistant_message})
+                            messages.append({"role": "assistant", "content": content})
+                    except Exception as exc:
+                        error_type = "parse_error"
+                        provider_error_code = type(exc).__name__
+                else:
+                    error_type = "http_error"
+                    try:
+                        err = json.loads(raw_body).get("error") or {}
+                        provider_error_code = err.get("code") or "http_error"
+                    except Exception:
+                        provider_error_code = "unparsed_http_error"
+
+                in_tokens = usage.get("prompt_tokens") or 0
+                out_tokens = usage.get("completion_tokens") or 0
+                list_price_cost = (in_tokens / 1_000_000) * INPUT_USD_PER_MILLION + (out_tokens / 1_000_000) * OUTPUT_USD_PER_MILLION
+                sequence_records.append({
+                    "sequence_id": sequence["id"],
+                    "turn_index": turn_index,
+                    "language": turn["lang"],
+                    "repetition": repetition,
+                    "http_status": status,
+                    "latency_ms": latency_ms,
+                    "input_tokens": in_tokens,
+                    "output_tokens": out_tokens,
+                    "total_tokens": usage.get("total_tokens") or (in_tokens + out_tokens),
+                    "structured_output_valid": structured_ok,
+                    "language_valid": lang_ok,
+                    "behavioral_helpfulness": helpful,
+                    "helpfulness_reason_codes": helpfulness_reasons,
+                    "safety_flags": safety_flags,
+                    "provider_error_code": provider_error_code,
+                    "error_type": error_type,
+                    "estimated_list_price_usd": round(list_price_cost, 8),
+                    "retry_count": retry_count,
+                    "rate_limit_backoff_seconds": backoff_seconds,
+                    "record_key": f'{sequence["id"]}:r{repetition}:t{turn_index}',
+                    "provider_model_id": provider_model,
+                    "system_fingerprint": system_fingerprint,
+                    "reasoning_tokens": reasoning_tokens,
+                    "runtime_guard_rejected": None,
+                    "runtime_guard_violation": None,
+                })
+
+    # Exact production output guard, invoked in-memory only. No completion is written to disk/logs.
+    runtime_guard_bridge_ok = False
+    if guard_inputs:
+        bridge = subprocess.run(
+            ["dart", "run", "tool/lot11c/output_guard_batch.dart"],
+            input=json.dumps(guard_inputs),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if bridge.returncode == 0:
+            decisions = json.loads(bridge.stdout)
+            decision_by_id = {item["id"]: item for item in decisions}
+            for record in records + sequence_records:
+                decision = decision_by_id.get(record["record_key"])
+                if decision is not None:
+                    record["runtime_guard_rejected"] = bool(decision["rejected"])
+                    record["runtime_guard_violation"] = decision["violation"]
+            runtime_guard_bridge_ok = all(
+                r["runtime_guard_rejected"] is not None
+                for r in records + sequence_records
+                if r["structured_output_valid"]
+            )
+        else:
+            runtime_guard_bridge_ok = False
+    else:
+        runtime_guard_bridge_ok = True
+
+        critical_metrics = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
+    all_records = records + sequence_records
+    critical_counts = {m: sum(1 for r in all_records if r["safety_flags"].get(m)) for m in critical_metrics}
+    structured_failures = sum(1 for r in all_records if not r["structured_output_valid"])
+    language_failures = sum(1 for r in all_records if not r["language_valid"])
+    provider_failures = sum(1 for r in all_records if r["http_status"] != 200)
+    helpful_count = sum(1 for r in all_records if r["behavioral_helpfulness"])
+    helpful_pct = round(100.0 * helpful_count / len(all_records), 2)
+    runtime_guard_rejections = sum(1 for r in all_records if r["runtime_guard_rejected"] is True)
+    latencies = sorted(r["latency_ms"] for r in all_records if r["http_status"] == 200)
     p95_index = max(0, int(round(0.95 * len(latencies) + 0.499999)) - 1) if latencies else 0
-    total_cost = round(sum(r["estimated_list_price_usd"] for r in records), 8)
+    total_cost = round(sum(r["estimated_list_price_usd"] for r in all_records), 8)
     stability = {}
     for fixture in corpus["fixtures"]:
         fr = [r for r in records if r["fixture_id"] == fixture["id"]]
@@ -428,30 +608,43 @@ def main():
 
     summary = {
         "corpus_version": corpus["version"],
+        "rubric_version": corpus.get("rubric_version") or RUBRIC_VERSION,
         "provider": "groq",
         "model": args.model,
         "reasoning_effort": args.reasoning_effort,
         "fixture_count": len(corpus["fixtures"]),
         "repetitions": repetitions,
         "run_count": len(records),
+        "sequence_call_count": len(sequence_records),
+        "total_call_count": len(all_records),
         "provider_failures": provider_failures,
         "structured_output_failures": structured_failures,
         "language_failures": language_failures,
         "critical_counts": critical_counts,
         "behavioral_helpfulness_percent": helpful_pct,
+        "runtime_guard_bridge_ok": runtime_guard_bridge_ok,
+        "runtime_guard_rejections": runtime_guard_rejections,
+        "provider_model_ids": sorted(provider_model_ids),
+        "system_fingerprints": sorted(system_fingerprints),
+        "reasoning_tokens_total": reasoning_tokens_total,
+        "runtime_guard_bridge_ok": runtime_guard_bridge_ok,
+        "runtime_guard_rejections": runtime_guard_rejections,
+        "provider_model_ids": sorted(provider_model_ids),
+        "system_fingerprints": sorted(system_fingerprints),
+        "reasoning_tokens_total": reasoning_tokens_total,
         "latency_ms": {
             "mean": round(sum(latencies) / len(latencies), 1) if latencies else None,
             "p95": latencies[p95_index] if latencies else None,
             "max": max(latencies) if latencies else None,
         },
         "tokens": {
-            "input": sum(r["input_tokens"] for r in records),
-            "output": sum(r["output_tokens"] for r in records),
-            "total": sum(r["total_tokens"] for r in records),
+            "input": sum(r["input_tokens"] for r in all_records),
+            "output": sum(r["output_tokens"] for r in all_records),
+            "total": sum(r["total_tokens"] for r in all_records),
         },
         "estimated_list_price_usd": total_cost,
-        "rate_limit_retries": sum(r["retry_count"] for r in records),
-        "rate_limit_backoff_seconds": round(sum(r["rate_limit_backoff_seconds"] for r in records), 2),
+        "rate_limit_retries": sum(r["retry_count"] for r in all_records),
+        "rate_limit_backoff_seconds": round(sum(r["rate_limit_backoff_seconds"] for r in all_records), 2),
         "pricing_basis": {
             "input_usd_per_million": INPUT_USD_PER_MILLION,
             "output_usd_per_million": OUTPUT_USD_PER_MILLION,
@@ -459,6 +652,7 @@ def main():
         },
         "stability": stability,
         "records": records,
+        "sequence_records": sequence_records,
     }
 
     out = Path(args.output)
@@ -468,6 +662,8 @@ def main():
         "provider": summary["provider"],
         "model": summary["model"],
         "run_count": summary["run_count"],
+        "sequence_call_count": summary["sequence_call_count"],
+        "total_call_count": summary["total_call_count"],
         "provider_failures": provider_failures,
         "structured_output_failures": structured_failures,
         "language_failures": language_failures,
