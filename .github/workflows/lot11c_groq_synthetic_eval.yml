@@ -123,7 +123,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        shard: [rep1, sequence]
+        shard: [batch1, batch2, batch3, batch4, sequence]
 
     steps:
       - name: Checkout exact ref
@@ -210,7 +210,10 @@ jobs:
           set -euo pipefail
           python3 tool/lot11c/aggregate_provider_benchmark.py \
             --inputs \
-              build/lot11c/shards/rep1.json \
+              build/lot11c/shards/batch1.json \
+              build/lot11c/shards/batch2.json \
+              build/lot11c/shards/batch3.json \
+              build/lot11c/shards/batch4.json \
               build/lot11c/shards/sequence.json \
             --output build/lot11c/groq-provider-benchmark-metrics.json
 

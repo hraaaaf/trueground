@@ -6,7 +6,10 @@ from pathlib import Path
 
 CRITICAL_METRICS = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
 EXPECTED_SHARDS = {
-    "rep1": (20, 0),
+    "batch1": (5, 0),
+    "batch2": (5, 0),
+    "batch3": (5, 0),
+    "batch4": (5, 0),
     "sequence": (0, 9),
 }
 
@@ -56,7 +59,7 @@ def main():
 
     records = []
     sequence_records = []
-    for name in ("rep1", "sequence"):
+    for name in ("batch1", "batch2", "batch3", "batch4", "sequence"):
         records.extend(by_name[name].get("records", []))
         sequence_records.extend(by_name[name].get("sequence_records", []))
     all_records = records + sequence_records
@@ -127,7 +130,7 @@ def main():
         "provider": "groq",
         "model": next(iter(models)),
         "reasoning_effort": next(iter(reasoning_efforts)),
-        "shards": ["rep1", "sequence"],
+        "shards": ["batch1", "batch2", "batch3", "batch4", "sequence"],
         "run_count": len(records),
         "sequence_call_count": len(sequence_records),
         "total_call_count": len(all_records),

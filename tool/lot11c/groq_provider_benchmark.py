@@ -288,7 +288,7 @@ def main():
     ap.add_argument("--delay-seconds", type=float, default=7.5)
     ap.add_argument(
         "--shard",
-        choices=("all", "rep1", "rep2", "rep3", "sequence"),
+        choices=("all", "rep1", "rep2", "rep3", "batch1", "batch2", "batch3", "batch4", "sequence"),
         default="all",
     )
     args = ap.parse_args()
@@ -300,6 +300,7 @@ def main():
     schema = json.loads(Path(args.schema).read_text())
     corpus = json.loads(Path(args.fixtures).read_text())
     repetitions = int(corpus["repetitions"])
+    selected_fixtures = list(corpus["fixtures"])
     if args.shard == "all":
         selected_repetitions = list(range(1, repetitions + 1))
         include_sequences = True
@@ -308,11 +309,20 @@ def main():
         if selected_repetitions[0] < 1 or selected_repetitions[0] > repetitions:
             raise SystemExit(f"invalid repetition shard: {args.shard}")
         include_sequences = False
+    elif args.shard.startswith("batch"):
+        batch_index = int(args.shard[-1]) - 1
+        start = batch_index * 5
+        selected_fixtures = list(corpus["fixtures"])[start:start + 5]
+        if len(selected_fixtures) != 5:
+            raise SystemExit(f"invalid fixture batch: {args.shard}")
+        selected_repetitions = [1]
+        include_sequences = False
     else:
+        selected_fixtures = []
         selected_repetitions = []
         include_sequences = True
 
-    expected_isolated_calls = len(corpus["fixtures"]) * len(selected_repetitions)
+    expected_isolated_calls = len(selected_fixtures) * len(selected_repetitions)
     expected_sequence_calls = sum(
         int(sequence.get("repetitions", 1)) * len(sequence.get("turns", []))
         for sequence in corpus.get("sequences", [])
@@ -328,7 +338,7 @@ def main():
     reasoning_tokens_total = 0
     critical_metrics = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
 
-    for fixture_index, fixture in enumerate(corpus["fixtures"]):
+    for fixture_index, fixture in enumerate(selected_fixtures):
         for repetition in selected_repetitions:
             if records:
                 time.sleep(args.delay_seconds)
