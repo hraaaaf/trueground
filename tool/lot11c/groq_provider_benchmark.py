@@ -261,6 +261,11 @@ def main():
     ap.add_argument("--fixtures", required=True)
     ap.add_argument("--output", required=True)
     ap.add_argument("--delay-seconds", type=float, default=7.5)
+    ap.add_argument(
+        "--shard",
+        choices=("all", "rep1", "rep2", "rep3", "sequence"),
+        default="all",
+    )
     args = ap.parse_args()
 
     api_key = os.environ.get("GROQ_API_KEY", "")
@@ -270,11 +275,23 @@ def main():
     schema = json.loads(Path(args.schema).read_text())
     corpus = json.loads(Path(args.fixtures).read_text())
     repetitions = int(corpus["repetitions"])
-    expected_isolated_calls = len(corpus["fixtures"]) * repetitions
+    if args.shard == "all":
+        selected_repetitions = list(range(1, repetitions + 1))
+        include_sequences = True
+    elif args.shard.startswith("rep"):
+        selected_repetitions = [int(args.shard[-1])]
+        if selected_repetitions[0] < 1 or selected_repetitions[0] > repetitions:
+            raise SystemExit(f"invalid repetition shard: {args.shard}")
+        include_sequences = False
+    else:
+        selected_repetitions = []
+        include_sequences = True
+
+    expected_isolated_calls = len(corpus["fixtures"]) * len(selected_repetitions)
     expected_sequence_calls = sum(
         int(sequence.get("repetitions", 1)) * len(sequence.get("turns", []))
         for sequence in corpus.get("sequences", [])
-    )
+    ) if include_sequences else 0
     expected_total_calls = expected_isolated_calls + expected_sequence_calls
     completed_calls = 0
     endpoint = "https://api.groq.com/openai/v1/chat/completions"
@@ -286,7 +303,7 @@ def main():
     reasoning_tokens_total = 0
 
     for fixture_index, fixture in enumerate(corpus["fixtures"]):
-        for repetition in range(1, repetitions + 1):
+        for repetition in selected_repetitions:
             if records:
                 time.sleep(args.delay_seconds)
             payload = {
@@ -452,7 +469,7 @@ def main():
             }), flush=True)
 
     # Dedicated provider-generation EN→FR→EN sequence. Raw completions remain in memory only.
-    for sequence in corpus.get("sequences", []):
+    for sequence in (corpus.get("sequences", []) if include_sequences else []):
         sequence_repetitions = int(sequence.get("repetitions", 1))
         for repetition in range(1, sequence_repetitions + 1):
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -644,6 +661,7 @@ def main():
         "reasoning_effort": args.reasoning_effort,
         "fixture_count": len(corpus["fixtures"]),
         "repetitions": repetitions,
+        "shard": args.shard,
         "run_count": len(records),
         "sequence_call_count": len(sequence_records),
         "total_call_count": len(all_records),
@@ -691,6 +709,7 @@ def main():
     print(json.dumps({
         "provider": summary["provider"],
         "model": summary["model"],
+        "shard": summary["shard"],
         "run_count": summary["run_count"],
         "sequence_call_count": summary["sequence_call_count"],
         "total_call_count": summary["total_call_count"],

@@ -9,15 +9,15 @@ on:
 permissions:
   contents: read
 
+env:
+  GROQ_MODEL: openai/gpt-oss-120b
+  GROQ_REASONING_EFFORT: medium
+
 jobs:
-  synthetic-eval:
+  preflight:
+    name: preflight
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
-    env:
-      GROQ_MODEL: openai/gpt-oss-120b
-      GROQ_REASONING_EFFORT: medium
-
+    timeout-minutes: 20
     steps:
       - name: Checkout exact ref
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -38,6 +38,13 @@ jobs:
             tool/lot11c/provider_benchmark.dart \
             tool/lot11c/output_guard_batch.dart \
             test/lot11c_provider_benchmark_test.dart
+
+      - name: Python syntax check
+        run: |
+          python3 -m py_compile \
+            tool/lot11c/groq_provider_benchmark.py \
+            tool/lot11c/aggregate_provider_benchmark.py \
+            tool/lot11c/groq_synthetic_smoke.py
 
       - name: Static analysis
         run: flutter analyze
@@ -67,22 +74,20 @@ jobs:
           GROQ_API_KEY: ${{ secrets.Grok_key_secret }}
         run: |
           set -euo pipefail
-          test -f tool/lot11c/groq_synthetic_smoke.py
           python3 tool/lot11c/groq_synthetic_smoke.py \
             --model "${GROQ_MODEL}" \
             --reasoning-effort "${GROQ_REASONING_EFFORT}" \
             --schema tool/lot11c/lot11c_response.schema.json \
             --output build/lot11c/groq-smoke-metrics.json
 
-      - name: Verify sanitized metrics only
+      - name: Verify sanitized smoke metrics
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-          p = Path("build/lot11c/groq-smoke-metrics.json")
-          data = json.loads(p.read_text())
+          data = json.loads(Path("build/lot11c/groq-smoke-metrics.json").read_text())
           forbidden = {"prompt", "completion", "message", "user_message", "raw_response"}
           def walk(v):
               if isinstance(v, dict):
@@ -94,10 +99,13 @@ jobs:
                   for item in v:
                       walk(item)
           walk(data)
-          print("sanitized metrics verified")
+          failed = [r for r in data["records"] if not r["structured_output_valid"]]
+          if failed:
+              raise SystemExit(f"Groq smoke failed for {len(failed)}/{len(data['records'])} fixtures")
+          print("Groq smoke + sanitization PASS")
           PY
 
-      - name: Upload sanitized benchmark metrics
+      - name: Upload sanitized smoke metrics
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lot11c-groq-smoke-metrics
@@ -105,7 +113,31 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      - name: Run full Groq provider benchmark
+  benchmark:
+    name: provider-${{ matrix.shard }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [rep1, rep2, rep3, sequence]
+
+    steps:
+      - name: Checkout exact ref
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Run Groq provider shard
         shell: bash
         env:
           GROQ_API_KEY: ${{ secrets.Grok_key_secret }}
@@ -116,10 +148,73 @@ jobs:
             --reasoning-effort "${GROQ_REASONING_EFFORT}" \
             --schema tool/lot11c/lot11c_response.schema.json \
             --fixtures tool/lot11c/groq_provider_benchmark_fixtures.json \
-            --output build/lot11c/groq-provider-benchmark-metrics.json \
-            --delay-seconds 7.5
+            --output "build/lot11c/${{ matrix.shard }}.json" \
+            --shard "${{ matrix.shard }}" \
+            --delay-seconds 15
 
-      - name: Verify full benchmark sanitized metrics only
+      - name: Verify shard sanitized metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          paths = list(Path("build/lot11c").glob("*.json"))
+          if len(paths) != 1:
+              raise SystemExit(f"expected one shard file, found {len(paths)}")
+          data = json.loads(paths[0].read_text())
+          forbidden = {"prompt", "completion", "message", "user_message", "raw_response", "provider_error_body_preview", "normalized_context"}
+          def walk(v):
+              if isinstance(v, dict):
+                  for k, val in v.items():
+                      if k in forbidden:
+                          raise SystemExit(f"forbidden raw-text field in shard metrics: {k}")
+                      walk(val)
+              elif isinstance(v, list):
+                  for item in v:
+                      walk(item)
+          walk(data)
+          print(f"sanitized shard verified: {data['shard']}")
+          PY
+
+      - name: Upload sanitized shard
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot11c-groq-provider-${{ matrix.shard }}
+          path: build/lot11c/${{ matrix.shard }}.json
+          if-no-files-found: error
+          retention-days: 7
+
+  aggregate:
+    name: aggregate-and-enforce
+    needs: benchmark
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout exact ref
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Download provider shards
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: lot11c-groq-provider-*
+          path: build/lot11c/shards
+          merge-multiple: true
+
+      - name: Aggregate exact 69-call evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tool/lot11c/aggregate_provider_benchmark.py \
+            --inputs \
+              build/lot11c/shards/rep1.json \
+              build/lot11c/shards/rep2.json \
+              build/lot11c/shards/rep3.json \
+              build/lot11c/shards/sequence.json \
+            --output build/lot11c/groq-provider-benchmark-metrics.json
+
+      - name: Verify aggregate sanitized metrics
         shell: bash
         run: |
           set -euo pipefail
@@ -127,29 +222,21 @@ jobs:
           import json
           from pathlib import Path
           data = json.loads(Path("build/lot11c/groq-provider-benchmark-metrics.json").read_text())
-          forbidden = {"prompt", "completion", "message", "user_message", "raw_response", "provider_error_body_preview"}
+          forbidden = {"prompt", "completion", "message", "user_message", "raw_response", "provider_error_body_preview", "normalized_context"}
           def walk(v):
               if isinstance(v, dict):
                   for k, val in v.items():
                       if k in forbidden:
-                          raise SystemExit(f"forbidden raw-text field in benchmark metrics: {k}")
+                          raise SystemExit(f"forbidden raw-text field in aggregate metrics: {k}")
                       walk(val)
               elif isinstance(v, list):
                   for item in v:
                       walk(item)
           walk(data)
-          print("full benchmark sanitized metrics verified")
+          print("aggregate sanitization PASS")
           PY
 
-      - name: Upload sanitized full benchmark metrics
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: lot11c-groq-provider-benchmark
-          path: build/lot11c/groq-provider-benchmark-metrics.json
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Enforce full benchmark thresholds
+      - name: Enforce frozen LOT11-C thresholds
         shell: bash
         run: |
           set -euo pipefail
@@ -158,6 +245,12 @@ jobs:
           from pathlib import Path
           data = json.loads(Path("build/lot11c/groq-provider-benchmark-metrics.json").read_text())
           failures = []
+          if data["run_count"] != 60:
+              failures.append(f"run_count={data['run_count']}")
+          if data["sequence_call_count"] != 9:
+              failures.append(f"sequence_call_count={data['sequence_call_count']}")
+          if data["total_call_count"] != 69:
+              failures.append(f"total_call_count={data['total_call_count']}")
           if data["provider_failures"] != 0:
               failures.append(f"provider_failures={data['provider_failures']}")
           if data["structured_output_failures"] != 0:
@@ -173,12 +266,11 @@ jobs:
               failures.append("runtime_guard_bridge_ok=false")
           if data.get("runtime_guard_rejections", 0) != 0:
               failures.append(f"runtime_guard_rejections={data['runtime_guard_rejections']}")
-          if data.get("sequence_call_count", 0) < 9:
-              failures.append(f"sequence_call_count={data.get('sequence_call_count', 0)}")
           unstable = [
               fid for fid, item in data["stability"].items()
               if not (
-                  item["all_http_200"]
+                  item["runs"] == 3
+                  and item["all_http_200"]
                   and item["all_structured_valid"]
                   and item["all_language_valid"]
                   and item["all_critical_zero"]
@@ -187,32 +279,15 @@ jobs:
           if unstable:
               failures.append(f"unstable_fixtures={len(unstable)}")
           if failures:
-              print("LOT11-C full benchmark threshold failure:", ", ".join(failures))
+              print("LOT11-C aggregate threshold failure:", ", ".join(failures))
               raise SystemExit(1)
-          print("LOT11-C automated provider thresholds PASS")
+          print("LOT11-C 69-call aggregate automated thresholds PASS")
           PY
 
-      - name: Enforce Groq smoke success
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          data = json.loads(Path("build/lot11c/groq-smoke-metrics.json").read_text())
-          failed = [r for r in data["records"] if not r["structured_output_valid"]]
-          if failed:
-              for r in failed:
-                  print({
-                      "fixture_id": r["fixture_id"],
-                      "http_status": r["http_status"],
-                      "provider_error_code": r.get("provider_error_code"),
-                      "provider_error_detail": r.get("provider_error_detail"),
-                      "provider_error_content_type": r.get("provider_error_content_type"),
-                      "provider_error_server": r.get("provider_error_server"),
-                      "provider_error_cf_ray": r.get("provider_error_cf_ray"),
-                      "provider_error_body_preview": r.get("provider_error_body_preview"),
-                  })
-              raise SystemExit(f"Groq smoke failed for {len(failed)}/{len(data['records'])} fixtures")
-          print("Groq smoke passed for all fixtures")
-          PY
+      - name: Upload sanitized aggregate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot11c-groq-provider-benchmark
+          path: build/lot11c/groq-provider-benchmark-metrics.json
+          if-no-files-found: error
+          retention-days: 7
