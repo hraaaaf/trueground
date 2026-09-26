@@ -83,6 +83,8 @@ def main():
         parsed_ok = False
         usage = {}
         error_type = None
+        provider_error_code = None
+        provider_error_detail = None
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
                 status = response.status
@@ -102,8 +104,20 @@ def main():
         except urllib.error.HTTPError as exc:
             status = exc.code
             error_type = "http_error"
-        except Exception:
+            try:
+                error_body = json.loads(exc.read().decode("utf-8"))
+                error_obj = error_body.get("error") or {}
+                code = error_obj.get("code")
+                detail = error_obj.get("message")
+                if isinstance(code, str):
+                    provider_error_code = code[:120]
+                if isinstance(detail, str):
+                    provider_error_detail = " ".join(detail.split())[:240]
+            except Exception:
+                provider_error_code = "unparsed_http_error"
+        except Exception as exc:
             error_type = "runtime_error"
+            provider_error_code = type(exc).__name__
 
         latency_ms = round((time.perf_counter() - start) * 1000)
         records.append(
@@ -117,6 +131,8 @@ def main():
                 "total_tokens": usage.get("total_tokens"),
                 "structured_output_valid": parsed_ok,
                 "error_type": error_type,
+                "provider_error_code": provider_error_code,
+                "provider_error_detail": provider_error_detail,
             }
         )
 
@@ -131,12 +147,23 @@ def main():
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(output, indent=2))
-    print(json.dumps({
+    summary = {
         "provider": output["provider"],
         "model": output["model"],
         "case_count": output["case_count"],
         "all_structured_output_valid": all(r["structured_output_valid"] for r in records),
-    }))
+        "errors": [
+            {
+                "fixture_id": r["fixture_id"],
+                "http_status": r["http_status"],
+                "provider_error_code": r["provider_error_code"],
+                "provider_error_detail": r["provider_error_detail"],
+            }
+            for r in records
+            if not r["structured_output_valid"]
+        ],
+    }
+    print(json.dumps(summary))
 
 if __name__ == "__main__":
     main()

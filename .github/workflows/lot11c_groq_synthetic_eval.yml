@@ -103,3 +103,24 @@ jobs:
           path: build/lot11c/groq-smoke-metrics.json
           if-no-files-found: error
           retention-days: 7
+
+      - name: Enforce Groq smoke success
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("build/lot11c/groq-smoke-metrics.json").read_text())
+          failed = [r for r in data["records"] if not r["structured_output_valid"]]
+          if failed:
+              for r in failed:
+                  print({
+                      "fixture_id": r["fixture_id"],
+                      "http_status": r["http_status"],
+                      "provider_error_code": r.get("provider_error_code"),
+                      "provider_error_detail": r.get("provider_error_detail"),
+                  })
+              raise SystemExit(f"Groq smoke failed for {len(failed)}/{len(data['records'])} fixtures")
+          print("Groq smoke passed for all fixtures")
+          PY
