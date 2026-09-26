@@ -1,6 +1,9 @@
 name: LOT 11-C Groq Synthetic Eval
 
 on:
+  pull_request:
+    branches:
+      - docs/lot11-cloud-provider-gate
   workflow_dispatch:
 
 permissions:
