@@ -50,7 +50,7 @@ jobs:
       - name: Verify Groq secret presence
         shell: bash
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.Grok_key_secret }}
         run: |
           set -euo pipefail
           if [ -z "${GROQ_API_KEY:-}" ]; then
@@ -63,7 +63,7 @@ jobs:
       - name: Run synthetic Groq smoke eval
         shell: bash
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.Grok_key_secret }}
         run: |
           set -euo pipefail
           test -f tool/lot11c/groq_synthetic_smoke.py
