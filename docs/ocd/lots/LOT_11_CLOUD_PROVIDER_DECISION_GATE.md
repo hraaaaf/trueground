@@ -31,6 +31,27 @@ A provider choice is acceptable only if:
 
 ## DATED PUBLIC EVIDENCE — 2026-09-25
 
+### Candidate 0 — GroqCloud / GPT-OSS-120B
+
+Relevant public controls:
+
+- Groq states that customer data from inference requests is not retained by default except for features requiring retention or reliability/abuse investigation.
+- All customers may enable Zero Data Retention in Data Controls.
+- With ZDR enabled, customer inputs/outputs are not retained for system reliability or abuse monitoring.
+- Usage metadata is still retained, but Groq states that this metadata does not contain customer inputs or outputs.
+- Retained customer data, when retention applies, is stored in GCP buckets in the United States.
+- inference endpoints `/openai/v1/chat/completions` and `/openai/v1/responses` are ZDR eligible.
+- `openai/gpt-oss-120b` supports reasoning and Structured Outputs.
+- strict Structured Outputs (`strict:true`) are supported via constrained decoding.
+- published model limits: 131,072-token context, 65,536 max output, ~500 tokens/s.
+- public price: $0.15 / 1M input, $0.075 / 1M cached input, $0.60 / 1M output.
+
+Sources:
+- https://console.groq.com/docs/your-data
+- https://console.groq.com/docs/model/openai/gpt-oss-120b
+- https://console.groq.com/docs/structured-outputs
+- https://console.groq.com/docs/responses-api
+
 ### Candidate 1 — OpenAI API
 
 Relevant public controls:
@@ -84,6 +105,53 @@ Sources:
 - https://ai.google.dev/gemini-api/docs/interactions-overview
 - https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash/
 - https://ai.google.dev/gemini-api/docs/api-key
+
+## OPTION A0 — GroqCloud + GPT-OSS-120B
+
+### Proposed first experiment
+
+Provider:
+GroqCloud
+
+Model:
+`openai/gpt-oss-120b`
+
+Endpoint:
+OpenAI-compatible Groq inference endpoint, preferably `/openai/v1/responses` or `/openai/v1/chat/completions` according to the minimal adapter chosen.
+
+Reasoning:
+`medium` initially, with `low` measured as a cost/latency optimization only if quality remains acceptable.
+
+Structured output:
+`strict:true` JSON Schema.
+
+Tools:
+NONE.
+
+Retention:
+ZDR must be enabled in Groq Data Controls before any sensitive/real-user experiment. LOT11-C synthetic fixtures do not authorize real-user data.
+
+Forbidden:
+- tools
+- browser search
+- code execution
+- files/batches
+- fine-tuning/LoRA
+- persistent provider memory
+- raw chat logging
+- real user data
+
+Why this is now the primary candidate:
+- very low latency (~500 tok/s published);
+- very low unit cost;
+- strict schema adherence support;
+- ZDR available to all customers in Data Controls;
+- no training/fine-tuning on customer Inputs/Outputs without explicit permission;
+- open-weight model reduces vendor-model lock-in at the model layer;
+- sufficient raw capability is plausible for bounded generation, but must be proven by TrueGround's frozen evals rather than assumed.
+
+Material caveat:
+Groq states retained customer data is stored in US GCP buckets when retention applies. This requires explicit privacy/legal review before any real-user data.
 
 ## OPTION A1 — OpenAI API
 
@@ -164,24 +232,25 @@ Material friction for this specific experiment:
 
 ### Provider
 
-**OpenAI API as the first cloud provider candidate.**
+**GroqCloud + `openai/gpt-oss-120b` as the first cloud provider candidate.**
 
 This recommendation is for an isolated synthetic evaluation only, not production use.
 
-### Initial model pair
+### Initial model strategy
 
-- primary: `gpt-6-luna`
-- comparator: `gpt-6-sol`
+- primary: Groq `openai/gpt-oss-120b`
+- comparator: OpenAI only if the Groq candidate fails frozen safety/helpfulness/quality thresholds or shows unacceptable stability/latency behavior
 
-Do not start with Astra or a broader agent/tool stack.
+Do not pay for a stronger proprietary model by default. Let the frozen evals decide whether a comparator is necessary.
 
 Rationale:
 
-1. the Responses API provides a narrow text/Structured Outputs path compatible with the deterministic TrueGround envelope;
-2. public documentation is explicit about training defaults, endpoint retention and ZDR eligibility;
-3. `store=false` allows the experiment to avoid application-state persistence on the selected request path;
-4. a cheap primary model plus stronger comparator lets the frozen evals decide whether extra model capability is actually necessary;
-5. rollback remains trivial because the provider adapter is not a safety authority.
+1. Groq offers an OpenAI-compatible narrow inference path that fits the deterministic TrueGround envelope;
+2. GPT-OSS-120B supports strict Structured Outputs and reasoning;
+3. Groq documents customer-level ZDR controls and no default inference retention outside limited reliability/abuse cases;
+4. published cost and latency are materially favorable for an intensively used consumer companion;
+5. OpenAI remains a comparator, not a default dependency;
+6. rollback remains trivial because the provider adapter is not a safety authority.
 
 ## REQUIRED DATA FLOW FOR THE FIRST MODEL EXPERIMENT
 
@@ -197,12 +266,13 @@ synthetic eval fixture
    - language code
    - allowed response mode
    - policy version
-→ OpenAI Responses API
-   - store=false
+→ Groq inference API
+   - GPT-OSS-120B
+   - strict JSON Schema
+   - reasoning=medium
    - no tools
-   - no files
-   - no background
-   - no conversation object
+   - no files/batches
+   - no provider memory
 → Structured Output
 → DeterministicConversationOutputGuard
 → eval scorer
@@ -276,17 +346,20 @@ Effect:
 
 ## IMPACT
 
-Choosing OpenAI first means:
+Choosing Groq GPT-OSS-120B first means:
 
 Positive:
-- narrow provider contract;
-- strong retention documentation;
-- Structured Outputs;
-- two candidate cost/quality levels;
+- narrow OpenAI-compatible provider contract;
+- strict Structured Outputs;
+- published ~500 tok/s generation speed;
+- $0.15/M input and $0.60/M output list pricing;
+- ZDR available through Data Controls;
+- OpenAI remains optional comparator rather than mandatory dependency;
 - simple adapter/rollback path.
 
 Residual:
-- ZDR/data residency eligibility must be confirmed on the actual account before sensitive data;
+- ZDR must be confirmed enabled on the actual Groq organization before sensitive data;
+- when retention applies, Groq documents US data location;
 - model behavior remains probabilistic;
 - Output Guard remains defense in depth, not proof;
 - future provider policy/model changes require re-evaluation;
@@ -296,17 +369,17 @@ Residual:
 
 Product Owner must explicitly approve:
 
-**OPENAI SYNTHETIC EVAL GO**
+**GROQ GPT-OSS-120B SYNTHETIC EVAL GO**
 
 That approval authorizes only:
 - a minimal provider adapter;
 - synthetic TG11 fixtures only;
-- `gpt-6-luna` and `gpt-6-sol`;
-- Responses API;
-- `store=false`;
-- Structured Outputs;
+- Groq `openai/gpt-oss-120b`;
+- reasoning initially `medium`;
+- strict Structured Outputs;
 - no tools;
 - no real user data;
+- OpenAI comparator only if the Groq candidate fails or is materially insufficient;
 - no merge;
 - no deploy.
 
