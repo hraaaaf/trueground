@@ -248,7 +248,7 @@ def call_groq(endpoint, api_key, payload, max_attempts=4):
             "synthetic_rate_limit_retry": True,
             "attempt": attempt,
             "wait_seconds": round(wait_seconds, 2),
-        }))
+        }), flush=True)
         time.sleep(wait_seconds)
 
     raise RuntimeError("unreachable")
@@ -270,6 +270,13 @@ def main():
     schema = json.loads(Path(args.schema).read_text())
     corpus = json.loads(Path(args.fixtures).read_text())
     repetitions = int(corpus["repetitions"])
+    expected_isolated_calls = len(corpus["fixtures"]) * repetitions
+    expected_sequence_calls = sum(
+        int(sequence.get("repetitions", 1)) * len(sequence.get("turns", []))
+        for sequence in corpus.get("sequences", [])
+    )
+    expected_total_calls = expected_isolated_calls + expected_sequence_calls
+    completed_calls = 0
     endpoint = "https://api.groq.com/openai/v1/chat/completions"
     records = []
     sequence_records = []
@@ -432,6 +439,17 @@ def main():
                 "runtime_guard_rejected": None,
                 "runtime_guard_violation": None,
             })
+            completed_calls += 1
+            print(json.dumps({
+                "benchmark_progress": True,
+                "completed_calls": completed_calls,
+                "expected_total_calls": expected_total_calls,
+                "phase": "isolated",
+                "fixture_id": fixture["id"],
+                "repetition": repetition,
+                "http_status": status,
+                "retry_count": retry_count,
+            }), flush=True)
 
     # Dedicated provider-generation EN→FR→EN sequence. Raw completions remain in memory only.
     for sequence in corpus.get("sequences", []):
@@ -554,6 +572,18 @@ def main():
                     "runtime_guard_rejected": None,
                     "runtime_guard_violation": None,
                 })
+                completed_calls += 1
+                print(json.dumps({
+                    "benchmark_progress": True,
+                    "completed_calls": completed_calls,
+                    "expected_total_calls": expected_total_calls,
+                    "phase": "cross_language",
+                    "sequence_id": sequence["id"],
+                    "repetition": repetition,
+                    "turn_index": turn_index,
+                    "http_status": status,
+                    "retry_count": retry_count,
+                }), flush=True)
 
     # Exact production output guard, invoked in-memory only. No completion is written to disk/logs.
     runtime_guard_bridge_ok = False

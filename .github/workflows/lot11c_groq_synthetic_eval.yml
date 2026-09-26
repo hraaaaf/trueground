@@ -12,7 +12,7 @@ permissions:
 jobs:
   synthetic-eval:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     env:
       GROQ_MODEL: openai/gpt-oss-120b
