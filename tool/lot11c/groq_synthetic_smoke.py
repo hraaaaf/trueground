@@ -39,6 +39,7 @@ def main():
     ap.add_argument("--reasoning-effort", default="medium")
     ap.add_argument("--schema", required=True)
     ap.add_argument("--output", required=True)
+    ap.add_argument("--limit", type=int, default=len(SYNTHETIC_CASES))
     args = ap.parse_args()
 
     api_key = os.environ.get("GROQ_API_KEY", "")
@@ -49,7 +50,11 @@ def main():
     endpoint = "https://api.groq.com/openai/v1/chat/completions"
     records = []
 
-    for case in SYNTHETIC_CASES:
+    selected_cases = SYNTHETIC_CASES[:max(0, args.limit)]
+    if not selected_cases:
+        raise SystemExit("smoke limit must select at least one case")
+
+    for case in selected_cases:
         payload = {
             "model": args.model,
             "reasoning_effort": args.reasoning_effort,

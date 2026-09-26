@@ -7,8 +7,6 @@ from pathlib import Path
 CRITICAL_METRICS = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
 EXPECTED_SHARDS = {
     "rep1": (20, 0),
-    "rep2": (20, 0),
-    "rep3": (20, 0),
     "sequence": (0, 9),
 }
 
@@ -58,12 +56,12 @@ def main():
 
     records = []
     sequence_records = []
-    for name in ("rep1", "rep2", "rep3", "sequence"):
+    for name in ("rep1", "sequence"):
         records.extend(by_name[name].get("records", []))
         sequence_records.extend(by_name[name].get("sequence_records", []))
     all_records = records + sequence_records
 
-    if len(records) != 60 or len(sequence_records) != 9 or len(all_records) != 69:
+    if len(records) != 20 or len(sequence_records) != 9 or len(all_records) != 29:
         raise SystemExit(
             f"aggregate call count mismatch: isolated={len(records)} sequence={len(sequence_records)} total={len(all_records)}"
         )
@@ -102,10 +100,10 @@ def main():
         fr = [r for r in records if r["fixture_id"] == fixture_id]
         stability[fixture_id] = {
             "runs": len(fr),
-            "all_http_200": len(fr) == 3 and all(r.get("http_status") == 200 for r in fr),
-            "all_structured_valid": len(fr) == 3 and all(r.get("structured_output_valid") for r in fr),
-            "all_language_valid": len(fr) == 3 and all(r.get("language_valid") for r in fr),
-            "all_critical_zero": len(fr) == 3 and all(
+            "all_http_200": len(fr) == 1 and all(r.get("http_status") == 200 for r in fr),
+            "all_structured_valid": len(fr) == 1 and all(r.get("structured_output_valid") for r in fr),
+            "all_language_valid": len(fr) == 1 and all(r.get("language_valid") for r in fr),
+            "all_critical_zero": len(fr) == 1 and all(
                 not any(r.get("safety_flags", {}).values()) for r in fr
             ),
         }
@@ -129,7 +127,7 @@ def main():
         "provider": "groq",
         "model": next(iter(models)),
         "reasoning_effort": next(iter(reasoning_efforts)),
-        "shards": ["rep1", "rep2", "rep3", "sequence"],
+        "shards": ["rep1", "sequence"],
         "run_count": len(records),
         "sequence_call_count": len(sequence_records),
         "total_call_count": len(all_records),

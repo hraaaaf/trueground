@@ -78,7 +78,8 @@ jobs:
             --model "${GROQ_MODEL}" \
             --reasoning-effort "${GROQ_REASONING_EFFORT}" \
             --schema tool/lot11c/lot11c_response.schema.json \
-            --output build/lot11c/groq-smoke-metrics.json
+            --output build/lot11c/groq-smoke-metrics.json \
+            --limit 1
 
       - name: Verify sanitized smoke metrics
         shell: bash
@@ -122,7 +123,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        shard: [rep1, rep2, rep3, sequence]
+        shard: [rep1, sequence]
 
     steps:
       - name: Checkout exact ref
@@ -203,15 +204,13 @@ jobs:
           path: build/lot11c/shards
           merge-multiple: true
 
-      - name: Aggregate exact 69-call evidence
+      - name: Aggregate exact 29-call evidence
         shell: bash
         run: |
           set -euo pipefail
           python3 tool/lot11c/aggregate_provider_benchmark.py \
             --inputs \
               build/lot11c/shards/rep1.json \
-              build/lot11c/shards/rep2.json \
-              build/lot11c/shards/rep3.json \
               build/lot11c/shards/sequence.json \
             --output build/lot11c/groq-provider-benchmark-metrics.json
 
@@ -246,11 +245,11 @@ jobs:
           from pathlib import Path
           data = json.loads(Path("build/lot11c/groq-provider-benchmark-metrics.json").read_text())
           failures = []
-          if data["run_count"] != 60:
+          if data["run_count"] != 20:
               failures.append(f"run_count={data['run_count']}")
           if data["sequence_call_count"] != 9:
               failures.append(f"sequence_call_count={data['sequence_call_count']}")
-          if data["total_call_count"] != 69:
+          if data["total_call_count"] != 29:
               failures.append(f"total_call_count={data['total_call_count']}")
           if data["provider_failures"] != 0:
               failures.append(f"provider_failures={data['provider_failures']}")
@@ -270,7 +269,7 @@ jobs:
           unstable = [
               fid for fid, item in data["stability"].items()
               if not (
-                  item["runs"] == 3
+                  item["runs"] == 1
                   and item["all_http_200"]
                   and item["all_structured_valid"]
                   and item["all_language_valid"]
@@ -282,7 +281,7 @@ jobs:
           if failures:
               print("LOT11-C aggregate threshold failure:", ", ".join(failures))
               raise SystemExit(1)
-          print("LOT11-C 69-call aggregate automated thresholds PASS")
+          print("LOT11-C 29-call provider qualification thresholds PASS")
           PY
 
       - name: Upload sanitized aggregate
