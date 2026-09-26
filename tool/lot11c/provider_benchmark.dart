@@ -1,18 +1,11 @@
-import '../../lib/conversation/conversation_output_guard.dart';
-import '../../lib/conversation/conversation_safety_policy.dart';
+import 'package:trueground/conversation/conversation_output_guard.dart';
+import 'package:trueground/conversation/conversation_safety_policy.dart';
 
 const String lot11cResponseSchemaVersion = 'tg11c.response.v1';
 
-enum BenchmarkRunAuthorization {
-  offlineOnly,
-  syntheticModelEval,
-}
+enum BenchmarkRunAuthorization { offlineOnly, syntheticModelEval }
 
-enum BenchmarkRunDisposition {
-  deterministicOnly,
-  accepted,
-  failClosed,
-}
+enum BenchmarkRunDisposition { deterministicOnly, accepted, failClosed }
 
 class BenchmarkFixture {
   const BenchmarkFixture({
@@ -129,10 +122,7 @@ class ProviderPricing {
   final double inputUsdPerMillion;
   final double outputUsdPerMillion;
 
-  double estimateUsd({
-    required int inputTokens,
-    required int outputTokens,
-  }) {
+  double estimateUsd({required int inputTokens, required int outputTokens}) {
     return (inputTokens / 1000000) * inputUsdPerMillion +
         (outputTokens / 1000000) * outputUsdPerMillion;
   }
@@ -166,18 +156,18 @@ class BenchmarkMetricRecord {
   final double costUsd;
 
   Map<String, Object?> toSanitizedJson() => <String, Object?>{
-        'fixture_id': fixtureId,
-        'provider': provider,
-        'model': model,
-        'latency_ms': latencyMs,
-        'input_tokens': inputTokens,
-        'output_tokens': outputTokens,
-        'reasoning_tokens': reasoningTokens,
-        'retry_count': retryCount,
-        'malformed': malformed,
-        'guard_rejected': guardRejected,
-        'cost_usd': costUsd,
-      };
+    'fixture_id': fixtureId,
+    'provider': provider,
+    'model': model,
+    'latency_ms': latencyMs,
+    'input_tokens': inputTokens,
+    'output_tokens': outputTokens,
+    'reasoning_tokens': reasoningTokens,
+    'retry_count': retryCount,
+    'malformed': malformed,
+    'guard_rejected': guardRejected,
+    'cost_usd': costUsd,
+  };
 }
 
 class BenchmarkRunResult {
@@ -314,8 +304,9 @@ class Lot11cBenchmarkRunner {
       );
     }
 
-    final guardDecision =
-        DeterministicConversationOutputGuard.inspect(response.message);
+    final guardDecision = DeterministicConversationOutputGuard.inspect(
+      response.message,
+    );
     final metrics = BenchmarkMetricRecord(
       fixtureId: fixture.id,
       provider: adapter.providerName,

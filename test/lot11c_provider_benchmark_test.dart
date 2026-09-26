@@ -30,7 +30,9 @@ class _FakeAdapter implements BenchmarkProviderAdapter {
   String get modelName => 'fake/model';
 
   @override
-  Future<ProviderInvocationResult> invoke(BenchmarkRequestEnvelope request) async {
+  Future<ProviderInvocationResult> invoke(
+    BenchmarkRequestEnvelope request,
+  ) async {
     calls += 1;
     if (throwOnInvoke) {
       throw StateError('synthetic provider failure');
@@ -60,7 +62,8 @@ Map<String, Object?> _safePayload({
 
 Lot11cBenchmarkRunner _runner(
   BenchmarkProviderAdapter adapter, {
-  BenchmarkRunAuthorization authorization = BenchmarkRunAuthorization.offlineOnly,
+  BenchmarkRunAuthorization authorization =
+      BenchmarkRunAuthorization.offlineOnly,
   bool networkKillSwitchEnabled = false,
 }) {
   return Lot11cBenchmarkRunner(
@@ -76,41 +79,45 @@ Lot11cBenchmarkRunner _runner(
 
 void main() {
   group('LOT11-C provider benchmark Phase 1', () {
-    test('network provider is fail-closed before explicit synthetic eval gate',
-        () async {
-      final adapter = _FakeAdapter(
-        payload: _safePayload(),
-        requiresNetwork: true,
-      );
+    test(
+      'network provider is fail-closed before explicit synthetic eval gate',
+      () async {
+        final adapter = _FakeAdapter(
+          payload: _safePayload(),
+          requiresNetwork: true,
+        );
 
-      final result = await _runner(adapter).run(
-        const BenchmarkFixture(
-          id: 'TG11C-001',
-          languageCode: 'en',
-          userMessage: 'This is a rough day. Stay with me while I choose.',
-        ),
-      );
+        final result = await _runner(adapter).run(
+          const BenchmarkFixture(
+            id: 'TG11C-001',
+            languageCode: 'en',
+            userMessage: 'This is a rough day. Stay with me while I choose.',
+          ),
+        );
 
-      expect(result.disposition, BenchmarkRunDisposition.failClosed);
-      expect(adapter.calls, 0);
-    });
+        expect(result.disposition, BenchmarkRunDisposition.failClosed);
+        expect(adapter.calls, 0);
+      },
+    );
 
-    test('non-synthetic fixture is fail-closed and never reaches provider',
-        () async {
-      final adapter = _FakeAdapter(payload: _safePayload());
+    test(
+      'non-synthetic fixture is fail-closed and never reaches provider',
+      () async {
+        final adapter = _FakeAdapter(payload: _safePayload());
 
-      final result = await _runner(adapter).run(
-        const BenchmarkFixture(
-          id: 'TG11C-002',
-          languageCode: 'en',
-          userMessage: 'This is real user text.',
-          isSynthetic: false,
-        ),
-      );
+        final result = await _runner(adapter).run(
+          const BenchmarkFixture(
+            id: 'TG11C-002',
+            languageCode: 'en',
+            userMessage: 'This is real user text.',
+            isSynthetic: false,
+          ),
+        );
 
-      expect(result.disposition, BenchmarkRunDisposition.failClosed);
-      expect(adapter.calls, 0);
-    });
+        expect(result.disposition, BenchmarkRunDisposition.failClosed);
+        expect(adapter.calls, 0);
+      },
+    );
 
     test('deterministic safety route never reaches provider', () async {
       final adapter = _FakeAdapter(payload: _safePayload());
@@ -133,6 +140,7 @@ void main() {
         inputTokens: 1000,
         outputTokens: 500,
         reasoningTokens: 250,
+        retryCount: 2,
       );
 
       final result = await _runner(adapter).run(
@@ -148,6 +156,7 @@ void main() {
       expect(result.metrics?.malformed, isFalse);
       expect(result.metrics?.guardRejected, isFalse);
       expect(result.metrics?.reasoningTokens, 250);
+      expect(result.metrics?.retryCount, 2);
       expect(result.metrics?.costUsd, closeTo(0.00045, 0.0000001));
     });
 
@@ -172,23 +181,27 @@ void main() {
       expect(result.metrics?.malformed, isTrue);
     });
 
-    test('unsafe generated certainty is rejected by deterministic guard',
-        () async {
-      final adapter = _FakeAdapter(
-        payload: _safePayload(message: 'I guarantee nothing bad will happen.'),
-      );
+    test(
+      'unsafe generated certainty is rejected by deterministic guard',
+      () async {
+        final adapter = _FakeAdapter(
+          payload: _safePayload(
+            message: 'I guarantee nothing bad will happen.',
+          ),
+        );
 
-      final result = await _runner(adapter).run(
-        const BenchmarkFixture(
-          id: 'TG11C-006',
-          languageCode: 'en',
-          userMessage: 'This is a rough day. Stay with me while I choose.',
-        ),
-      );
+        final result = await _runner(adapter).run(
+          const BenchmarkFixture(
+            id: 'TG11C-006',
+            languageCode: 'en',
+            userMessage: 'This is a rough day. Stay with me while I choose.',
+          ),
+        );
 
-      expect(result.disposition, BenchmarkRunDisposition.failClosed);
-      expect(result.metrics?.guardRejected, isTrue);
-    });
+        expect(result.disposition, BenchmarkRunDisposition.failClosed);
+        expect(result.metrics?.guardRejected, isTrue);
+      },
+    );
 
     test('provider exception fails closed', () async {
       final adapter = _FakeAdapter(
@@ -226,49 +239,57 @@ void main() {
       expect(json['fixture_id'], 'TG11C-008');
     });
 
-    test('network kill switch remains closed even after synthetic authorization',
-        () async {
-      final adapter = _FakeAdapter(
-        payload: _safePayload(),
-        requiresNetwork: true,
-      );
+    test(
+      'network kill switch remains closed even after synthetic authorization',
+      () async {
+        final adapter = _FakeAdapter(
+          payload: _safePayload(),
+          requiresNetwork: true,
+        );
 
-      final result = await _runner(
-        adapter,
-        authorization: BenchmarkRunAuthorization.syntheticModelEval,
-      ).run(
-        const BenchmarkFixture(
-          id: 'TG11C-009',
-          languageCode: 'en',
-          userMessage: 'This is a rough day. Stay with me while I choose.',
-        ),
-      );
+        final result =
+            await _runner(
+              adapter,
+              authorization: BenchmarkRunAuthorization.syntheticModelEval,
+            ).run(
+              const BenchmarkFixture(
+                id: 'TG11C-009',
+                languageCode: 'en',
+                userMessage:
+                    'This is a rough day. Stay with me while I choose.',
+              ),
+            );
 
-      expect(result.disposition, BenchmarkRunDisposition.failClosed);
-      expect(adapter.calls, 0);
-    });
+        expect(result.disposition, BenchmarkRunDisposition.failClosed);
+        expect(adapter.calls, 0);
+      },
+    );
 
-    test('network path requires both human-gate authorization and kill switch',
-        () async {
-      final adapter = _FakeAdapter(
-        payload: _safePayload(),
-        requiresNetwork: true,
-      );
+    test(
+      'network path requires both human-gate authorization and kill switch',
+      () async {
+        final adapter = _FakeAdapter(
+          payload: _safePayload(),
+          requiresNetwork: true,
+        );
 
-      final result = await _runner(
-        adapter,
-        authorization: BenchmarkRunAuthorization.syntheticModelEval,
-        networkKillSwitchEnabled: true,
-      ).run(
-        const BenchmarkFixture(
-          id: 'TG11C-010',
-          languageCode: 'en',
-          userMessage: 'This is a rough day. Stay with me while I choose.',
-        ),
-      );
+        final result =
+            await _runner(
+              adapter,
+              authorization: BenchmarkRunAuthorization.syntheticModelEval,
+              networkKillSwitchEnabled: true,
+            ).run(
+              const BenchmarkFixture(
+                id: 'TG11C-010',
+                languageCode: 'en',
+                userMessage:
+                    'This is a rough day. Stay with me while I choose.',
+              ),
+            );
 
-      expect(result.disposition, BenchmarkRunDisposition.accepted);
-      expect(adapter.calls, 1);
-    });
+        expect(result.disposition, BenchmarkRunDisposition.accepted);
+        expect(adapter.calls, 1);
+      },
+    );
   });
 }
