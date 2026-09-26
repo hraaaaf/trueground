@@ -85,6 +85,10 @@ def main():
         error_type = None
         provider_error_code = None
         provider_error_detail = None
+        provider_error_content_type = None
+        provider_error_server = None
+        provider_error_cf_ray = None
+        provider_error_body_preview = None
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
                 status = response.status
@@ -104,8 +108,15 @@ def main():
         except urllib.error.HTTPError as exc:
             status = exc.code
             error_type = "http_error"
+            provider_error_content_type = exc.headers.get("Content-Type")
+            provider_error_server = exc.headers.get("Server")
+            provider_error_cf_ray = exc.headers.get("CF-Ray")
+            raw_error = b""
             try:
-                error_body = json.loads(exc.read().decode("utf-8"))
+                raw_error = exc.read()
+                decoded_error = raw_error.decode("utf-8", errors="replace")
+                provider_error_body_preview = " ".join(decoded_error.split())[:300]
+                error_body = json.loads(decoded_error)
                 error_obj = error_body.get("error") or {}
                 code = error_obj.get("code")
                 detail = error_obj.get("message")
@@ -133,6 +144,10 @@ def main():
                 "error_type": error_type,
                 "provider_error_code": provider_error_code,
                 "provider_error_detail": provider_error_detail,
+                "provider_error_content_type": provider_error_content_type,
+                "provider_error_server": provider_error_server,
+                "provider_error_cf_ray": provider_error_cf_ray,
+                "provider_error_body_preview": provider_error_body_preview,
             }
         )
 
@@ -158,6 +173,10 @@ def main():
                 "http_status": r["http_status"],
                 "provider_error_code": r["provider_error_code"],
                 "provider_error_detail": r["provider_error_detail"],
+                "provider_error_content_type": r["provider_error_content_type"],
+                "provider_error_server": r["provider_error_server"],
+                "provider_error_cf_ray": r["provider_error_cf_ray"],
+                "provider_error_body_preview": r["provider_error_body_preview"],
             }
             for r in records
             if not r["structured_output_valid"]

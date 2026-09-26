@@ -120,6 +120,10 @@ jobs:
                       "http_status": r["http_status"],
                       "provider_error_code": r.get("provider_error_code"),
                       "provider_error_detail": r.get("provider_error_detail"),
+                      "provider_error_content_type": r.get("provider_error_content_type"),
+                      "provider_error_server": r.get("provider_error_server"),
+                      "provider_error_cf_ray": r.get("provider_error_cf_ray"),
+                      "provider_error_body_preview": r.get("provider_error_body_preview"),
                   })
               raise SystemExit(f"Groq smoke failed for {len(failed)}/{len(data['records'])} fixtures")
           print("Groq smoke passed for all fixtures")
