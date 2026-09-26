@@ -116,7 +116,7 @@ jobs:
             --schema tool/lot11c/lot11c_response.schema.json \
             --fixtures tool/lot11c/groq_provider_benchmark_fixtures.json \
             --output build/lot11c/groq-provider-benchmark-metrics.json \
-            --delay-seconds 5.5
+            --delay-seconds 7.5
 
       - name: Verify full benchmark sanitized metrics only
         shell: bash
