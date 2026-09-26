@@ -3,8 +3,8 @@ import argparse
 import json
 import os
 import time
-import urllib.request
-import urllib.error
+import subprocess
+import tempfile
 from pathlib import Path
 
 SYNTHETIC_CASES = [
@@ -68,16 +68,6 @@ def main():
             },
         }
 
-        req = urllib.request.Request(
-            endpoint,
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-
         start = time.perf_counter()
         status = None
         parsed_ok = False
@@ -90,42 +80,97 @@ def main():
         provider_error_cf_ray = None
         provider_error_body_preview = None
         try:
-            with urllib.request.urlopen(req, timeout=60) as response:
-                status = response.status
-                body = json.loads(response.read().decode("utf-8"))
-                usage = body.get("usage") or {}
-                content = body["choices"][0]["message"]["content"]
-                parsed = json.loads(content)
-                required = set(schema["required"])
-                parsed_ok = (
-                    set(parsed.keys()) == required
-                    and parsed.get("schema_version") == "tg11c.response.v1"
-                    and parsed.get("language") == case["language"]
-                    and isinstance(parsed.get("message"), str)
-                    and 0 < len(parsed["message"]) <= 1200
-                    and parsed.get("mode") in {"support", "clarify"}
+            with tempfile.TemporaryDirectory(prefix="tg11c-groq-") as temp_dir:
+                temp = Path(temp_dir)
+                request_path = temp / "request.json"
+                response_path = temp / "response.txt"
+                headers_path = temp / "headers.txt"
+                request_path.write_text(json.dumps(payload))
+
+                completed = subprocess.run(
+                    [
+                        "curl",
+                        "--silent",
+                        "--show-error",
+                        "--location",
+                        "--connect-timeout",
+                        "15",
+                        "--max-time",
+                        "60",
+                        "--request",
+                        "POST",
+                        "--header",
+                        f"Authorization: Bearer {api_key}",
+                        "--header",
+                        "Content-Type: application/json",
+                        "--header",
+                        "Accept: application/json",
+                        "--header",
+                        "User-Agent: TrueGround-LOT11C-Synthetic-Eval/1.0",
+                        "--data-binary",
+                        f"@{request_path}",
+                        "--dump-header",
+                        str(headers_path),
+                        "--output",
+                        str(response_path),
+                        "--write-out",
+                        "%{http_code}",
+                        endpoint,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    check=False,
                 )
-        except urllib.error.HTTPError as exc:
-            status = exc.code
-            error_type = "http_error"
-            provider_error_content_type = exc.headers.get("Content-Type")
-            provider_error_server = exc.headers.get("Server")
-            provider_error_cf_ray = exc.headers.get("CF-Ray")
-            raw_error = b""
-            try:
-                raw_error = exc.read()
-                decoded_error = raw_error.decode("utf-8", errors="replace")
-                provider_error_body_preview = " ".join(decoded_error.split())[:300]
-                error_body = json.loads(decoded_error)
-                error_obj = error_body.get("error") or {}
-                code = error_obj.get("code")
-                detail = error_obj.get("message")
-                if isinstance(code, str):
-                    provider_error_code = code[:120]
-                if isinstance(detail, str):
-                    provider_error_detail = " ".join(detail.split())[:240]
-            except Exception:
-                provider_error_code = "unparsed_http_error"
+
+                if completed.returncode != 0:
+                    error_type = "transport_error"
+                    provider_error_code = f"curl_exit_{completed.returncode}"
+                    provider_error_detail = " ".join(completed.stderr.split())[:240]
+                else:
+                    status_text = completed.stdout.strip()
+                    status = int(status_text) if status_text.isdigit() else None
+                    raw_headers = headers_path.read_text(errors="replace")
+                    raw_body = response_path.read_text(errors="replace")
+
+                    header_values = {}
+                    for line in raw_headers.splitlines():
+                        if ":" not in line:
+                            continue
+                        key, value = line.split(":", 1)
+                        header_values[key.strip().lower()] = value.strip()
+
+                    provider_error_content_type = header_values.get("content-type")
+                    provider_error_server = header_values.get("server")
+                    provider_error_cf_ray = header_values.get("cf-ray")
+
+                    if status is not None and 200 <= status < 300:
+                        body = json.loads(raw_body)
+                        usage = body.get("usage") or {}
+                        content = body["choices"][0]["message"]["content"]
+                        parsed = json.loads(content)
+                        required = set(schema["required"])
+                        parsed_ok = (
+                            set(parsed.keys()) == required
+                            and parsed.get("schema_version") == "tg11c.response.v1"
+                            and parsed.get("language") == case["language"]
+                            and isinstance(parsed.get("message"), str)
+                            and 0 < len(parsed["message"]) <= 1200
+                            and parsed.get("mode") in {"support", "clarify"}
+                        )
+                    else:
+                        error_type = "http_error"
+                        provider_error_body_preview = " ".join(raw_body.split())[:300]
+                        try:
+                            error_body = json.loads(raw_body)
+                            error_obj = error_body.get("error") or {}
+                            code = error_obj.get("code")
+                            detail = error_obj.get("message")
+                            if isinstance(code, str):
+                                provider_error_code = code[:120]
+                            if isinstance(detail, str):
+                                provider_error_detail = " ".join(detail.split())[:240]
+                        except Exception:
+                            provider_error_code = "unparsed_http_error"
         except Exception as exc:
             error_type = "runtime_error"
             provider_error_code = type(exc).__name__
