@@ -61,10 +61,12 @@ Map<String, Object?> _safePayload({
 Lot11cBenchmarkRunner _runner(
   BenchmarkProviderAdapter adapter, {
   BenchmarkRunAuthorization authorization = BenchmarkRunAuthorization.offlineOnly,
+  bool networkKillSwitchEnabled = false,
 }) {
   return Lot11cBenchmarkRunner(
     adapter: adapter,
     authorization: authorization,
+    networkKillSwitchEnabled: networkKillSwitchEnabled,
     pricing: const ProviderPricing(
       inputUsdPerMillion: 0.15,
       outputUsdPerMillion: 0.60,
@@ -224,7 +226,7 @@ void main() {
       expect(json['fixture_id'], 'TG11C-008');
     });
 
-    test('network adapter can only run after synthetic-eval authorization',
+    test('network kill switch remains closed even after synthetic authorization',
         () async {
       final adapter = _FakeAdapter(
         payload: _safePayload(),
@@ -237,6 +239,29 @@ void main() {
       ).run(
         const BenchmarkFixture(
           id: 'TG11C-009',
+          languageCode: 'en',
+          userMessage: 'This is a rough day. Stay with me while I choose.',
+        ),
+      );
+
+      expect(result.disposition, BenchmarkRunDisposition.failClosed);
+      expect(adapter.calls, 0);
+    });
+
+    test('network path requires both human-gate authorization and kill switch',
+        () async {
+      final adapter = _FakeAdapter(
+        payload: _safePayload(),
+        requiresNetwork: true,
+      );
+
+      final result = await _runner(
+        adapter,
+        authorization: BenchmarkRunAuthorization.syntheticModelEval,
+        networkKillSwitchEnabled: true,
+      ).run(
+        const BenchmarkFixture(
+          id: 'TG11C-010',
           languageCode: 'en',
           userMessage: 'This is a rough day. Stay with me while I choose.',
         ),

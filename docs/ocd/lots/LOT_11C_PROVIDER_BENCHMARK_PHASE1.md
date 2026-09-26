@@ -11,7 +11,7 @@ Prepare a provider-neutral, offline-first benchmark harness without making any e
 Phase 1 is acceptable only if:
 - deterministic OCD routing remains authoritative;
 - non-model-eligible turns never reach a provider adapter;
-- network adapters fail closed unless the explicit synthetic-eval authorization is present;
+- network adapters fail closed unless **both** the explicit synthetic-eval authorization and the network kill switch are enabled;
 - non-synthetic fixtures fail closed;
 - response envelopes are strict and reject additional properties;
 - generated text still passes through `DeterministicConversationOutputGuard`;
@@ -44,6 +44,7 @@ synthetic fixture
 
 The runner fails closed when:
 - fixture is not synthetic;
+- a network adapter is used while the network kill switch is disabled;
 - a network adapter is used while authorization is `offlineOnly`;
 - provider throws;
 - response envelope is malformed;

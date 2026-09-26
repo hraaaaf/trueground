@@ -201,12 +201,14 @@ class Lot11cBenchmarkRunner {
     required this.adapter,
     required this.pricing,
     this.authorization = BenchmarkRunAuthorization.offlineOnly,
+    this.networkKillSwitchEnabled = false,
     ConversationSafetySession? session,
   }) : session = session ?? ConversationSafetySession();
 
   final BenchmarkProviderAdapter adapter;
   final ProviderPricing pricing;
   final BenchmarkRunAuthorization authorization;
+  final bool networkKillSwitchEnabled;
   final ConversationSafetySession session;
 
   Future<BenchmarkRunResult> run(BenchmarkFixture fixture) async {
@@ -226,6 +228,13 @@ class Lot11cBenchmarkRunner {
       return BenchmarkRunResult(
         disposition: BenchmarkRunDisposition.deterministicOnly,
         safetyDecision: safetyDecision,
+      );
+    }
+
+    if (adapter.requiresNetwork && !networkKillSwitchEnabled) {
+      return BenchmarkRunResult(
+        disposition: BenchmarkRunDisposition.failClosed,
+        safetyDecision: ConversationFailurePolicy.providerFailure(),
       );
     }
 
