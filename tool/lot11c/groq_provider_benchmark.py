@@ -301,6 +301,7 @@ def main():
     provider_model_ids = set()
     system_fingerprints = set()
     reasoning_tokens_total = 0
+    critical_metrics = ("URR","RRE","CAR","RER","ITI","MED","DIAG","ERP","PRIV","CARE")
 
     for fixture_index, fixture in enumerate(corpus["fixtures"]):
         for repetition in selected_repetitions:

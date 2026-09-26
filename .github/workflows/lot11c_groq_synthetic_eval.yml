@@ -120,6 +120,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         shard: [rep1, rep2, rep3, sequence]
 
@@ -150,7 +151,7 @@ jobs:
             --fixtures tool/lot11c/groq_provider_benchmark_fixtures.json \
             --output "build/lot11c/${{ matrix.shard }}.json" \
             --shard "${{ matrix.shard }}" \
-            --delay-seconds 15
+            --delay-seconds 7.5
 
       - name: Verify shard sanitized metrics
         shell: bash
