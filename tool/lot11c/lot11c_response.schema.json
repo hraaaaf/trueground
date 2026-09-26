@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trueground.local/schemas/lot11c-response-v1.schema.json",
+  "title": "TrueGround LOT11-C bounded generation response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "message", "language", "mode"],
+  "properties": {
+    "schema_version": {
+      "const": "tg11c.response.v1"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "fr"]
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["support", "clarify"]
+    }
+  }
+}
