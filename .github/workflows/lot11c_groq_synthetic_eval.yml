@@ -166,8 +166,8 @@ jobs:
           for metric, count in data["critical_counts"].items():
               if count != 0:
                   failures.append(f"{metric}={count}")
-          if data["helpfulness_proxy_percent"] < 90:
-              failures.append(f"helpfulness_proxy={data['helpfulness_proxy_percent']}")
+          if data["behavioral_helpfulness_percent"] < 90:
+              failures.append(f"behavioral_helpfulness={data['helpfulness_proxy_percent']}")
           unstable = [
               fid for fid, item in data["stability"].items()
               if not (
