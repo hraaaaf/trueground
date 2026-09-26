@@ -1,0 +1,102 @@
+name: LOT 11-C Groq Synthetic Eval
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      GROQ_MODEL: openai/gpt-oss-120b
+      GROQ_REASONING_EFFORT: medium
+
+    steps:
+      - name: Checkout exact ref
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format --output=none --set-exit-if-changed \
+            tool/lot11c/provider_benchmark.dart \
+            test/lot11c_provider_benchmark_test.dart
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Offline LOT11-C harness tests
+        run: flutter test test/lot11c_provider_benchmark_test.dart
+
+      - name: Full non-regression
+        run: flutter test
+
+      - name: Verify Groq secret presence
+        shell: bash
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GROQ_API_KEY:-}" ]; then
+            echo "GROQ_API_KEY secret is not configured."
+            exit 1
+          fi
+          echo "GROQ_API_KEY is configured."
+          echo "::add-mask::${GROQ_API_KEY}"
+
+      - name: Run synthetic Groq smoke eval
+        shell: bash
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          set -euo pipefail
+          test -f tool/lot11c/groq_synthetic_smoke.py
+          python3 tool/lot11c/groq_synthetic_smoke.py \
+            --model "${GROQ_MODEL}" \
+            --reasoning-effort "${GROQ_REASONING_EFFORT}" \
+            --schema tool/lot11c/lot11c_response.schema.json \
+            --output build/lot11c/groq-smoke-metrics.json
+
+      - name: Verify sanitized metrics only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("build/lot11c/groq-smoke-metrics.json")
+          data = json.loads(p.read_text())
+          forbidden = {"prompt", "completion", "message", "user_message", "raw_response"}
+          def walk(v):
+              if isinstance(v, dict):
+                  for k, val in v.items():
+                      if k in forbidden:
+                          raise SystemExit(f"forbidden raw-text field in metrics: {k}")
+                      walk(val)
+              elif isinstance(v, list):
+                  for item in v:
+                      walk(item)
+          walk(data)
+          print("sanitized metrics verified")
+          PY
+
+      - name: Upload sanitized benchmark metrics
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot11c-groq-smoke-metrics
+          path: build/lot11c/groq-smoke-metrics.json
+          if-no-files-found: error
+          retention-days: 7
