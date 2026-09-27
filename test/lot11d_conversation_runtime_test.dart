@@ -6,8 +6,7 @@ class _FakeConversationAdapter implements ConversationProviderAdapter {
   _FakeConversationAdapter({
     this.payload = const <String, Object?>{
       'schema_version': conversationRuntimeSchemaVersion,
-      'message':
-          'We can leave the question unresolved and choose one small next step.',
+      'message': 'We can leave the question unresolved and choose one small next step.',
       'language': 'en',
       'mode': 'support',
     },
@@ -54,7 +53,9 @@ void main() {
         final adapter = _FakeConversationAdapter();
         final runtime = BoundedConversationRuntime(adapter: adapter);
 
-        final result = await runtime.run('Help me choose one useful next step.');
+        final result = await runtime.run(
+          'Help me choose one useful next step.',
+        );
 
         expect(result.disposition, ConversationRuntimeDisposition.generated);
         expect(result.safetyDecision.modelEligible, isTrue);
@@ -166,10 +167,7 @@ void main() {
 
     test('malformed provider schema fails closed', () async {
       final adapter = _FakeConversationAdapter(
-        payload: <String, Object?>{
-          ..._payload(),
-          'route': '/loop',
-        },
+        payload: <String, Object?>{..._payload(), 'route': '/loop'},
       );
       final runtime = BoundedConversationRuntime(adapter: adapter);
 
@@ -232,8 +230,7 @@ void main() {
       final adapter = _FakeConversationAdapter(
         payload: _payload(
           language: 'fr',
-          message:
-              'On peut laisser la question sans réponse et choisir une petite prochaine étape.',
+          message: 'On peut laisser la question sans réponse et choisir une petite prochaine étape.',
         ),
       );
       final runtime = BoundedConversationRuntime(adapter: adapter);

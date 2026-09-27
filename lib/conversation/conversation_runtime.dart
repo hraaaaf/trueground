@@ -3,11 +3,7 @@ import 'conversation_safety_policy.dart';
 
 const String conversationRuntimeSchemaVersion = 'tg11c.response.v1';
 
-enum ConversationRuntimeDisposition {
-  generated,
-  deterministicOnly,
-  failClosed,
-}
+enum ConversationRuntimeDisposition { generated, deterministicOnly, failClosed }
 
 class ConversationProviderRequest {
   const ConversationProviderRequest({
