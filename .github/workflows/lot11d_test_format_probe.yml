@@ -23,6 +23,9 @@ jobs:
           channel: stable
           cache: false
 
+      - name: Resolve dependencies
+        run: flutter pub get
+
       - name: Show canonical test format diff
         shell: bash
         run: |
