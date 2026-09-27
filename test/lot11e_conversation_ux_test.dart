@@ -97,6 +97,24 @@ void main() {
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
     });
 
+    testWidgets('keyboard send action uses the bounded runtime', (tester) async {
+      final adapter = _RecordingAdapter();
+      await _pumpApp(tester, adapter);
+      await _openCompanion(tester);
+
+      await tester.enterText(
+        find.byKey(ConversationScreen.inputKey),
+        'Help me choose one useful next step.',
+      );
+      await tester.pump();
+      await tester.testTextInput.receiveAction(TextInputAction.send);
+      await tester.pumpAndSettle();
+
+      expect(adapter.calls, 1);
+      expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+      expect(find.text(adapter.message), findsOneWidget);
+    });
+
     testWidgets('rejected provider text is never rendered', (tester) async {
       const rejected = 'I guarantee nothing bad will happen.';
       final adapter = _RecordingAdapter(message: rejected);
