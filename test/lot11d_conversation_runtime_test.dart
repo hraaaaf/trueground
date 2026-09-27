@@ -267,17 +267,20 @@ void main() {
       expect(adapter.lastRequest?.languageCode, 'fr');
       expect(adapter.calls, 1);
     });
-    test('first reassurance output cannot provide identity certainty', () async {
-      final adapter = _FakeConversationAdapter(
-        payload: _payload(message: 'Yes, you are a good person.'),
-      );
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'first reassurance output cannot provide identity certainty',
+      () async {
+        final adapter = _FakeConversationAdapter(
+          payload: _payload(message: 'Yes, you are a good person.'),
+        );
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final result = await runtime.run('Are you sure I am a good person?');
+        final result = await runtime.run('Are you sure I am a good person?');
 
-      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
-      expect(result.outputGuardDecision?.isRejected, isTrue);
-    });
+        expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+        expect(result.outputGuardDecision?.isRejected, isTrue);
+      },
+    );
 
     test('checking reinforcement from provider is rejected', () async {
       final adapter = _FakeConversationAdapter(
@@ -321,21 +324,24 @@ void main() {
       expect(result.outputGuardDecision?.isRejected, isTrue);
     });
 
-    test('intrusive-thought intent inference from provider is rejected', () async {
-      final adapter = _FakeConversationAdapter(
-        payload: _payload(
-          message: 'This thought means you want to hurt someone.',
-        ),
-      );
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'intrusive-thought intent inference from provider is rejected',
+      () async {
+        final adapter = _FakeConversationAdapter(
+          payload: _payload(
+            message: 'This thought means you want to hurt someone.',
+          ),
+        );
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final result = await runtime.run(
-        'I have an unwanted intrusive thought of hurting someone.',
-      );
+        final result = await runtime.run(
+          'I have an unwanted intrusive thought of hurting someone.',
+        );
 
-      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
-      expect(result.outputGuardDecision?.isRejected, isTrue);
-    });
+        expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+        expect(result.outputGuardDecision?.isRejected, isTrue);
+      },
+    );
 
     test('provider timeout fails closed inside the runtime', () async {
       final adapter = _DelayedConversationAdapter();
@@ -347,6 +353,5 @@ void main() {
 
       expect(result.disposition, ConversationRuntimeDisposition.failClosed);
     });
-
   });
 }
