@@ -48,17 +48,20 @@ Map<String, Object?> _payload({
 
 void main() {
   group('LOT11-D bounded conversational runtime', () {
-    test('model-eligible ordinary request invokes provider exactly once', () async {
-      final adapter = _FakeConversationAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'model-eligible ordinary request invokes provider exactly once',
+      () async {
+        final adapter = _FakeConversationAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final result = await runtime.run('Help me choose one useful next step.');
+        final result = await runtime.run('Help me choose one useful next step.');
 
-      expect(result.disposition, ConversationRuntimeDisposition.generated);
-      expect(result.safetyDecision.modelEligible, isTrue);
-      expect(adapter.calls, 1);
-      expect(adapter.lastRequest?.languageCode, 'en');
-    });
+        expect(result.disposition, ConversationRuntimeDisposition.generated);
+        expect(result.safetyDecision.modelEligible, isTrue);
+        expect(adapter.calls, 1);
+        expect(adapter.lastRequest?.languageCode, 'en');
+      },
+    );
 
     test('bounded support request invokes provider exactly once', () async {
       final adapter = _FakeConversationAdapter();
@@ -73,34 +76,43 @@ void main() {
       expect(adapter.calls, 1);
     });
 
-    test('forced certainty is deterministic and never reaches provider', () async {
-      final adapter = _FakeConversationAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'forced certainty is deterministic and never reaches provider',
+      () async {
+        final adapter = _FakeConversationAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final result = await runtime.run(
-        'Just answer yes or no: am I definitely safe?',
-      );
+        final result = await runtime.run(
+          'Just answer yes or no: am I definitely safe?',
+        );
 
-      expect(
-        result.disposition,
-        ConversationRuntimeDisposition.deterministicOnly,
-      );
-      expect(result.safetyDecision.outcome, ConversationOutcome.routeLoop);
-      expect(adapter.calls, 0);
-    });
+        expect(
+          result.disposition,
+          ConversationRuntimeDisposition.deterministicOnly,
+        );
+        expect(result.safetyDecision.outcome, ConversationOutcome.routeLoop);
+        expect(adapter.calls, 0);
+      },
+    );
 
-    test('repeated reassurance pivots deterministically on second turn', () async {
-      final adapter = _FakeConversationAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'repeated reassurance pivots deterministically on second turn',
+      () async {
+        final adapter = _FakeConversationAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final first = await runtime.run('Can you promise I am a good person?');
-      final second = await runtime.run('Are you sure I am a good person?');
+        final first = await runtime.run('Can you promise I am a good person?');
+        final second = await runtime.run('Are you sure I am a good person?');
 
-      expect(first.disposition, ConversationRuntimeDisposition.generated);
-      expect(second.disposition, ConversationRuntimeDisposition.deterministicOnly);
-      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
-      expect(adapter.calls, 1);
-    });
+        expect(first.disposition, ConversationRuntimeDisposition.generated);
+        expect(
+          second.disposition,
+          ConversationRuntimeDisposition.deterministicOnly,
+        );
+        expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+        expect(adapter.calls, 1);
+      },
+    );
 
     test('urgent request never reaches provider', () async {
       final adapter = _FakeConversationAdapter();
@@ -172,7 +184,9 @@ void main() {
     });
 
     test('wrong-language provider response fails closed', () async {
-      final adapter = _FakeConversationAdapter(payload: _payload(language: 'fr'));
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(language: 'fr'),
+      );
       final runtime = BoundedConversationRuntime(adapter: adapter);
 
       final result = await runtime.run(
@@ -184,19 +198,21 @@ void main() {
       expect(adapter.calls, 1);
     });
 
-    test('unsafe generated certainty is rejected by production output guard',
-        () async {
-      final adapter = _FakeConversationAdapter(
-        payload: _payload(message: 'I guarantee nothing bad will happen.'),
-      );
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'unsafe generated certainty is rejected by production output guard',
+      () async {
+        final adapter = _FakeConversationAdapter(
+          payload: _payload(message: 'I guarantee nothing bad will happen.'),
+        );
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final result = await runtime.run('Help me choose one useful next step.');
+        final result = await runtime.run('Help me choose one useful next step.');
 
-      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
-      expect(result.outputGuardDecision?.isRejected, isTrue);
-      expect(adapter.calls, 1);
-    });
+        expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+        expect(result.outputGuardDecision?.isRejected, isTrue);
+        expect(adapter.calls, 1);
+      },
+    );
 
     test('provider exception fails closed', () async {
       final adapter = _FakeConversationAdapter(throwOnGenerate: true);

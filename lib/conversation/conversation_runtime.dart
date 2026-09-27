@@ -42,9 +42,7 @@ class ConversationGeneratedResponse {
   final String language;
   final String mode;
 
-  static ConversationGeneratedResponse? tryParse(
-    Map<String, Object?> payload,
-  ) {
+  static ConversationGeneratedResponse? tryParse(Map<String, Object?> payload) {
     const requiredKeys = <String>{
       'schema_version',
       'message',
