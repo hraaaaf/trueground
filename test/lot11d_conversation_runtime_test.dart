@@ -441,7 +441,10 @@ void main() {
 
       final result = await runtime.run('What did I tell you yesterday?');
 
-      expect(result.disposition, ConversationRuntimeDisposition.deterministicOnly);
+      expect(
+        result.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
       expect(result.safetyDecision.outcome, ConversationOutcome.memoryTruthful);
       expect(adapter.calls, 0);
     });
