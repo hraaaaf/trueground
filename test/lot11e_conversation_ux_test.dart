@@ -132,31 +132,32 @@ void main() {
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
     });
 
-    testWidgets('provider timeout fails closed without a retry loop', (
-      tester,
-    ) async {
-      final adapter = _RecordingAdapter(
-        delay: const Duration(milliseconds: 200),
-      );
-      await _pumpApp(
-        tester,
-        adapter,
-        timeout: const Duration(milliseconds: 25),
-      );
-      await _openCompanion(tester);
+    testWidgets(
+      'provider timeout fails closed without a retry loop',
+      (tester) async {
+        final adapter = _RecordingAdapter(
+          delay: const Duration(milliseconds: 200),
+        );
+        await _pumpApp(
+          tester,
+          adapter,
+          timeout: const Duration(milliseconds: 25),
+        );
+        await _openCompanion(tester);
 
-      await _submit(tester, 'Help me choose one useful next step.');
-      await tester.pump();
-      expect(find.byKey(ConversationScreen.loadingKey), findsOneWidget);
+        await _submit(tester, 'Help me choose one useful next step.');
+        await tester.pump();
+        expect(find.byKey(ConversationScreen.loadingKey), findsOneWidget);
 
-      await tester.pump(const Duration(milliseconds: 30));
-      await tester.pump();
+        await tester.pump(const Duration(milliseconds: 30));
+        await tester.pump();
 
-      expect(find.byKey(ConversationScreen.failClosedKey), findsOneWidget);
-      expect(find.text('Try again'), findsNothing);
-      expect(find.byKey(ConversationScreen.inputKey), findsNothing);
-      await tester.pump(const Duration(milliseconds: 250));
-    });
+        expect(find.byKey(ConversationScreen.failClosedKey), findsOneWidget);
+        expect(find.text('Try again'), findsNothing);
+        expect(find.byKey(ConversationScreen.inputKey), findsNothing);
+        await tester.pump(const Duration(milliseconds: 250));
+      },
+    );
 
     testWidgets('urgent request routes deterministically without provider', (
       tester,
