@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -16,13 +15,11 @@ class _RecordingAdapter implements ConversationProviderAdapter {
         'We can leave the question unresolved and choose one small next step.',
     this.language = 'en',
     this.delay = Duration.zero,
-    this.throwOnGenerate = false,
   });
 
   final String message;
   final String language;
   final Duration delay;
-  final bool throwOnGenerate;
 
   int calls = 0;
   ConversationProviderRequest? lastRequest;
@@ -35,9 +32,6 @@ class _RecordingAdapter implements ConversationProviderAdapter {
     lastRequest = request;
     if (delay > Duration.zero) {
       await Future<void>.delayed(delay);
-    }
-    if (throwOnGenerate) {
-      throw StateError('synthetic provider failure');
     }
     return ConversationProviderInvocation(
       payload: <String, Object?>{
