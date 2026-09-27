@@ -121,7 +121,6 @@ GoRouter createTrueGroundRouter({
   );
 }
 
-
 class _UnavailableConversationProviderAdapter
     implements ConversationProviderAdapter {
   const _UnavailableConversationProviderAdapter();
