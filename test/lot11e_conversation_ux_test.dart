@@ -155,28 +155,29 @@ void main() {
       expect(find.text('Use urgent real-world help'), findsOneWidget);
     });
 
-    testWidgets('same safety session survives leaving and reopening companion', (
-      tester,
-    ) async {
-      final adapter = _RecordingAdapter();
-      await _pumpApp(tester, adapter);
-      await _openCompanion(tester);
+    testWidgets(
+      'same safety session survives leaving and reopening companion',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+        await _openCompanion(tester);
 
-      await _submit(tester, 'Check the lock again for me.');
-      await tester.pumpAndSettle();
-      expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
-      expect(adapter.calls, 1);
+        await _submit(tester, 'Check the lock again for me.');
+        await tester.pumpAndSettle();
+        expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+        expect(adapter.calls, 1);
 
-      await tester.tap(find.text('Return Home'));
-      await tester.pumpAndSettle();
-      await _openCompanion(tester);
+        await tester.tap(find.text('Return Home'));
+        await tester.pumpAndSettle();
+        await _openCompanion(tester);
 
-      await _submit(tester, 'Double-check one last time.');
-      await tester.pumpAndSettle();
+        await _submit(tester, 'Double-check one last time.');
+        await tester.pumpAndSettle();
 
-      expect(adapter.calls, 1);
-      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
-    });
+        expect(adapter.calls, 1);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+      },
+    );
 
     testWidgets('diagnosis boundary stays deterministic', (tester) async {
       final adapter = _RecordingAdapter();
@@ -247,10 +248,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Compagnon encadré'), findsOneWidget);
 
-      await _submit(
-        tester,
-        'Aide-moi à choisir une petite prochaine étape.',
-      );
+      await _submit(tester, 'Aide-moi à choisir une petite prochaine étape.');
       await tester.pumpAndSettle();
 
       expect(adapter.lastRequest?.languageCode, 'fr');
@@ -268,34 +266,38 @@ void main() {
       }
     });
 
-    test('conversation UI source contains no raw logging or analytics call', () {
-      final source = File(
-        'lib/conversation/conversation_screen.dart',
-      ).readAsStringSync();
+    test(
+      'conversation UI source contains no raw logging or analytics call',
+      () {
+        final source = File(
+          'lib/conversation/conversation_screen.dart',
+        ).readAsStringSync();
 
-      expect(source, isNot(contains('print(')));
-      expect(source, isNot(contains('debugPrint')));
-      expect(source, isNot(contains('analytics')));
-      expect(source, isNot(contains('logger')));
-    });
+        expect(source, isNot(contains('print(')));
+        expect(source, isNot(contains('debugPrint')));
+        expect(source, isNot(contains('analytics')));
+        expect(source, isNot(contains('logger')));
+      },
+    );
 
-    testWidgets('conversation surface meets accessibility guidelines at 360px', (
-      tester,
-    ) async {
-      final adapter = _RecordingAdapter();
-      await _pumpApp(tester, adapter, size: const Size(360, 800));
-      await _openCompanion(tester);
+    testWidgets(
+      'conversation surface meets accessibility guidelines at 360px',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter, size: const Size(360, 800));
+        await _openCompanion(tester);
 
-      final semantics = tester.ensureSemantics();
-      try {
-        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-        await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-        await expectLater(tester, meetsGuideline(textContrastGuideline));
-        expect(tester.takeException(), isNull);
-      } finally {
-        semantics.dispose();
-      }
-    });
+        final semantics = tester.ensureSemantics();
+        try {
+          await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(textContrastGuideline));
+          expect(tester.takeException(), isNull);
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
   });
 }
