@@ -6,7 +6,8 @@ class _FakeConversationAdapter implements ConversationProviderAdapter {
   _FakeConversationAdapter({
     this.payload = const <String, Object?>{
       'schema_version': conversationRuntimeSchemaVersion,
-      'message': 'We can leave the question unresolved and choose one small next step.',
+      'message':
+          'We can leave the question unresolved and choose one small next step.',
       'language': 'en',
       'mode': 'support',
     },
@@ -232,7 +233,8 @@ void main() {
       final adapter = _FakeConversationAdapter(
         payload: _payload(
           language: 'fr',
-          message: 'On peut laisser la question sans réponse et choisir une petite prochaine étape.',
+          message:
+              'On peut laisser la question sans réponse et choisir une petite prochaine étape.',
         ),
       );
       final runtime = BoundedConversationRuntime(adapter: adapter);
