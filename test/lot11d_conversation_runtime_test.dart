@@ -32,7 +32,6 @@ class _FakeConversationAdapter implements ConversationProviderAdapter {
   }
 }
 
-
 class _DelayedConversationAdapter implements ConversationProviderAdapter {
   @override
   Future<ConversationProviderInvocation> generate(
