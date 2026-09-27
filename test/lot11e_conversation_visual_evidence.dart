@@ -70,6 +70,18 @@ Future<void> _loadRoboto() async {
   final loader = FontLoader('Roboto')
     ..addFont(Future.value(ByteData.sublistView(bytes)));
   await loader.load();
+
+  final iconFile = File(
+    '${_flutterRoot()}/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.otf',
+  );
+  if (!iconFile.existsSync()) {
+    throw StateError('Material Icons font not found at ${iconFile.path}');
+  }
+
+  final iconBytes = iconFile.readAsBytesSync();
+  final iconLoader = FontLoader('MaterialIcons')
+    ..addFont(Future.value(ByteData.sublistView(iconBytes)));
+  await iconLoader.load();
 }
 
 Future<void> _capture(
