@@ -4,6 +4,11 @@ enum OutputGuardViolation {
   none,
   emptyOutput,
   certaintyGuarantee,
+  reassuranceReinforcement,
+  checkingReinforcement,
+  ruminationReinforcement,
+  reconfessionSolicitation,
+  intrusiveThoughtIntentInference,
   unsupportedDiagnosis,
   medicationInstruction,
   treatmentEfficacyClaim,
@@ -48,6 +53,66 @@ abstract final class DeterministicConversationOutputGuard {
       'tu es definitivement en securite',
     ])) {
       return _reject(OutputGuardViolation.certaintyGuarantee);
+    }
+
+
+    if (_startsWithAny(text, const <String>[
+      'yes you are a good person',
+      'you are a good person',
+      'no you are not a bad person',
+      'you are not a bad person',
+      'oui tu es une bonne personne',
+      'tu es une bonne personne',
+      'non tu n es pas une mauvaise personne',
+      'tu n es pas une mauvaise personne',
+    ])) {
+      return _reject(OutputGuardViolation.reassuranceReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(check|double check|verify)\b.*\b(again|one more time|last time)\b.*\b(to be sure|to make sure|for certainty)\b',
+      ),
+      RegExp(
+        r'^(verifie|reverifie)\b.*\b(encore|a nouveau|une derniere fois)\b.*\b(pour etre sur|pour t assurer|pour verifier)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(keep analyzing|analyze again|keep thinking|continue analyzing)\b.*\b(until|exactly|what it means)\b',
+      ),
+      RegExp(
+        r'^(continue a analyser|continue d analyser|analyse encore|continue a y penser)\b.*\b(jusqu a|exactement|ce que ca signifie|ce que cela signifie)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.ruminationReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(tell me|share)\b.*\b(one more detail|another detail|more details)\b.*\b(sure|certain|certainty|know for sure)\b',
+      ),
+      RegExp(
+        r'^(dis moi|partage)\b.*\b(encore un detail|un autre detail|plus de details)\b.*\b(sur|certains|certitude)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.reconfessionSolicitation);
+    }
+
+    if (_containsAny(text, const <String>[
+      'this thought means you want to',
+      'that thought means you want to',
+      'this thought proves you want to',
+      'your intrusive thought means you want to',
+      'cette pensee signifie que tu veux',
+      'cette pensee veut dire que tu veux',
+      'cette pensee prouve que tu veux',
+      'ta pensee intrusive signifie que tu veux',
+    ])) {
+      return _reject(OutputGuardViolation.intrusiveThoughtIntentInference);
     }
 
     final directDiagnosis = <String>['you', 'have', 'ocd'].join(' ');
@@ -193,6 +258,24 @@ String _normalize(String input) {
 bool _containsAny(String text, List<String> needles) {
   for (final needle in needles) {
     if (text.contains(_normalize(needle))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _startsWithAny(String text, List<String> needles) {
+  for (final needle in needles) {
+    if (text.startsWith(_normalize(needle))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _matchesAny(String text, List<RegExp> patterns) {
+  for (final pattern in patterns) {
+    if (pattern.hasMatch(text)) {
       return true;
     }
   }

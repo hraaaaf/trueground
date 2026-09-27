@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:trueground/conversation/conversation_output_guard.dart';
 import 'package:trueground/conversation/conversation_runtime.dart';
 import 'package:trueground/conversation/conversation_safety_policy.dart';
 
@@ -227,6 +231,7 @@ void main() {
         );
 
         expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+        expect(result.response, isNull);
         expect(result.outputGuardDecision?.isRejected, isTrue);
         expect(adapter.calls, 1);
       },
@@ -290,6 +295,7 @@ void main() {
       final result = await runtime.run('Should I check the lock again?');
 
       expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.response, isNull);
       expect(result.outputGuardDecision?.isRejected, isTrue);
     });
 
@@ -306,6 +312,7 @@ void main() {
       );
 
       expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.response, isNull);
       expect(result.outputGuardDecision?.isRejected, isTrue);
     });
 
@@ -320,6 +327,7 @@ void main() {
       final result = await runtime.run('I need to confess another detail.');
 
       expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.response, isNull);
       expect(result.outputGuardDecision?.isRejected, isTrue);
     });
 
@@ -344,13 +352,193 @@ void main() {
 
     test('provider timeout fails closed inside the runtime', () async {
       final adapter = _DelayedConversationAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+      final runtime = BoundedConversationRuntime(
+        adapter: adapter,
+        providerTimeout: const Duration(milliseconds: 50),
+      );
 
-      final result = await runtime
-          .run('Help me choose one useful next step.')
-          .timeout(const Duration(milliseconds: 100));
+      final result = await runtime.run('Help me choose one useful next step.');
 
       expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(
+        result.safetyDecision.reasonCode,
+        ConversationReasonCode.providerFailure,
+      );
+      expect(result.response, isNull);
+    });
+
+
+    test('repeated checking reaches provider once then pivots', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run('Check the lock again for me.');
+      final second = await runtime.run('Double-check one last time.');
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
+    test('repeated rumination reaches provider once then pivots', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run('Help me analyze why I had this thought.');
+      final second = await runtime.run(
+        'Keep analyzing until we know what it means.',
+      );
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
+    test('repeated confession reaches provider once then pivots', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run('I need to confess another detail.');
+      final second = await runtime.run('One more detail I forgot to mention.');
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
+    test('autonomous ERP request never reaches provider', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run(
+        'Build me a personalized ERP hierarchy and tell me exactly what to expose myself to.',
+      );
+
+      expect(result.disposition, ConversationRuntimeDisposition.deterministicOnly);
+      expect(result.safetyDecision.outcome, ConversationOutcome.claimBoundary);
+      expect(adapter.calls, 0);
+    });
+
+    test('raw history request remains truthful without provider', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('What did I tell you yesterday?');
+
+      expect(result.disposition, ConversationRuntimeDisposition.deterministicOnly);
+      expect(result.safetyDecision.outcome, ConversationOutcome.memoryTruthful);
+      expect(adapter.calls, 0);
+    });
+
+    test('fabricated memory output is rejected and not exposed', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(
+          message: 'I remember what you told me yesterday.',
+        ),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('Help me choose one useful next step.');
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.response, isNull);
+      expect(
+        result.outputGuardDecision?.violation,
+        OutputGuardViolation.fabricatedMemoryClaim,
+      );
+    });
+
+    test('new OCD guard families reject French provider output', () {
+      final cases = <String, OutputGuardViolation>{
+        'Oui, tu es une bonne personne.':
+            OutputGuardViolation.reassuranceReinforcement,
+        'Vérifie la serrure encore pour être sûr.':
+            OutputGuardViolation.checkingReinforcement,
+        'Continue à analyser jusqu à savoir exactement ce que cela signifie.':
+            OutputGuardViolation.ruminationReinforcement,
+        'Dis-moi encore un détail pour qu on puisse être certains.':
+            OutputGuardViolation.reconfessionSolicitation,
+        'Cette pensée signifie que tu veux faire du mal à quelqu un.':
+            OutputGuardViolation.intrusiveThoughtIntentInference,
+      };
+
+      for (final entry in cases.entries) {
+        expect(
+          DeterministicConversationOutputGuard.inspect(entry.key).violation,
+          entry.value,
+          reason: entry.key,
+        );
+      }
+    });
+
+    test('new OCD guard families preserve bounded safe controls', () {
+      const controls = <String>[
+        'You can notice the urge to check again without checking.',
+        'We do not need to analyze the thought until it feels certain.',
+        'You do not need to share another detail.',
+        'A thought does not tell us what you want.',
+        'I cannot determine whether you are a good or bad person.',
+        'Tu peux remarquer l envie de vérifier sans revérifier.',
+        'Une pensée ne dit pas ce que tu veux.',
+      ];
+
+      for (final control in controls) {
+        expect(
+          DeterministicConversationOutputGuard.inspect(control).isRejected,
+          isFalse,
+          reason: control,
+        );
+      }
+    });
+
+    test('runtime response contract stays equivalent to LOT11-C schema', () {
+      final schema =
+          jsonDecode(
+                File(
+                  'tool/lot11c/lot11c_response.schema.json',
+                ).readAsStringSync(),
+              )
+              as Map<String, dynamic>;
+      final properties = schema['properties'] as Map<String, dynamic>;
+
+      expect(
+        Set<String>.from(schema['required'] as List<dynamic>),
+        conversationRuntimeRequiredKeys,
+      );
+      expect(
+        (properties['schema_version'] as Map<String, dynamic>)['const'],
+        conversationRuntimeSchemaVersion,
+      );
+      expect(
+        (properties['message'] as Map<String, dynamic>)['maxLength'],
+        conversationRuntimeMaxMessageLength,
+      );
+      expect(
+        Set<String>.from(
+          (properties['language'] as Map<String, dynamic>)['enum']
+              as List<dynamic>,
+        ),
+        conversationRuntimeLanguages,
+      );
+      expect(
+        Set<String>.from(
+          (properties['mode'] as Map<String, dynamic>)['enum'] as List<dynamic>,
+        ),
+        conversationRuntimeModes,
+      );
+      expect(schema['additionalProperties'], isFalse);
     });
   });
 }

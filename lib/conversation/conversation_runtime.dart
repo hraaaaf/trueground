@@ -2,6 +2,16 @@ import 'conversation_output_guard.dart';
 import 'conversation_safety_policy.dart';
 
 const String conversationRuntimeSchemaVersion = 'tg11c.response.v1';
+const Set<String> conversationRuntimeRequiredKeys = <String>{
+  'schema_version',
+  'message',
+  'language',
+  'mode',
+};
+const Set<String> conversationRuntimeLanguages = <String>{'en', 'fr'};
+const Set<String> conversationRuntimeModes = <String>{'support', 'clarify'};
+const int conversationRuntimeMaxMessageLength = 1200;
+const Duration defaultConversationProviderTimeout = Duration(seconds: 15);
 
 enum ConversationRuntimeDisposition { generated, deterministicOnly, failClosed }
 
@@ -39,15 +49,8 @@ class ConversationGeneratedResponse {
   final String mode;
 
   static ConversationGeneratedResponse? tryParse(Map<String, Object?> payload) {
-    const requiredKeys = <String>{
-      'schema_version',
-      'message',
-      'language',
-      'mode',
-    };
-
-    if (payload.length != requiredKeys.length ||
-        !requiredKeys.every(payload.containsKey)) {
+    if (payload.length != conversationRuntimeRequiredKeys.length ||
+        !conversationRuntimeRequiredKeys.every(payload.containsKey)) {
       return null;
     }
 
@@ -61,11 +64,11 @@ class ConversationGeneratedResponse {
 
     if (message is! String ||
         message.isEmpty ||
-        message.length > 1200 ||
+        message.length > conversationRuntimeMaxMessageLength ||
         language is! String ||
-        (language != 'en' && language != 'fr') ||
+        !conversationRuntimeLanguages.contains(language) ||
         mode is! String ||
-        (mode != 'support' && mode != 'clarify')) {
+        !conversationRuntimeModes.contains(mode)) {
       return null;
     }
 
@@ -95,10 +98,13 @@ class BoundedConversationRuntime {
   BoundedConversationRuntime({
     required this.adapter,
     ConversationSafetySession? session,
-  }) : session = session ?? ConversationSafetySession();
+    this.providerTimeout = defaultConversationProviderTimeout,
+  }) : assert(providerTimeout.inMicroseconds > 0),
+       session = session ?? ConversationSafetySession();
 
   final ConversationProviderAdapter adapter;
   final ConversationSafetySession session;
+  final Duration providerTimeout;
 
   Future<ConversationRuntimeResult> run(
     String userMessage, {
@@ -119,12 +125,14 @@ class BoundedConversationRuntime {
 
     ConversationProviderInvocation invocation;
     try {
-      invocation = await adapter.generate(
-        ConversationProviderRequest(
-          languageCode: normalizedLanguage,
-          userMessage: userMessage,
-        ),
-      );
+      invocation = await adapter
+          .generate(
+            ConversationProviderRequest(
+              languageCode: normalizedLanguage,
+              userMessage: userMessage,
+            ),
+          )
+          .timeout(providerTimeout);
     } catch (_) {
       return _failClosed();
     }
@@ -141,7 +149,6 @@ class BoundedConversationRuntime {
       return ConversationRuntimeResult(
         disposition: ConversationRuntimeDisposition.failClosed,
         safetyDecision: ConversationFailurePolicy.providerFailure(),
-        response: response,
         outputGuardDecision: guardDecision,
       );
     }
