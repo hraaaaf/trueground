@@ -32,6 +32,24 @@ class _FakeConversationAdapter implements ConversationProviderAdapter {
   }
 }
 
+
+class _DelayedConversationAdapter implements ConversationProviderAdapter {
+  @override
+  Future<ConversationProviderInvocation> generate(
+    ConversationProviderRequest request,
+  ) async {
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    return const ConversationProviderInvocation(
+      payload: <String, Object?>{
+        'schema_version': conversationRuntimeSchemaVersion,
+        'message': 'Choose one small next step without settling the question.',
+        'language': 'en',
+        'mode': 'support',
+      },
+    );
+  }
+}
+
 Map<String, Object?> _payload({
   String language = 'en',
   String message =
@@ -249,5 +267,86 @@ void main() {
       expect(adapter.lastRequest?.languageCode, 'fr');
       expect(adapter.calls, 1);
     });
+    test('first reassurance output cannot provide identity certainty', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(message: 'Yes, you are a good person.'),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('Are you sure I am a good person?');
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.outputGuardDecision?.isRejected, isTrue);
+    });
+
+    test('checking reinforcement from provider is rejected', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(message: 'Check the lock again to be sure.'),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('Should I check the lock again?');
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.outputGuardDecision?.isRejected, isTrue);
+    });
+
+    test('rumination reinforcement from provider is rejected', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(
+          message: 'Keep analyzing until you know exactly what it means.',
+        ),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run(
+        'What if this thought means something about me?',
+      );
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.outputGuardDecision?.isRejected, isTrue);
+    });
+
+    test('reconfession solicitation from provider is rejected', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(
+          message: 'Tell me one more detail so we can be certain.',
+        ),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('I need to confess another detail.');
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.outputGuardDecision?.isRejected, isTrue);
+    });
+
+    test('intrusive-thought intent inference from provider is rejected', () async {
+      final adapter = _FakeConversationAdapter(
+        payload: _payload(
+          message: 'This thought means you want to hurt someone.',
+        ),
+      );
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run(
+        'I have an unwanted intrusive thought of hurting someone.',
+      );
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(result.outputGuardDecision?.isRejected, isTrue);
+    });
+
+    test('provider timeout fails closed inside the runtime', () async {
+      final adapter = _DelayedConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime
+          .run('Help me choose one useful next step.')
+          .timeout(const Duration(milliseconds: 100));
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+    });
+
   });
 }
