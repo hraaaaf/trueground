@@ -1,0 +1,146 @@
+name: LOT 11E Conversation UX
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conversation-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Format check
+        run: |
+          dart format lib test
+          git diff --exit-code
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: LOT11-E privacy and provider boundary guard
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -R -n -E 'api[_-]?key|Bearer |Authorization:|https?://'             lib/conversation lib/app; then
+            echo 'Client provider transport or secret marker found in LOT11-E scope.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'print\(|debugPrint|analytics|logger'             lib/conversation/conversation_screen.dart; then
+            echo 'Raw conversation logging/analytics marker found.'
+            exit 1
+          fi
+
+          if grep -R -n -E 'regenerate|check again|are you sure'             lib/conversation/conversation_screen.dart; then
+            echo 'Unsafe retry/reassurance mechanic marker found in conversation UI.'
+            exit 1
+          fi
+
+      - name: LOT11-D runtime regression
+        run: flutter test test/lot11d_conversation_runtime_test.dart
+
+      - name: LOT11-E focused UX tests
+        run: flutter test test/lot11e_conversation_ux_test.dart
+
+      - name: Full Flutter regression
+        run: flutter test
+
+      - name: Release web build
+        run: flutter build web --release
+
+      - name: Capture LOT11-E state evidence
+        run: |
+          flutter test test/lot11e_conversation_visual_evidence.dart
+          for width in 360 390 768 1280; do
+            for state in idle_en loading generated fail_closed pivot_loop idle_fr; do
+              test -s "build/lot11e/screenshots/conversation_${width}_${state}.png"
+            done
+          done
+          sha256sum build/lot11e/screenshots/conversation_*.png
+
+      - name: Capture dashboard before and after
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_sha=db9d37a369299bf4746dd172c378b49877011c05
+          before_dir=/tmp/trueground-lot11e-before
+          rm -rf "$before_dir"
+          git worktree add "$before_dir" "$base_sha"
+
+          cleanup() {
+            kill "${after_pid:-}" >/dev/null 2>&1 || true
+            kill "${before_pid:-}" >/dev/null 2>&1 || true
+            git worktree remove --force "$before_dir" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          (
+            cd "$before_dir"
+            flutter pub get
+            flutter build web --release
+          )
+
+          python3 -m http.server 7467 --bind 127.0.0.1             --directory build/web >/tmp/lot11e-after.log 2>&1 &
+          after_pid=$!
+          python3 -m http.server 7468 --bind 127.0.0.1             --directory "$before_dir/build/web" >/tmp/lot11e-before.log 2>&1 &
+          before_pid=$!
+
+          for port in 7467 7468; do
+            ready=0
+            for _ in $(seq 1 30); do
+              if curl --fail --silent "http://127.0.0.1:$port/" >/dev/null; then
+                ready=1
+                break
+              fi
+              sleep 1
+            done
+            test "$ready" -eq 1
+          done
+
+          chrome_bin="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome_bin"
+
+          mkdir -p build/lot11e/screenshots
+          for spec in "360 800" "390 844" "768 1024" "1280 900"; do
+            set -- $spec
+            width=$1
+            height=$2
+
+            timeout 45s "$chrome_bin"               --headless --disable-gpu --no-sandbox --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot11e/screenshots/before_dashboard_${width}.png"               "http://127.0.0.1:7468/#/"               || test -s "build/lot11e/screenshots/before_dashboard_${width}.png"
+
+            timeout 45s "$chrome_bin"               --headless --disable-gpu --no-sandbox --hide-scrollbars               --force-device-scale-factor=1               --run-all-compositor-stages-before-draw               --virtual-time-budget=5000               --window-size="$width,$height"               --screenshot="build/lot11e/screenshots/after_dashboard_${width}.png"               "http://127.0.0.1:7467/#/"               || test -s "build/lot11e/screenshots/after_dashboard_${width}.png"
+
+            test -s "build/lot11e/screenshots/before_dashboard_${width}.png"
+            test -s "build/lot11e/screenshots/after_dashboard_${width}.png"
+          done
+          sha256sum build/lot11e/screenshots/*dashboard*.png
+
+      - name: Upload LOT11-E evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot11e-conversation-ux-evidence
+          path: build/lot11e/screenshots/
+          if-no-files-found: warn
+          retention-days: 14
