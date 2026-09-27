@@ -204,7 +204,9 @@ void main() {
         );
         final runtime = BoundedConversationRuntime(adapter: adapter);
 
-        final result = await runtime.run('Help me choose one useful next step.');
+        final result = await runtime.run(
+          'Help me choose one useful next step.',
+        );
 
         expect(result.disposition, ConversationRuntimeDisposition.failClosed);
         expect(result.outputGuardDecision?.isRejected, isTrue);
