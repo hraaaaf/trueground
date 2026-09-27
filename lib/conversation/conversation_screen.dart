@@ -93,7 +93,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
       return;
     }
 
-    if (result.disposition == ConversationRuntimeDisposition.deterministicOnly) {
+    if (result.disposition ==
+        ConversationRuntimeDisposition.deterministicOnly) {
       final route = result.safetyDecision.route;
       if (route != null) {
         context.go(route);
@@ -178,7 +179,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
           const SizedBox(width: TrueGroundSpacing.sm),
           Expanded(
             child: Text(
-              context.tr('Messages are not saved as chat history in this build.'),
+              context.tr(
+                'Messages are not saved as chat history in this build.',
+              ),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
