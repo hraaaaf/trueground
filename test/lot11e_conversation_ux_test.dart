@@ -135,6 +135,7 @@ void main() {
       expect(find.byKey(ConversationScreen.failClosedKey), findsOneWidget);
       expect(find.text('Try again'), findsNothing);
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
+      await tester.pump(const Duration(milliseconds: 250));
     });
 
     testWidgets('urgent request routes deterministically without provider', (
@@ -164,7 +165,10 @@ void main() {
         expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
         expect(adapter.calls, 1);
 
-        await tester.tap(find.text('Return Home'));
+        final returnHome = find.text('Return Home');
+        await tester.ensureVisible(returnHome);
+        await tester.pumpAndSettle();
+        await tester.tap(returnHome);
         await tester.pumpAndSettle();
         await _openCompanion(tester);
 
