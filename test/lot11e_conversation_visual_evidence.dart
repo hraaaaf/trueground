@@ -119,7 +119,10 @@ Future<GlobalKey> _open(
 Future<void> _submit(WidgetTester tester, String message) async {
   await tester.enterText(find.byKey(ConversationScreen.inputKey), message);
   await tester.pump();
-  await tester.tap(find.byKey(ConversationScreen.submitKey));
+  final submit = find.byKey(ConversationScreen.submitKey);
+  await tester.ensureVisible(submit);
+  await tester.pumpAndSettle();
+  await tester.tap(submit);
 }
 
 void main() {
