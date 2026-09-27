@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/conversation/conversation_runtime.dart';
 import 'package:trueground/conversation/conversation_screen.dart';
+import 'package:trueground/design/app_theme.dart';
 import 'package:trueground/localization/trueground_locale.dart';
 import 'package:trueground/loop/loop_flow_screen.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
@@ -299,6 +300,41 @@ void main() {
         expect(source, isNot(contains('debugPrint')));
         expect(source, isNot(contains('analytics')));
         expect(source, isNot(contains('logger')));
+      },
+    );
+
+    testWidgets(
+      'conversation surface remains readable at 200 percent text on 360px',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(360, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        final runtime = BoundedConversationRuntime(
+          adapter: _RecordingAdapter(),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: TrueGroundTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(2)),
+              child: child!,
+            ),
+            home: TrueGroundLocaleScope(
+              language: TrueGroundLanguage.en,
+              onLanguageChanged: (_) {},
+              child: Scaffold(body: ConversationScreen(runtime: runtime)),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(ConversationScreen.screenKey), findsOneWidget);
+        expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
+        expect(find.byKey(ConversationScreen.submitKey), findsOneWidget);
+        expect(tester.takeException(), isNull);
       },
     );
 
