@@ -173,11 +173,7 @@ void main() {
       await _submit(tester, 'Help me choose one useful next step.');
       await tester.pumpAndSettle();
       expect(find.byKey(ConversationScreen.failClosedKey), findsOneWidget);
-      await _capture(
-        tester,
-        boundary,
-        'conversation_${width}_fail_closed.png',
-      );
+      await _capture(tester, boundary, 'conversation_${width}_fail_closed.png');
 
       boundary = await _open(tester, size, const _VisualAdapter());
       await _submit(tester, 'Just answer yes or no: am I definitely safe?');
