@@ -367,7 +367,6 @@ void main() {
       expect(result.response, isNull);
     });
 
-
     test('repeated checking reaches provider once then pivots', () async {
       final adapter = _FakeConversationAdapter();
       final runtime = BoundedConversationRuntime(adapter: adapter);
@@ -388,7 +387,9 @@ void main() {
       final adapter = _FakeConversationAdapter();
       final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final first = await runtime.run('Help me analyze why I had this thought.');
+      final first = await runtime.run(
+        'Help me analyze why I had this thought.',
+      );
       final second = await runtime.run(
         'Keep analyzing until we know what it means.',
       );
@@ -426,7 +427,10 @@ void main() {
         'Build me a personalized ERP hierarchy and tell me exactly what to expose myself to.',
       );
 
-      expect(result.disposition, ConversationRuntimeDisposition.deterministicOnly);
+      expect(
+        result.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
       expect(result.safetyDecision.outcome, ConversationOutcome.claimBoundary);
       expect(adapter.calls, 0);
     });
@@ -444,9 +448,7 @@ void main() {
 
     test('fabricated memory output is rejected and not exposed', () async {
       final adapter = _FakeConversationAdapter(
-        payload: _payload(
-          message: 'I remember what you told me yesterday.',
-        ),
+        payload: _payload(message: 'I remember what you told me yesterday.'),
       );
       final runtime = BoundedConversationRuntime(adapter: adapter);
 

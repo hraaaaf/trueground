@@ -55,7 +55,6 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.certaintyGuarantee);
     }
 
-
     if (_startsWithAny(text, const <String>[
       'yes you are a good person',
       'you are a good person',
