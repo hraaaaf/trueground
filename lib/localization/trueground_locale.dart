@@ -345,8 +345,7 @@ const Map<String, String> _fr = <String, String>{
       'Historique de discussion indisponible.',
   'This build does not keep raw chat history here, and TrueGround will not invent one.':
       'Cette version ne conserve pas ici l’historique brut des discussions, et TrueGround n’en inventera pas.',
-  'Conversation response unavailable':
-      'Réponse conversationnelle indisponible',
+  'Conversation response unavailable': 'Réponse conversationnelle indisponible',
   'No generated response was shown. This screen did not save your message as chat history.':
       'Aucune réponse générée n’a été affichée. Cet écran n’a pas enregistré votre message comme historique de discussion.',
   'Choose another route from Home.':
