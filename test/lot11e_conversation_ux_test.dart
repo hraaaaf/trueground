@@ -97,7 +97,9 @@ void main() {
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
     });
 
-    testWidgets('keyboard send action uses the bounded runtime', (tester) async {
+    testWidgets('keyboard send action uses the bounded runtime', (
+      tester,
+    ) async {
       final adapter = _RecordingAdapter();
       await _pumpApp(tester, adapter);
       await _openCompanion(tester);
