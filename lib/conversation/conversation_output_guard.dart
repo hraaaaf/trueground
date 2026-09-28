@@ -74,11 +74,11 @@ abstract final class DeterministicConversationOutputGuard {
 
     if (_matchesAny(text, <RegExp>[
       RegExp(
-        r'^(check|double check|verify|wash|clean)\\b.*\\b(again|one more time|last time)\\b',
+        r'^(check|double check|verify|wash|clean)\b.*\b(again|one more time|last time)\b',
       ),
-      RegExp(r'^(recheck|reverify)\\b'),
-      RegExp(r'^(verifie|lave|nettoie)\\b.*\\b(encore|une derniere fois)\\b'),
-      RegExp(r'^reverifie\\b'),
+      RegExp(r'^(recheck|reverify)\b'),
+      RegExp(r'^(verifie|lave|nettoie)\b.*\b(encore|une derniere fois)\b'),
+      RegExp(r'^reverifie\b'),
     ])) {
       return _reject(OutputGuardViolation.checkingReinforcement);
     }
