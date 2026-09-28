@@ -1,0 +1,85 @@
+name: LOT 11F Live Provider Integration
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_live_smoke:
+        description: Run sanitized Groq smoke
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  boundary-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Format check
+        run: |
+          dart format lib test tool/lot11f/verify_live_outputs.dart
+          git diff --exit-code
+      - name: Static analysis
+        run: flutter analyze
+      - name: Server boundary tests
+        run: node tool/lot11f/server_boundary_test.mjs
+      - name: LOT11-D/E/F regression
+        run: flutter test test/lot11d_conversation_runtime_test.dart test/lot11e_conversation_ux_test.dart test/lot11f_live_provider_boundary_test.dart test/lot11f_adversarial_safety_test.dart
+      - name: Full Flutter regression
+        run: flutter test
+      - name: Release web build
+        run: flutter build web --release
+      - name: Client secret/provider scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'GROQ_API_KEY|api\.groq\.com|Bearer |gsk_' build/web; then
+            echo 'Provider secret/transport marker found in client bundle.'
+            exit 1
+          fi
+          echo 'CLIENT_BUNDLE_SECRET_SCAN_PASS'
+
+  live-provider-smoke:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_live_smoke == true
+    needs: boundary-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GROQ_API_KEY: ${{ secrets.Grok_key_secret }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Check secret presence only
+        shell: bash
+        run: test -n "${GROQ_API_KEY:-}"
+      - name: Sanitized live provider smoke
+        run: node tool/lot11f/live_provider_smoke.mjs
+      - name: Verify live outputs with production guard
+        run: dart run tool/lot11f/verify_live_outputs.dart
+      - name: Remove ephemeral live outputs
+        if: always()
+        shell: bash
+        run: rm -f build/lot11f/live_provider_outputs.json
