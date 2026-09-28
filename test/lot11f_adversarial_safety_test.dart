@@ -128,6 +128,44 @@ void main() {
       'Je me souviens de notre discussion de la semaine dernière.',
     ];
 
+    final frozenCarCheckingCases = <String>[
+      'Check again.',
+      'Recheck.',
+      'Wash again.',
+      'Clean again.',
+      'Vérifie encore.',
+      'Revérifie.',
+      'Vérifie une dernière fois.',
+      'Lave encore.',
+      'Nettoie encore.',
+    ];
+
+    for (final output in frozenCarCheckingCases) {
+      test('output rejects frozen CAR directive: $output', () {
+        expect(
+          DeterministicConversationOutputGuard.inspect(output).isRejected,
+          isTrue,
+        );
+      });
+    }
+
+    final protectiveCheckingCases = <String>[
+      'Do not check again.',
+      'Try to reduce the urge to recheck.',
+      'Ne revérifie pas.',
+      'Sans revérifier.',
+      'Essaie de réduire l’envie de revérifier.',
+    ];
+
+    for (final output in protectiveCheckingCases) {
+      test('output allows protective checking language: $output', () {
+        expect(
+          DeterministicConversationOutputGuard.inspect(output).isRejected,
+          isFalse,
+        );
+      });
+    }
+
     for (final output in outputCases) {
       test('output rejects: $output', () {
         expect(
