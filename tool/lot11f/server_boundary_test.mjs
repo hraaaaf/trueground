@@ -1,0 +1,145 @@
+import assert from 'node:assert/strict';
+import handler from '../../api/conversation.mjs';
+
+const originalFetch = globalThis.fetch;
+const originalKey = process.env.GROQ_API_KEY;
+process.env.GROQ_API_KEY = 'test-only-key';
+
+function request(body, { origin = 'https://trueground.example' } = {}) {
+  return new Request('https://trueground.example/api/conversation', {
+    method: 'POST',
+    headers: {
+      origin,
+      'content-type': 'application/json',
+      'x-trueground-client': 'tg11f.client.v1',
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+function validBody(language = 'en') {
+  return {
+    schema_version: 'tg11c.response.v1',
+    language,
+    user_message:
+      language === 'fr'
+        ? 'Aide-moi à choisir une petite prochaine étape.'
+        : 'Help me choose one useful next step.',
+  };
+}
+
+async function run() {
+  let providerCalls = 0;
+  let providerRequest;
+  globalThis.fetch = async (_url, init) => {
+    providerCalls += 1;
+    providerRequest = JSON.parse(init.body);
+    return new Response(
+      JSON.stringify({
+        choices: [
+          {
+            message: {
+              content: JSON.stringify({
+                schema_version: 'tg11c.response.v1',
+                message:
+                  'Choose one small next step without resolving the uncertainty.',
+                language: 'en',
+                mode: 'support',
+              }),
+            },
+          },
+        ],
+      }),
+      { status: 200, headers: { 'content-type': 'application/json' } },
+    );
+  };
+
+  const ok = await handler.fetch(request(validBody()));
+  assert.equal(ok.status, 200);
+  const okBody = await ok.json();
+  assert.deepEqual(Object.keys(okBody).sort(), [
+    'language',
+    'message',
+    'mode',
+    'schema_version',
+  ]);
+  assert.equal(providerCalls, 1);
+  assert.equal(providerRequest.model, 'openai/gpt-oss-120b');
+  assert.equal(providerRequest.reasoning_effort, 'medium');
+  assert.equal(providerRequest.response_format.type, 'json_schema');
+  assert.equal(providerRequest.response_format.json_schema.strict, true);
+  assert.equal(
+    providerRequest.response_format.json_schema.schema.additionalProperties,
+    false,
+  );
+  assert.equal('tools' in providerRequest, false);
+
+  const crossOrigin = await handler.fetch(
+    request(validBody(), { origin: 'https://evil.example' }),
+  );
+  assert.equal(crossOrigin.status, 403);
+  assert.equal(providerCalls, 1);
+
+  const missingOrigin = new Request('https://trueground.example/api/conversation', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-trueground-client': 'tg11f.client.v1',
+    },
+    body: JSON.stringify(validBody()),
+  });
+  const noOrigin = await handler.fetch(missingOrigin);
+  assert.equal(noOrigin.status, 403);
+  assert.equal(providerCalls, 1);
+
+  const extraField = await handler.fetch(
+    request({ ...validBody(), hidden: 'nope' }),
+  );
+  assert.equal(extraField.status, 400);
+  assert.equal(providerCalls, 1);
+
+  const missingContract = new Request(
+    'https://trueground.example/api/conversation',
+    {
+      method: 'POST',
+      headers: {
+        origin: 'https://trueground.example',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(validBody()),
+    },
+  );
+  const badContract = await handler.fetch(missingContract);
+  assert.equal(badContract.status, 400);
+  assert.equal(providerCalls, 1);
+
+  globalThis.fetch = async () => new Response('provider failure', { status: 500 });
+  const providerFailure = await handler.fetch(request(validBody()));
+  assert.equal(providerFailure.status, 502);
+  assert.deepEqual(await providerFailure.json(), {
+    error: 'provider_unavailable',
+  });
+
+  globalThis.fetch = async () =>
+    new Response(
+      JSON.stringify({
+        choices: [{ message: { content: '{"language":"en"}' } }],
+      }),
+      { status: 200, headers: { 'content-type': 'application/json' } },
+    );
+  const malformed = await handler.fetch(request(validBody()));
+  assert.equal(malformed.status, 502);
+  assert.deepEqual(await malformed.json(), {
+    error: 'provider_unavailable',
+  });
+
+  console.log('LOT11-F server boundary tests PASS');
+}
+
+try {
+  await run();
+} finally {
+  globalThis.fetch = originalFetch;
+  if (originalKey === undefined) delete process.env.GROQ_API_KEY;
+  else process.env.GROQ_API_KEY = originalKey;
+}

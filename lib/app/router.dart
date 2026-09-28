@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../conversation/conversation_runtime.dart';
+import '../conversation/conversation_server_adapter.dart';
 import '../conversation/conversation_screen.dart';
 import '../dashboard/dashboard_v3_screen.dart';
 import '../localization/language_screen.dart';
@@ -23,9 +24,7 @@ GoRouter createTrueGroundRouter({
   Duration conversationProviderTimeout = defaultConversationProviderTimeout,
 }) {
   final conversationRuntime = BoundedConversationRuntime(
-    adapter:
-        conversationProviderAdapter ??
-        const _UnavailableConversationProviderAdapter(),
+    adapter: conversationProviderAdapter ?? ServerConversationProviderAdapter(),
     providerTimeout: conversationProviderTimeout,
   );
 
@@ -119,18 +118,4 @@ GoRouter createTrueGroundRouter({
       ),
     ],
   );
-}
-
-class _UnavailableConversationProviderAdapter
-    implements ConversationProviderAdapter {
-  const _UnavailableConversationProviderAdapter();
-
-  @override
-  Future<ConversationProviderInvocation> generate(
-    ConversationProviderRequest request,
-  ) {
-    return Future<ConversationProviderInvocation>.error(
-      StateError('No conversation provider is configured in this build.'),
-    );
-  }
 }
