@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../../lib/conversation/conversation_output_guard.dart';
+import 'package:trueground/conversation/conversation_output_guard.dart';
 
 void main() {
   final file = File('build/lot11f/live_provider_outputs.json');
