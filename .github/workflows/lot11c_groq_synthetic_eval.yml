@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - docs/lot11-cloud-provider-gate
+      - lot/11c-provider-benchmark
   workflow_dispatch:
 
 permissions:
