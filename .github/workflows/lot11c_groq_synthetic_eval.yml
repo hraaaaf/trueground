@@ -45,7 +45,11 @@ jobs:
           python3 -m py_compile \
             tool/lot11c/groq_provider_benchmark.py \
             tool/lot11c/aggregate_provider_benchmark.py \
-            tool/lot11c/groq_synthetic_smoke.py
+            tool/lot11c/groq_synthetic_smoke.py \
+            tool/lot11c/test_groq_provider_benchmark_rubric.py
+
+      - name: CAR rubric regression tests
+        run: python3 tool/lot11c/test_groq_provider_benchmark_rubric.py
 
       - name: Static analysis
         run: flutter analyze
