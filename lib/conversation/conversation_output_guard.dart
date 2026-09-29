@@ -319,7 +319,6 @@ bool _startsWithAny(String text, List<String> needles) {
   return false;
 }
 
-
 bool _containsUnprotectedCheckingDirective(String text) {
   const directives = <String>[
     'check again',
