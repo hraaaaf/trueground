@@ -20,6 +20,8 @@ def main():
         "Tu peux reverifier une derniere fois.",
     ]
     protective = [
+        "We can focus on reducing the urge to reverify.",
+        "Essaie de reduire l envie de reverifier.",
         "Do not check again.",
         "Try to reduce the urge to recheck.",
         "Try to reduce your urge to recheck.",
