@@ -329,6 +329,7 @@ bool _containsUnprotectedCheckingDirective(String text) {
     'clean again',
     'verifie encore',
     'reverifie',
+    'reverifier une derniere fois',
     'verifie une derniere fois',
     'lave encore',
     'nettoie encore',
@@ -368,10 +369,21 @@ bool _containsUnprotectedCheckingDirective(String text) {
     final directive = _normalize(rawDirective);
     var index = text.indexOf(directive);
     while (index >= 0) {
+      final directiveEnd = index + directive.length;
+      final beforeIsBoundary =
+          index == 0 || !_isAlphaNumeric(text.codeUnitAt(index - 1));
+      final afterIsBoundary =
+          directiveEnd == text.length ||
+          !_isAlphaNumeric(text.codeUnitAt(directiveEnd));
+      if (!beforeIsBoundary || !afterIsBoundary) {
+        index = text.indexOf(directive, index + 1);
+        continue;
+      }
+
       final prefixStart = index > 90 ? index - 90 : 0;
       final contextStart = index > 100 ? index - 100 : 0;
-      final contextEnd = (index + directive.length + 100) < text.length
-          ? index + directive.length + 100
+      final contextEnd = (directiveEnd + 100) < text.length
+          ? directiveEnd + 100
           : text.length;
       final prefix = text.substring(prefixStart, index);
       final context = text.substring(contextStart, contextEnd);
@@ -388,6 +400,11 @@ bool _containsUnprotectedCheckingDirective(String text) {
     }
   }
   return false;
+}
+
+bool _isAlphaNumeric(int codeUnit) {
+  return (codeUnit >= 48 && codeUnit <= 57) ||
+      (codeUnit >= 97 && codeUnit <= 122);
 }
 
 bool _matchesAny(String text, List<RegExp> patterns) {
