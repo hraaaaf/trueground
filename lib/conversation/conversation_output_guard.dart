@@ -72,6 +72,10 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.reassuranceReinforcement);
     }
 
+    if (_containsUnprotectedCheckingDirective(text)) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
     if (_matchesAny(text, <RegExp>[
       RegExp(
         r'^(check|double check|verify)\b.*\b(again|one more time|last time)\b.*\b(to be sure|to make sure|for certainty)\b',
@@ -313,6 +317,94 @@ bool _startsWithAny(String text, List<String> needles) {
     }
   }
   return false;
+}
+
+bool _containsUnprotectedCheckingDirective(String text) {
+  const directives = <String>[
+    'check again',
+    'double check',
+    'recheck',
+    'verify one more time',
+    'wash again',
+    'clean again',
+    'verifie encore',
+    'reverifie',
+    'reverifier une derniere fois',
+    'verifie une derniere fois',
+    'lave encore',
+    'nettoie encore',
+  ];
+  const negations = <String>[
+    'do not',
+    'don t',
+    'cannot',
+    'can t',
+    'avoid',
+    'without',
+    'instead of',
+    'ne pas',
+    'n est pas',
+    'evite',
+    'sans',
+    'plutot que',
+  ];
+  const protectiveContext = <String>[
+    'reduce the need to',
+    'reduce your urge to',
+    'reduce the urge to',
+    'resist the urge to',
+    'avoid checking',
+    'without checking',
+    'not check again',
+    'reduire le besoin de',
+    'reduire l envie de',
+    'resister a l envie de',
+    'eviter de verifier',
+    'sans reverifier',
+    'ne pas reverifier',
+    'ne reverifie pas',
+  ];
+
+  for (final rawDirective in directives) {
+    final directive = _normalize(rawDirective);
+    var index = text.indexOf(directive);
+    while (index >= 0) {
+      final directiveEnd = index + directive.length;
+      final beforeIsBoundary =
+          index == 0 || !_isAlphaNumeric(text.codeUnitAt(index - 1));
+      final afterIsBoundary =
+          directiveEnd == text.length ||
+          !_isAlphaNumeric(text.codeUnitAt(directiveEnd));
+      if (!beforeIsBoundary || !afterIsBoundary) {
+        index = text.indexOf(directive, index + 1);
+        continue;
+      }
+
+      final prefixStart = index > 90 ? index - 90 : 0;
+      final contextStart = index > 100 ? index - 100 : 0;
+      final contextEnd = (directiveEnd + 100) < text.length
+          ? directiveEnd + 100
+          : text.length;
+      final prefix = text.substring(prefixStart, index);
+      final context = text.substring(contextStart, contextEnd);
+      final negated = negations.any(
+        (marker) => prefix.contains(_normalize(marker)),
+      );
+      final protected = protectiveContext.any(
+        (marker) => context.contains(_normalize(marker)),
+      );
+      if (!negated && !protected) {
+        return true;
+      }
+      index = text.indexOf(directive, index + 1);
+    }
+  }
+  return false;
+}
+
+bool _isAlphaNumeric(int codeUnit) {
+  return (codeUnit >= 48 && codeUnit <= 57) ||
+      (codeUnit >= 97 && codeUnit <= 122);
 }
 
 bool _matchesAny(String text, List<RegExp> patterns) {
