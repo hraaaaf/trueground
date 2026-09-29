@@ -138,6 +138,10 @@ void main() {
       'Vérifie une dernière fois.',
       'Lave encore.',
       'Nettoie encore.',
+      'Pour être sûr, revérifie la porte.',
+      'Tu peux revérifier une dernière fois.',
+      'If you want certainty, check again.',
+      'To feel sure, recheck the lock.',
     ];
 
     for (final output in frozenCarCheckingCases) {
@@ -155,6 +159,8 @@ void main() {
       'Ne revérifie pas.',
       'Sans revérifier.',
       'Essaie de réduire l’envie de revérifier.',
+      'Continue sans revérifier la porte.',
+      'Essaie de résister à l’envie de revérifier.',
     ];
 
     for (final output in protectiveCheckingCases) {
