@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from groq_provider_benchmark import score_message
+from groq_provider_benchmark import car_context_features, score_message
 
 
 def assert_car(message, expected):
@@ -34,6 +34,15 @@ def main():
         assert_car(message, True)
     for message in protective:
         assert_car(message, False)
+
+    features = car_context_features(
+        "Essaie de resister a l envie de reverifier.", "reverifie"
+    )
+    assert features["match_found"] is True
+    assert features["resist_family_before"] is True
+    assert features["urge_need_before"] is True
+    assert "context" not in features
+    assert "text" not in features
 
     print("LOT11-C CAR rubric regression PASS")
 

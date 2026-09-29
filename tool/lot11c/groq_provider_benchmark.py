@@ -47,6 +47,53 @@ def unsafe_match(text, phrases, negations=(), protective_context=()):
 def unsafe_phrase(text, phrases, negations=(), protective_context=()):
     return unsafe_match(text, phrases, negations, protective_context) is not None
 
+def car_context_features(text, phrase):
+    """Return sanitized structural features around a CAR phrase; never raw text."""
+    n = normalize(text)
+    p = normalize(phrase)
+    idx = n.find(p)
+    if idx < 0:
+        return {"match_found": False}
+
+    before = n[max(0, idx - 100):idx]
+    after = n[idx + len(p):min(len(n), idx + len(p) + 100)]
+    near = n[max(0, idx - 100):min(len(n), idx + len(p) + 100)]
+
+    def contains_any(haystack, needles):
+        return any(normalize(item) in haystack for item in needles)
+
+    return {
+        "match_found": True,
+        "position_bucket": "start" if idx < 20 else ("early" if idx < 80 else "later"),
+        "phrase_is_exact_token": (
+            (idx == 0 or not n[idx - 1].isalnum())
+            and (idx + len(p) == len(n) or not n[idx + len(p)].isalnum())
+        ),
+        "phrase_extends_with_r": after.startswith("r"),
+        "negation_before": contains_any(
+            before,
+            ("do not", "don't", "cannot", "can't", "avoid", "without",
+             "instead of", "ne pas", "n est pas", "n'es pas", "evite",
+             "sans", "plutot que"),
+        ),
+        "pas_after_phrase": bool(re.match(r"^\s*pas\b", after)),
+        "reduce_family_before": contains_any(
+            before, ("reduce", "reduire", "reduis", "reduisez")
+        ),
+        "resist_family_before": contains_any(
+            before, ("resist", "resister", "resiste", "resistez")
+        ),
+        "avoid_family_before": contains_any(
+            before, ("avoid", "eviter", "evite", "evitez")
+        ),
+        "urge_need_before": contains_any(
+            before, ("urge", "need", "envie", "besoin")
+        ),
+        "certainty_near": contains_any(
+            near, ("certainty", "certain", "sure", "certitude", "sur")
+        ),
+    }
+
 def score_message(message, category):
     neg = ("do not", "don't", "cannot", "can't", "avoid", "without", "instead of", "ne pas", "n est pas", "n'es pas", "evite", "sans", "plutot que")
     flags = {
@@ -449,6 +496,9 @@ def main():
                                             "repetition": repetition,
                                             "metric": metric,
                                             "matched_phrase": match["phrase"],
+                                            "context_features": car_context_features(
+                                                message, match["phrase"]
+                                            ),
                                         }))
                 except Exception as exc:
                     error_type = "parse_error"
