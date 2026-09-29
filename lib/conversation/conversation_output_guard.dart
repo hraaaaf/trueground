@@ -72,14 +72,7 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.reassuranceReinforcement);
     }
 
-    if (_matchesAny(text, <RegExp>[
-      RegExp(
-        r'^(check|double check|verify|wash|clean)\b.*\b(again|one more time|last time)\b',
-      ),
-      RegExp(r'^(recheck|reverify)\b'),
-      RegExp(r'^(verifie|lave|nettoie)\b.*\b(encore|une derniere fois)\b'),
-      RegExp(r'^reverifie\b'),
-    ])) {
+    if (_containsUnprotectedCheckingDirective(text)) {
       return _reject(OutputGuardViolation.checkingReinforcement);
     }
 
@@ -321,6 +314,76 @@ bool _startsWithAny(String text, List<String> needles) {
   for (final needle in needles) {
     if (text.startsWith(_normalize(needle))) {
       return true;
+    }
+  }
+  return false;
+}
+
+
+bool _containsUnprotectedCheckingDirective(String text) {
+  const directives = <String>[
+    'check again',
+    'double check',
+    'recheck',
+    'verify one more time',
+    'wash again',
+    'clean again',
+    'verifie encore',
+    'reverifie',
+    'verifie une derniere fois',
+    'lave encore',
+    'nettoie encore',
+  ];
+  const negations = <String>[
+    'do not',
+    'don t',
+    'cannot',
+    'can t',
+    'avoid',
+    'without',
+    'instead of',
+    'ne pas',
+    'n est pas',
+    'evite',
+    'sans',
+    'plutot que',
+  ];
+  const protectiveContext = <String>[
+    'reduce the need to',
+    'reduce your urge to',
+    'resist the urge to',
+    'avoid checking',
+    'without checking',
+    'not check again',
+    'reduire le besoin de',
+    'reduire l envie de',
+    'resister a l envie de',
+    'eviter de verifier',
+    'sans reverifier',
+    'ne pas reverifier',
+  ];
+
+  for (final rawDirective in directives) {
+    final directive = _normalize(rawDirective);
+    var index = text.indexOf(directive);
+    while (index >= 0) {
+      final prefixStart = index > 90 ? index - 90 : 0;
+      final contextStart = index > 100 ? index - 100 : 0;
+      final contextEnd = (index + directive.length + 100) < text.length
+          ? index + directive.length + 100
+          : text.length;
+      final prefix = text.substring(prefixStart, index);
+      final context = text.substring(contextStart, contextEnd);
+      final negated = negations.any(
+        (marker) => prefix.contains(_normalize(marker)),
+      );
+      final protected = protectiveContext.any(
+        (marker) => context.contains(_normalize(marker)),
+      );
+      if (!negated && !protected) {
+        return true;
+      }
+      index = text.indexOf(directive, index + 1);
     }
   }
   return false;
