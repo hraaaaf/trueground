@@ -351,6 +351,7 @@ bool _containsUnprotectedCheckingDirective(String text) {
   const protectiveContext = <String>[
     'reduce the need to',
     'reduce your urge to',
+    'reduce the urge to',
     'resist the urge to',
     'avoid checking',
     'without checking',
@@ -361,6 +362,7 @@ bool _containsUnprotectedCheckingDirective(String text) {
     'eviter de verifier',
     'sans reverifier',
     'ne pas reverifier',
+    'ne reverifie pas',
   ];
 
   for (final rawDirective in directives) {
