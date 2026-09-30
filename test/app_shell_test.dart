@@ -57,7 +57,10 @@ void main() {
 
       expect(find.byKey(AppShell.companionSheetKey), findsOneWidget);
       expect(find.byKey(ConversationScreen.screenKey), findsOneWidget);
-      expect(find.byKey(ConversationScreen.inputKey).hitTestable(), findsOneWidget);
+      expect(
+        find.byKey(ConversationScreen.inputKey).hitTestable(),
+        findsOneWidget,
+      );
       expect(
         find.byKey(ConversationScreen.submitKey).hitTestable(),
         findsOneWidget,
