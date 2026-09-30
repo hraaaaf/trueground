@@ -41,10 +41,15 @@ class AppShell extends StatelessWidget {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.28),
       builder: (sheetContext) {
-        return FractionallySizedBox(
-          heightFactor: 0.82,
-          child: Material(
-            key: companionSheetKey,
+        final keyboardInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: keyboardInset),
+          child: FractionallySizedBox(
+            heightFactor: 0.82,
+            child: Material(
+              key: companionSheetKey,
             color: TrueGroundColors.background,
             clipBehavior: Clip.antiAlias,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
@@ -117,6 +122,7 @@ class AppShell extends StatelessWidget {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         );
