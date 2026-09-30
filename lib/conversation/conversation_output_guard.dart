@@ -76,6 +76,10 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.checkingReinforcement);
     }
 
+    if (_looksLikeCheckingChecklist(text)) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
     if (_matchesAny(text, <RegExp>[
       RegExp(
         r'^(check|double check|verify)\b.*\b(again|one more time|last time)\b.*\b(to be sure|to make sure|for certainty)\b',
@@ -103,6 +107,12 @@ abstract final class DeterministicConversationOutputGuard {
       ),
       RegExp(r'^(go over|revisit)\b.*\b(thought)\b.*\b(until|completely)\b'),
       RegExp(r'^(reprends|revois)\b.*\b(pensee)\b.*\b(jusqu a|completement)\b'),
+      RegExp(
+        r'\b(decris|decrire|precise|preciser)\b.*\b(exactement|mots|contexte|emotions)\b.*\b(sens|raison|signification|apparition)\b',
+      ),
+      RegExp(
+        r'\b(describe|specify)\b.*\b(exact words|context|emotions)\b.*\b(meaning|reason|why it appeared)\b',
+      ),
     ])) {
       return _reject(OutputGuardViolation.ruminationReinforcement);
     }
@@ -122,6 +132,12 @@ abstract final class DeterministicConversationOutputGuard {
       ),
       RegExp(
         r'^(dis moi|partage)\b.*\b(fait d autre|as fait d autre)\b.*\b(certitude|sache|savoir)\b',
+      ),
+      RegExp(
+        r'\b(continue d en parler|partage davantage de details|donne encore un detail)\b',
+      ),
+      RegExp(
+        r'\b(keep talking about it|share more details|give another detail)\b',
       ),
     ])) {
       return _reject(OutputGuardViolation.reconfessionSolicitation);
@@ -317,6 +333,44 @@ bool _startsWithAny(String text, List<String> needles) {
     }
   }
   return false;
+}
+
+bool _looksLikeCheckingChecklist(String text) {
+  final checkingActions = <RegExp>[
+    RegExp(r'\b(regarde|verifie|assure toi|teste|touche)\b'),
+    RegExp(r'\b(check|look at|verify|make sure|test|touch)\b'),
+  ];
+  final checkingTargets = <String>[
+    'serrure',
+    'loquet',
+    'verrou',
+    'poignee',
+    'cadre',
+    'porte',
+    'lock',
+    'latch',
+    'handle',
+    'frame',
+    'door',
+  ];
+
+  var actionCount = 0;
+  for (final pattern in checkingActions) {
+    actionCount += pattern.allMatches(text).length;
+  }
+  final targetCount = checkingTargets
+      .where((target) => text.contains(_normalize(target)))
+      .length;
+  final certaintyCue = _containsAny(text, const <String>[
+    'pour etre sur',
+    'pour t assurer',
+    'assure toi',
+    'to be sure',
+    'to make sure',
+    'make sure',
+  ]);
+
+  return actionCount >= 2 && targetCount >= 2 && certaintyCue;
 }
 
 bool _containsUnprotectedCheckingDirective(String text) {
