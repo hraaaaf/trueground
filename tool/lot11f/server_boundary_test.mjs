@@ -25,6 +25,7 @@ function validBody(language = 'en') {
       language === 'fr'
         ? 'Aide-moi à choisir une petite prochaine étape.'
         : 'Help me choose one useful next step.',
+    context: [],
   };
 }
 
@@ -73,6 +74,51 @@ async function run() {
     false,
   );
   assert.equal('tools' in providerRequest, false);
+  assert.equal(providerRequest.messages.length, 2);
+  assert.equal(providerRequest.messages[0].role, 'system');
+  assert.equal(providerRequest.messages[1].role, 'user');
+
+  const contextual = await handler.fetch(
+    request({
+      ...validBody(),
+      context: [
+        { role: 'user', content: 'I had a difficult morning.' },
+        {
+          role: 'assistant',
+          content: 'We can focus on one small grounded next step.',
+        },
+      ],
+    }),
+  );
+  assert.equal(contextual.status, 200);
+  assert.equal(providerCalls, 2);
+  assert.equal(providerRequest.messages.length, 4);
+  assert.equal(providerRequest.messages[1].role, 'user');
+  assert.equal(providerRequest.messages[2].role, 'assistant');
+
+  const tooMuchContext = await handler.fetch(
+    request({
+      ...validBody(),
+      context: [
+        { role: 'user', content: '1' },
+        { role: 'assistant', content: '2' },
+        { role: 'user', content: '3' },
+        { role: 'assistant', content: '4' },
+        { role: 'user', content: '5' },
+      ],
+    }),
+  );
+  assert.equal(tooMuchContext.status, 400);
+  assert.equal(providerCalls, 2);
+
+  const invalidContextRole = await handler.fetch(
+    request({
+      ...validBody(),
+      context: [{ role: 'system', content: 'nope' }],
+    }),
+  );
+  assert.equal(invalidContextRole.status, 400);
+  assert.equal(providerCalls, 2);
 
   const crossOrigin = await handler.fetch(
     request(validBody(), { origin: 'https://evil.example' }),
