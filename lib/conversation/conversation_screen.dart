@@ -73,6 +73,7 @@ class ConversationScreen extends StatefulWidget {
 
 class _ConversationScreenState extends State<ConversationScreen> {
   final _controller = TextEditingController();
+  final _scrollController = ScrollController();
   _View _view = _View.idle;
   bool _hasInput = false;
   String? _response;
@@ -83,6 +84,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -95,8 +97,22 @@ class _ConversationScreenState extends State<ConversationScreen> {
     context.go(route);
   }
 
+  void _scrollToLatest() {
+    if (!widget.compact) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
   Future<void> _submit() async {
-    if (_view != _View.idle) return;
+    final canSubmit =
+        _view == _View.idle || (widget.compact && _view == _View.generated);
+    if (!canSubmit) return;
     final message = _controller.text.trim();
     if (message.isEmpty) return;
 
@@ -111,6 +127,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       }
       _view = _View.loading;
     });
+    _scrollToLatest();
 
     final result = await widget.runtime.run(
       message,
@@ -132,6 +149,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         }
         _view = _View.generated;
       });
+      _scrollToLatest();
       return;
     }
 
@@ -146,10 +164,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
         _decision = result.safetyDecision;
         _view = _View.boundary;
       });
+      _scrollToLatest();
       return;
     }
 
     setState(() => _view = _View.failClosed);
+    _scrollToLatest();
   }
 
   @override
@@ -160,6 +180,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         children: <Widget>[
           Expanded(
             child: SingleChildScrollView(
+              controller: _scrollController,
               padding: const EdgeInsets.fromLTRB(
                 TrueGroundSpacing.md,
                 TrueGroundSpacing.md,
