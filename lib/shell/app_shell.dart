@@ -33,6 +33,7 @@ class AppShell extends StatelessWidget {
   }
 
   Future<void> _openCompanion(BuildContext context) async {
+    conversationRuntime.resetProviderContext();
     await showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
