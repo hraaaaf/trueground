@@ -221,6 +221,53 @@ void main() {
       },
     );
 
+    testWidgets(
+      'popup allows twelve user messages then blocks a thirteenth',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        for (var index = 1;
+            index <= ConversationScreen.compactSessionMaxUserMessages;
+            index++) {
+          await _submit(tester, 'Ordinary message $index.');
+          await tester.pumpAndSettle();
+        }
+
+        expect(
+          adapter.calls,
+          ConversationScreen.compactSessionMaxUserMessages,
+        );
+        expect(adapter.lastRequest?.context, hasLength(4));
+
+        final field = tester.widget<TextField>(
+          find.byKey(ConversationScreen.inputKey),
+        );
+        expect(field.enabled, isFalse);
+        expect(
+          find.text('This conversation is complete for now'),
+          findsOneWidget,
+        );
+
+        await tester.enterText(
+          find.byKey(ConversationScreen.inputKey),
+          'Message thirteen must not leave the UI.',
+        );
+        await tester.pump();
+        await tester.testTextInput.receiveAction(TextInputAction.send);
+        await tester.pumpAndSettle();
+
+        expect(
+          adapter.calls,
+          ConversationScreen.compactSessionMaxUserMessages,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('keyboard send action uses the bounded runtime', (
       tester,
     ) async {
