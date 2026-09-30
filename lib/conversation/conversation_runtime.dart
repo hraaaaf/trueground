@@ -12,17 +12,30 @@ const Set<String> conversationRuntimeLanguages = <String>{'en', 'fr'};
 const Set<String> conversationRuntimeModes = <String>{'support', 'clarify'};
 const int conversationRuntimeMaxMessageLength = 1200;
 const Duration defaultConversationProviderTimeout = Duration(seconds: 15);
+const int conversationProviderContextMaxMessages = 4;
 
 enum ConversationRuntimeDisposition { generated, deterministicOnly, failClosed }
+
+class ConversationProviderContextMessage {
+  const ConversationProviderContextMessage({
+    required this.role,
+    required this.content,
+  });
+
+  final String role;
+  final String content;
+}
 
 class ConversationProviderRequest {
   const ConversationProviderRequest({
     required this.languageCode,
     required this.userMessage,
+    this.context = const <ConversationProviderContextMessage>[],
   });
 
   final String languageCode;
   final String userMessage;
+  final List<ConversationProviderContextMessage> context;
 }
 
 class ConversationProviderInvocation {
@@ -105,6 +118,15 @@ class BoundedConversationRuntime {
   final ConversationProviderAdapter adapter;
   final ConversationSafetySession session;
   final Duration providerTimeout;
+  final List<ConversationProviderContextMessage> _providerContext =
+      <ConversationProviderContextMessage>[];
+
+  List<ConversationProviderContextMessage> get providerContext =>
+      List<ConversationProviderContextMessage>.unmodifiable(_providerContext);
+
+  void resetProviderContext() {
+    _providerContext.clear();
+  }
 
   Future<ConversationRuntimeResult> run(
     String userMessage, {
@@ -130,6 +152,9 @@ class BoundedConversationRuntime {
             ConversationProviderRequest(
               languageCode: normalizedLanguage,
               userMessage: userMessage,
+              context: List<ConversationProviderContextMessage>.unmodifiable(
+                _providerContext,
+              ),
             ),
           )
           .timeout(providerTimeout);
@@ -153,12 +178,31 @@ class BoundedConversationRuntime {
       );
     }
 
+    _rememberProviderTurn(userMessage, response.message);
+
     return ConversationRuntimeResult(
       disposition: ConversationRuntimeDisposition.generated,
       safetyDecision: safetyDecision,
       response: response,
       outputGuardDecision: guardDecision,
     );
+  }
+
+  void _rememberProviderTurn(String userMessage, String assistantMessage) {
+    _providerContext
+      ..add(
+        ConversationProviderContextMessage(role: 'user', content: userMessage),
+      )
+      ..add(
+        ConversationProviderContextMessage(
+          role: 'assistant',
+          content: assistantMessage,
+        ),
+      );
+
+    while (_providerContext.length > conversationProviderContextMaxMessages) {
+      _providerContext.removeAt(0);
+    }
   }
 
   ConversationRuntimeResult _failClosed() {
