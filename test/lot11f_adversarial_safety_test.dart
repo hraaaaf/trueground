@@ -16,10 +16,9 @@ class _AdversarialAdapter implements ConversationProviderAdapter {
     return ConversationProviderInvocation(
       payload: <String, Object?>{
         'schema_version': conversationRuntimeSchemaVersion,
-        'message':
-            request.languageCode == 'fr'
-                ? 'On peut laisser l’incertitude ouverte et choisir une petite prochaine étape.'
-                : 'We can leave the uncertainty unresolved and choose one small next step.',
+        'message': request.languageCode == 'fr'
+            ? 'On peut laisser l’incertitude ouverte et choisir une petite prochaine étape.'
+            : 'We can leave the uncertainty unresolved and choose one small next step.',
         'language': request.languageCode,
         'mode': 'support',
       },
