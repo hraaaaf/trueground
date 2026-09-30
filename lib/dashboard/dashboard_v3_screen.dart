@@ -17,13 +17,7 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
-    final language =
-        TrueGroundLocaleScope.maybeOf(context)?.language ??
-        TrueGroundLanguage.en;
-    final flexibleCopyLayout = largeText || language == TrueGroundLanguage.fr;
-    return flexibleCopyLayout
-        ? const _AccessibleDashboard()
-        : const _TargetDashboard();
+    return largeText ? const _AccessibleDashboard() : const _TargetDashboard();
   }
 }
 
@@ -75,15 +69,22 @@ class _TargetDashboard extends StatelessWidget {
                         left: 19,
                         right: 19,
                         top: 78,
-                        child: Text(
-                          context.tr('Choose your next move.'),
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 28.5,
-                            height: 1,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.65,
-                            color: TrueGroundColors.primary,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              context.tr('Choose your next move.'),
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 28.5,
+                                height: 1,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.65,
+                                color: TrueGroundColors.primary,
+                              ),
+                            ),
                           ),
                         ),
                       ),
