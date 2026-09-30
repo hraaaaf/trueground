@@ -86,6 +86,61 @@ void main() {
       },
     );
 
+    test('second generated turn receives bounded ephemeral context', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run('Help me choose one useful next step.');
+      final second = await runtime.run('What would be a small follow-up step?');
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(second.disposition, ConversationRuntimeDisposition.generated);
+      expect(adapter.calls, 2);
+      expect(adapter.lastRequest?.context, hasLength(2));
+      expect(adapter.lastRequest?.context[0].role, 'user');
+      expect(
+        adapter.lastRequest?.context[0].content,
+        'Help me choose one useful next step.',
+      );
+      expect(adapter.lastRequest?.context[1].role, 'assistant');
+      expect(runtime.providerContext, hasLength(4));
+    });
+
+    test('provider context remains capped at four messages', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      await runtime.run('First ordinary question.');
+      await runtime.run('Second ordinary question.');
+      await runtime.run('Third ordinary question.');
+
+      expect(adapter.calls, 3);
+      expect(adapter.lastRequest?.context, hasLength(4));
+      expect(runtime.providerContext, hasLength(4));
+      expect(runtime.providerContext.first.content, 'Second ordinary question.');
+      expect(runtime.providerContext.last.role, 'assistant');
+    });
+
+    test('resetting provider context does not reset safety session', () async {
+      final adapter = _FakeConversationAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run('Can you promise I am a good person?');
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(runtime.providerContext, isNotEmpty);
+
+      runtime.resetProviderContext();
+      expect(runtime.providerContext, isEmpty);
+
+      final second = await runtime.run('Are you sure I am a good person?');
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
     test('bounded support request invokes provider exactly once', () async {
       final adapter = _FakeConversationAdapter();
       final runtime = BoundedConversationRuntime(adapter: adapter);
