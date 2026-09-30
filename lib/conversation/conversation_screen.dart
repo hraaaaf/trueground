@@ -89,7 +89,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   bool get _compactSessionLimitReached =>
       widget.compact &&
-      _compactUserMessageCount >= ConversationScreen.compactSessionMaxUserMessages;
+      _compactUserMessageCount >=
+          ConversationScreen.compactSessionMaxUserMessages;
 
   @override
   void dispose() {
