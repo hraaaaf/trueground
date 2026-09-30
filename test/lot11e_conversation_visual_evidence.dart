@@ -193,6 +193,28 @@ void main() {
     });
   }
 
+  testWidgets('LOT11-E popup keyboard inset at 390 px', (tester) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final boundary = await _openPopup(
+      tester,
+      const Size(390, 844),
+      const _VisualAdapter(),
+    );
+    await tester.tap(find.byKey(ConversationScreen.inputKey));
+    await tester.pump();
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.pumpAndSettle();
+
+    final composerRect = tester.getRect(
+      find.byKey(ConversationScreen.compactComposerKey),
+    );
+    expect(composerRect.bottom, lessThanOrEqualTo(544));
+    await _capture(tester, boundary, 'popup_390_keyboard.png');
+    expect(tester.takeException(), isNull);
+  });
+
   for (final size in <Size>[
     const Size(360, 800),
     const Size(390, 844),
