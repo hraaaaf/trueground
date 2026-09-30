@@ -57,6 +57,11 @@ void main() {
 
       expect(find.byKey(AppShell.companionSheetKey), findsOneWidget);
       expect(find.byKey(ConversationScreen.screenKey), findsOneWidget);
+      expect(find.byKey(ConversationScreen.inputKey).hitTestable(), findsOneWidget);
+      expect(
+        find.byKey(ConversationScreen.submitKey).hitTestable(),
+        findsOneWidget,
+      );
       expect(find.text('Choose your next move.'), findsOneWidget);
 
       await tester.tap(find.byKey(AppShell.companionCloseKey));

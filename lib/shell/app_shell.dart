@@ -83,6 +83,7 @@ class AppShell extends StatelessWidget {
                 Expanded(
                   child: ConversationScreen(
                     runtime: conversationRuntime,
+                    compact: true,
                     onRoute: (route) {
                       Navigator.of(sheetContext).pop();
                       context.go(route);

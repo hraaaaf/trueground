@@ -35,7 +35,12 @@ const Set<String> conversationUiCopy = <String>{
 enum _View { idle, loading, generated, boundary, failClosed }
 
 class ConversationScreen extends StatefulWidget {
-  const ConversationScreen({required this.runtime, this.onRoute, super.key});
+  const ConversationScreen({
+    required this.runtime,
+    this.onRoute,
+    this.compact = false,
+    super.key,
+  });
 
   static const screenKey = ValueKey('screen-conversation');
   static const inputKey = ValueKey('conversation-input');
@@ -47,6 +52,7 @@ class ConversationScreen extends StatefulWidget {
 
   final BoundedConversationRuntime runtime;
   final ValueChanged<String>? onRoute;
+  final bool compact;
 
   @override
   State<ConversationScreen> createState() => _ConversationScreenState();
@@ -122,6 +128,31 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.compact) {
+      return SingleChildScrollView(
+        key: ConversationScreen.screenKey,
+        padding: const EdgeInsets.fromLTRB(
+          TrueGroundSpacing.md,
+          TrueGroundSpacing.sm,
+          TrueGroundSpacing.md,
+          TrueGroundSpacing.lg,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 640),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _privacyNotice(),
+                const SizedBox(height: TrueGroundSpacing.md),
+                _body(),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       key: ConversationScreen.screenKey,
       padding: const EdgeInsets.all(TrueGroundSpacing.lg),
