@@ -164,20 +164,13 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(_loadRoboto);
 
-  for (final size in <Size>[
-    const Size(390, 844),
-    const Size(768, 1024),
-  ]) {
+  for (final size in <Size>[const Size(390, 844), const Size(768, 1024)]) {
     final width = size.width.toInt();
 
     testWidgets('LOT11-E polished popup at $width px', (tester) async {
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final boundary = await _openPopup(
-        tester,
-        size,
-        const _VisualAdapter(),
-      );
+      final boundary = await _openPopup(tester, size, const _VisualAdapter());
       await _capture(tester, boundary, 'popup_${width}_idle.png');
 
       await _submit(tester, 'Help me choose one useful next step.');
