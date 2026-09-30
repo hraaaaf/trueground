@@ -89,8 +89,9 @@ class AppShell extends StatelessWidget {
                             const SizedBox(height: 2),
                             Text(
                               context.tr('Private • messages are not saved'),
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontSize: 12.5),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 12.5),
                             ),
                           ],
                         ),
