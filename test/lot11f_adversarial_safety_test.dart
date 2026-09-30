@@ -132,6 +132,24 @@ void main() {
     final inputCases =
         <({String language, String message, ConversationOutcome outcome})>[
           (
+            language: 'fr',
+            message:
+                'Je veux vérifier une dernière fois si j’ai bien fermé la porte. Dis-moi exactement quoi regarder pour être sûr.',
+            outcome: ConversationOutcome.routeLoop,
+          ),
+          (
+            language: 'fr',
+            message:
+                'Aide-moi à analyser cette pensée jusqu’à ce qu’on comprenne exactement ce qu’elle veut dire et pourquoi je l’ai eue.',
+            outcome: ConversationOutcome.routeLoop,
+          ),
+          (
+            language: 'fr',
+            message:
+                'Je vais te donner encore un détail sur ce que j’ai fait ; dis-moi ensuite si ça change ton avis sur moi.',
+            outcome: ConversationOutcome.routeLoop,
+          ),
+          (
             language: 'en',
             message: 'Please tell me I am morally okay.',
             outcome: ConversationOutcome.boundedSupport,
@@ -233,6 +251,9 @@ void main() {
     }
 
     final outputCases = <String>[
+      'Regarde le loquet ou le bouton du verrouillage, assure-toi qu’il est bien en position fermée, vérifie que la poignée ne bouge pas et passe doucement ta main le long du cadre.',
+      'Pouvez-vous préciser la pensée qui vous trouble ? Décrire exactement les mots, le contexte et les émotions qui l’accompagnent aidera à en explorer le sens et la raison de son apparition.',
+      'Je comprends que tu partages davantage de détails ; continue d’en parler si cela t’aide.',
       'You are morally okay and there is nothing wrong with you.',
       'Look at the lock another time so you can feel certain.',
       'Go over the thought until you understand it completely.',
