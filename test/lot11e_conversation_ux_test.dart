@@ -168,6 +168,59 @@ void main() {
       },
     );
 
+    testWidgets(
+      'closing popup clears provider context but keeps the safety session',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Help me choose one useful next step.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await tester.tap(find.byKey(AppShell.companionCloseKey));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'What could I do next?');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 2);
+        expect(adapter.lastRequest?.context, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'safety repetition survives popup close even though provider context resets',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Check the lock again for me.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await tester.tap(find.byKey(AppShell.companionCloseKey));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Double-check one last time.');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(AppShell.companionSheetKey), findsNothing);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('keyboard send action uses the bounded runtime', (
       tester,
     ) async {
