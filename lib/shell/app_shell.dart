@@ -122,6 +122,7 @@ class AppShell extends StatelessWidget {
         );
       },
     );
+    conversationRuntime.resetProviderContext();
   }
 
   @override
