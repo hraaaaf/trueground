@@ -316,7 +316,8 @@ const Map<String, String> _fr = <String, String>{
   'Open TrueGround companion': 'Ouvrir le compagnon TrueGround',
   'Close companion': 'Fermer le compagnon',
   'TrueGround companion': 'Compagnon TrueGround',
-  'Private • messages are not saved': 'Privé • les messages ne sont pas conservés',
+  'Private • messages are not saved':
+      'Privé • les messages ne sont pas conservés',
   'Talk it through': 'Parler un instant',
   'One bounded response, then choose your next move.':
       'Une réponse encadrée, puis choisissez votre prochaine action.',
