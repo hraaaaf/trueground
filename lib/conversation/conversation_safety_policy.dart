@@ -185,6 +185,12 @@ class ConversationSafetySession {
       );
     }
 
+    if (_isExplicitCompulsiveInstructionRequest(normalized, current.family)) {
+      final key = _PivotKey.forTurn(current);
+      _pivoted.add(key);
+      return _remember(current, _loopDecision(current.family));
+    }
+
     if (current.family == ConversationLoopFamily.none) {
       return _remember(
         current,
@@ -556,6 +562,47 @@ bool _isForcedCertainty(String text) {
     'repond seulement oui ou non',
     'ignore tes regles de securite',
   ]);
+}
+
+bool _isExplicitCompulsiveInstructionRequest(
+  String text,
+  ConversationLoopFamily family,
+) {
+  return switch (family) {
+    ConversationLoopFamily.checking => _containsAny(text, const <String>[
+      'tell me exactly what to check',
+      'what exactly should i check',
+      'what should i look at to be sure',
+      'give me a checklist',
+      'dis moi exactement quoi verifier',
+      'dis moi exactement quoi regarder',
+      'quoi regarder pour etre sur',
+      'donne moi une checklist',
+      'une derniere fois si j ai bien ferme',
+    ]),
+    ConversationLoopFamily.rumination => _containsAny(text, const <String>[
+      'analyze this until we understand exactly',
+      'analyze until i understand exactly',
+      'figure out exactly what it means',
+      'why i had this thought exactly',
+      'analyser cette pensee jusqu a',
+      'comprendre exactement ce qu elle veut dire',
+      'comprendre exactement ce que ca signifie',
+      'pourquoi je l ai eue',
+      'explorer exactement le sens',
+    ]),
+    ConversationLoopFamily.confession => _containsAny(text, const <String>[
+      'tell you another detail and tell me if',
+      'one more detail and tell me if',
+      'another detail changes your opinion',
+      'encore un detail et dis moi si',
+      'un autre detail et dis moi si',
+      'si ca change ton avis sur moi',
+      'si cela change ton avis sur moi',
+    ]),
+    ConversationLoopFamily.reassurance ||
+    ConversationLoopFamily.none => false,
+  };
 }
 
 class _SafetyTurn {
