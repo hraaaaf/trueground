@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/conversation/conversation_runtime.dart';
 import 'package:trueground/conversation/conversation_screen.dart';
+import 'package:trueground/shell/app_shell.dart';
 
 class _VisualAdapter implements ConversationProviderAdapter {
   const _VisualAdapter({
@@ -128,6 +129,28 @@ Future<GlobalKey> _open(
   return boundaryKey;
 }
 
+Future<GlobalKey> _openPopup(
+  WidgetTester tester,
+  Size size,
+  ConversationProviderAdapter adapter,
+) async {
+  await tester.binding.setSurfaceSize(size);
+  final boundaryKey = GlobalKey();
+  await tester.pumpWidget(
+    RepaintBoundary(
+      key: boundaryKey,
+      child: TrueGroundApp(conversationProviderAdapter: adapter),
+    ),
+  );
+  await tester.pumpAndSettle();
+
+  await tester.tap(find.byKey(AppShell.companionLauncherKey));
+  await tester.pumpAndSettle();
+  expect(find.byKey(AppShell.companionSheetKey), findsOneWidget);
+  expect(find.byKey(ConversationScreen.compactComposerKey), findsOneWidget);
+  return boundaryKey;
+}
+
 Future<void> _submit(WidgetTester tester, String message) async {
   await tester.enterText(find.byKey(ConversationScreen.inputKey), message);
   await tester.pump();
@@ -140,6 +163,33 @@ Future<void> _submit(WidgetTester tester, String message) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(_loadRoboto);
+
+  for (final size in <Size>[
+    const Size(390, 844),
+    const Size(768, 1024),
+  ]) {
+    final width = size.width.toInt();
+
+    testWidgets('LOT11-E polished popup at $width px', (tester) async {
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final boundary = await _openPopup(
+        tester,
+        size,
+        const _VisualAdapter(),
+      );
+      await _capture(tester, boundary, 'popup_${width}_idle.png');
+
+      await _submit(tester, 'Help me choose one useful next step.');
+      await tester.pumpAndSettle();
+      expect(find.byKey(ConversationScreen.userBubbleKey), findsOneWidget);
+      expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+      expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
+      await _capture(tester, boundary, 'popup_${width}_generated.png');
+
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   for (final size in <Size>[
     const Size(360, 800),
