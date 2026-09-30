@@ -180,6 +180,15 @@ void main() {
       expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
       await _capture(tester, boundary, 'popup_${width}_generated.png');
 
+      await _submit(tester, 'And what could I do after that?');
+      await tester.pumpAndSettle();
+      expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+      final field = tester.widget<TextField>(
+        find.byKey(ConversationScreen.inputKey),
+      );
+      expect(field.enabled, isTrue);
+      await _capture(tester, boundary, 'popup_${width}_second_turn.png');
+
       expect(tester.takeException(), isNull);
     });
   }
