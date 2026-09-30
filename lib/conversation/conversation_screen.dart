@@ -62,6 +62,7 @@ class ConversationScreen extends StatefulWidget {
   static const userBubbleKey = ValueKey('conversation-user-bubble');
   static const assistantBubbleKey = ValueKey('conversation-assistant-bubble');
   static const compactComposerKey = ValueKey('conversation-compact-composer');
+  static const int compactSessionMaxUserMessages = 12;
 
   final BoundedConversationRuntime runtime;
   final ValueChanged<String>? onRoute;
@@ -80,6 +81,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   ConversationDecision? _decision;
   String? _submittedMessage;
   final List<_CompactMessage> _compactMessages = <_CompactMessage>[];
+
+  int get _compactUserMessageCount =>
+      _compactMessages.where((message) => message.isUser).length;
+
+  bool get _compactSessionLimitReached =>
+      widget.compact &&
+      _compactUserMessageCount >= ConversationScreen.compactSessionMaxUserMessages;
 
   @override
   void dispose() {
@@ -111,7 +119,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Future<void> _submit() async {
     final canSubmit =
-        _view == _View.idle || (widget.compact && _view == _View.generated);
+        (_view == _View.idle || (widget.compact && _view == _View.generated)) &&
+        !_compactSessionLimitReached;
     if (!canSubmit) return;
     final message = _controller.text.trim();
     if (message.isEmpty) return;
@@ -439,7 +448,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _compactComposer() {
-    final canSend = _view == _View.idle || _view == _View.generated;
+    final canSend =
+        (_view == _View.idle || _view == _View.generated) &&
+        !_compactSessionLimitReached;
 
     return Container(
       key: ConversationScreen.compactComposerKey,
@@ -470,7 +481,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 },
                 decoration: InputDecoration(
                   hintText: context.tr(
-                    canSend
+                    _compactSessionLimitReached
+                        ? 'This conversation is complete for now'
+                        : canSend
                         ? 'Write one brief message'
                         : 'This turn is complete',
                   ),
