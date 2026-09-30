@@ -203,7 +203,9 @@ void main() {
     );
     await tester.tap(find.byKey(ConversationScreen.inputKey));
     await tester.pump();
-    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    tester.view.viewInsets = FakeViewPadding(
+      bottom: 300 * tester.view.devicePixelRatio,
+    );
     addTearDown(tester.view.resetViewInsets);
     await tester.pumpAndSettle();
 
