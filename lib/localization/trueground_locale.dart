@@ -313,6 +313,9 @@ const Map<String, String> _fr = <String, String>{
       'TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.',
   'Open regular Support': 'Ouvrir le soutien habituel',
 
+  'Open TrueGround companion': 'Ouvrir le compagnon TrueGround',
+  'Close companion': 'Fermer le compagnon',
+  'TrueGround companion': 'Compagnon TrueGround',
   'Talk it through': 'Parler un instant',
   'One bounded response, then choose your next move.':
       'Une réponse encadrée, puis choisissez votre prochaine action.',

@@ -83,7 +83,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          base_sha=db9d37a369299bf4746dd172c378b49877011c05
+          base_sha=e00d79234fa16338f07e9b0ea6f98618e0a58cb6
           before_dir=/tmp/trueground-lot11e-before
           rm -rf "$before_dir"
           git worktree add "$before_dir" "$base_sha"

@@ -35,7 +35,11 @@ const Set<String> conversationUiCopy = <String>{
 enum _View { idle, loading, generated, boundary, failClosed }
 
 class ConversationScreen extends StatefulWidget {
-  const ConversationScreen({required this.runtime, super.key});
+  const ConversationScreen({
+    required this.runtime,
+    this.onRoute,
+    super.key,
+  });
 
   static const screenKey = ValueKey('screen-conversation');
   static const inputKey = ValueKey('conversation-input');
@@ -46,6 +50,7 @@ class ConversationScreen extends StatefulWidget {
   static const failClosedKey = ValueKey('conversation-fail-closed');
 
   final BoundedConversationRuntime runtime;
+  final ValueChanged<String>? onRoute;
 
   @override
   State<ConversationScreen> createState() => _ConversationScreenState();
@@ -62,6 +67,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _go(String route) {
+    final onRoute = widget.onRoute;
+    if (onRoute != null) {
+      onRoute(route);
+      return;
+    }
+    context.go(route);
   }
 
   Future<void> _submit() async {
@@ -97,7 +111,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         ConversationRuntimeDisposition.deterministicOnly) {
       final route = result.safetyDecision.route;
       if (route != null) {
-        context.go(route);
+        _go(route);
         return;
       }
       setState(() {

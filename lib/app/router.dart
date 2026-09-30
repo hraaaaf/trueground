@@ -38,7 +38,11 @@ GoRouter createTrueGroundRouter({
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return AppShell(navigationShell: navigationShell);
+          return AppShell(
+            navigationShell: navigationShell,
+            conversationRuntime: conversationRuntime,
+            showCompanionLauncher: state.uri.path != '/companion',
+          );
         },
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
