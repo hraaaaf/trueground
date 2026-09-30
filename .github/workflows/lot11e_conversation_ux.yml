@@ -77,7 +77,7 @@ jobs:
             done
           done
           for width in 390 768; do
-            for state in idle generated; do
+            for state in idle generated second_turn; do
               test -s "build/lot11e/screenshots/popup_${width}_${state}.png"
             done
           done
