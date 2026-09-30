@@ -66,7 +66,7 @@ jobs:
         run: flutter test
 
       - name: Release web build
-        run: flutter build web --release
+        run: flutter build web --release --no-web-resources-cdn
 
       - name: Capture LOT11-E state evidence
         run: |
@@ -98,7 +98,7 @@ jobs:
           (
             cd "$before_dir"
             flutter pub get
-            flutter build web --release
+            flutter build web --release --no-web-resources-cdn
           )
 
           python3 -m http.server 7467 --bind 127.0.0.1             --directory build/web >/tmp/lot11e-after.log 2>&1 &
