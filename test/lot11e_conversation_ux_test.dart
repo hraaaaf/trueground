@@ -100,7 +100,7 @@ void main() {
     });
 
     testWidgets(
-      'floating companion renders a polished bounded turn without reopening the loop',
+      'floating companion supports a bounded contextual second turn',
       (tester) async {
         final adapter = _RecordingAdapter();
         await _pumpApp(tester, adapter);
@@ -114,26 +114,56 @@ void main() {
           findsOneWidget,
         );
 
-        await tester.enterText(
-          find.byKey(ConversationScreen.inputKey),
-          'Help me choose one useful next step.',
-        );
-        await tester.pump();
-        await tester.tap(find.byKey(ConversationScreen.submitKey));
+        await _submit(tester, 'Help me choose one useful next step.');
         await tester.pumpAndSettle();
 
         expect(adapter.calls, 1);
         expect(find.byKey(ConversationScreen.userBubbleKey), findsOneWidget);
         expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
         expect(find.text(adapter.message), findsOneWidget);
-        expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
         expect(find.text('Bounded response'), findsNothing);
 
-        final field = tester.widget<TextField>(
+        var field = tester.widget<TextField>(
           find.byKey(ConversationScreen.inputKey),
         );
-        expect(field.enabled, isFalse);
-        expect(find.text('This turn is complete'), findsOneWidget);
+        expect(field.enabled, isTrue);
+
+        await _submit(tester, 'And what could I do after that?');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 2);
+        expect(adapter.lastRequest?.context, hasLength(2));
+        expect(adapter.lastRequest?.context.first.role, 'user');
+        expect(adapter.lastRequest?.context.last.role, 'assistant');
+        expect(find.text(adapter.message), findsNWidgets(2));
+
+        field = tester.widget<TextField>(
+          find.byKey(ConversationScreen.inputKey),
+        );
+        expect(field.enabled, isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'repeated checking in the same popup pivots before a second provider call',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(tester, 'Check the lock again for me.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await _submit(tester, 'Double-check one last time.');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(AppShell.companionSheetKey), findsNothing);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
