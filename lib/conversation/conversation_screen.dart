@@ -232,9 +232,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
             padding: const EdgeInsets.only(left: 48),
             child: Text(
               context.tr('One grounded turn at a time.'),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 12.5,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 12.5),
             ),
           ),
         ],
@@ -314,10 +314,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
               context.tr(
                 'This response is not a diagnosis, medication instruction, treatment plan, or emergency assessment.',
               ),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 12,
-                height: 1.35,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontSize: 12, height: 1.35),
             ),
           ),
         ],
@@ -375,11 +374,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             color: TrueGroundColors.primary,
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.eco_rounded,
-            size: 20,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.eco_rounded, size: 20, color: Colors.white),
         ),
         const SizedBox(width: TrueGroundSpacing.sm),
         Flexible(
