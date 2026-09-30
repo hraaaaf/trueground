@@ -366,6 +366,60 @@ void main() {
       },
     );
 
+    testWidgets(
+      'French dental procedure request is blocked before the provider',
+      (tester) async {
+        final adapter = _RecordingAdapter(language: 'fr');
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.text('FR'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(
+          tester,
+          'J’ai une dent à extraire, comment procéder ?',
+        );
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 0);
+        expect(find.byKey(ConversationScreen.boundaryKey), findsOneWidget);
+        expect(
+          find.text(
+            'TrueGround ne peut pas vous guider pour réaliser une procédure médicale. Adressez-vous à un professionnel de santé qualifié pour la procédure ou la décision de traitement.',
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('mobile keyboard keeps the compact composer visible', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter();
+      await _pumpApp(tester, adapter);
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(ConversationScreen.inputKey));
+      await tester.pump();
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+
+      final composerRect = tester.getRect(
+        find.byKey(ConversationScreen.compactComposerKey),
+      );
+      expect(composerRect.bottom, lessThanOrEqualTo(544));
+      expect(
+        find.byKey(ConversationScreen.inputKey).hitTestable(),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('diagnosis boundary stays deterministic', (tester) async {
       final adapter = _RecordingAdapter();
       await _pumpApp(tester, adapter);
