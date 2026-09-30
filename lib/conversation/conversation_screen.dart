@@ -35,11 +35,7 @@ const Set<String> conversationUiCopy = <String>{
 enum _View { idle, loading, generated, boundary, failClosed }
 
 class ConversationScreen extends StatefulWidget {
-  const ConversationScreen({
-    required this.runtime,
-    this.onRoute,
-    super.key,
-  });
+  const ConversationScreen({required this.runtime, this.onRoute, super.key});
 
   static const screenKey = ValueKey('screen-conversation');
   static const inputKey = ValueKey('conversation-input');
