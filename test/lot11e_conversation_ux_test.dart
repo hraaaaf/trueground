@@ -109,7 +109,10 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Private • messages are not saved'), findsOneWidget);
-        expect(find.byKey(ConversationScreen.compactComposerKey), findsOneWidget);
+        expect(
+          find.byKey(ConversationScreen.compactComposerKey),
+          findsOneWidget,
+        );
 
         await tester.enterText(
           find.byKey(ConversationScreen.inputKey),
