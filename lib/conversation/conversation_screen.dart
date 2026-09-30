@@ -279,12 +279,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (var index = 0; index < _compactMessages.length; index++) ...<Widget>[
+        for (
+          var index = 0;
+          index < _compactMessages.length;
+          index++
+        ) ...<Widget>[
           if (_compactMessages[index].isUser)
             Align(
               alignment: Alignment.centerRight,
               child: Container(
-                key: index == _compactMessages.length - 1 ||
+                key:
+                    index == _compactMessages.length - 1 ||
                         (index == _compactMessages.length - 2 &&
                             !_compactMessages.last.isUser)
                     ? ConversationScreen.userBubbleKey
