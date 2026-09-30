@@ -37,6 +37,13 @@ const Set<String> conversationUiCopy = <String>{
 
 enum _View { idle, loading, generated, boundary, failClosed }
 
+class _CompactMessage {
+  const _CompactMessage({required this.isUser, required this.text});
+
+  final bool isUser;
+  final String text;
+}
+
 class ConversationScreen extends StatefulWidget {
   const ConversationScreen({
     required this.runtime,
@@ -71,6 +78,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   String? _response;
   ConversationDecision? _decision;
   String? _submittedMessage;
+  final List<_CompactMessage> _compactMessages = <_CompactMessage>[];
 
   @override
   void dispose() {
@@ -98,6 +106,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     FocusScope.of(context).unfocus();
     setState(() {
       _submittedMessage = message;
+      if (widget.compact) {
+        _compactMessages.add(_CompactMessage(isUser: true, text: message));
+      }
       _view = _View.loading;
     });
 
@@ -114,6 +125,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
         result.response != null) {
       setState(() {
         _response = result.response!.message;
+        if (widget.compact) {
+          _compactMessages.add(
+            _CompactMessage(isUser: false, text: result.response!.message),
+          );
+        }
         _view = _View.generated;
       });
       return;
@@ -213,12 +229,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _compactConversation() {
-    final submittedMessage = _submittedMessage;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (submittedMessage == null) ...<Widget>[
+    if (_compactMessages.isEmpty && _view == _View.idle) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
           _assistantBubble(
             child: Text(
               context.tr(
@@ -238,34 +252,55 @@ class _ConversationScreenState extends State<ConversationScreen> {
             ),
           ),
         ],
-        if (submittedMessage != null) ...<Widget>[
-          Align(
-            alignment: Alignment.centerRight,
-            child: Container(
-              key: ConversationScreen.userBubbleKey,
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(
-                horizontal: TrueGroundSpacing.md,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: TrueGroundColors.primary,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(6),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (var index = 0; index < _compactMessages.length; index++) ...<Widget>[
+          if (_compactMessages[index].isUser)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Container(
+                key: index == _compactMessages.length - 1 ||
+                        (index == _compactMessages.length - 2 &&
+                            !_compactMessages.last.isUser)
+                    ? ConversationScreen.userBubbleKey
+                    : null,
+                constraints: const BoxConstraints(maxWidth: 500),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: TrueGroundSpacing.md,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: TrueGroundColors.primary,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(6),
+                  ),
+                ),
+                child: Text(
+                  _compactMessages[index].text,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Colors.white,
+                    height: 1.4,
+                  ),
                 ),
               ),
+            )
+          else
+            _assistantBubble(
+              key: index == _compactMessages.length - 1
+                  ? ConversationScreen.generatedKey
+                  : null,
               child: Text(
-                submittedMessage,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white,
-                  height: 1.4,
-                ),
+                _compactMessages[index].text,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-          ),
           const SizedBox(height: TrueGroundSpacing.md),
         ],
         _compactAssistantState(),
@@ -275,7 +310,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Widget _compactAssistantState() {
     return switch (_view) {
-      _View.idle => const SizedBox.shrink(),
+      _View.idle || _View.generated => const SizedBox.shrink(),
       _View.loading => _assistantBubble(
         key: ConversationScreen.loadingKey,
         child: Row(
@@ -296,30 +331,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
             ),
           ],
         ),
-      ),
-      _View.generated => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          _assistantBubble(
-            key: ConversationScreen.generatedKey,
-            child: Text(
-              _response ?? '',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-          const SizedBox(height: TrueGroundSpacing.sm),
-          Padding(
-            padding: const EdgeInsets.only(left: 48, right: 8),
-            child: Text(
-              context.tr(
-                'This response is not a diagnosis, medication instruction, treatment plan, or emergency assessment.',
-              ),
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontSize: 12, height: 1.35),
-            ),
-          ),
-        ],
       ),
       _View.boundary => _assistantBubble(
         key: ConversationScreen.boundaryKey,
@@ -402,7 +413,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
 
   Widget _compactComposer() {
-    final isIdle = _view == _View.idle;
+    final canSend = _view == _View.idle || _view == _View.generated;
 
     return Container(
       key: ConversationScreen.compactComposerKey,
@@ -420,7 +431,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               child: TextField(
                 key: ConversationScreen.inputKey,
                 controller: _controller,
-                enabled: isIdle,
+                enabled: canSend,
                 minLines: 1,
                 maxLines: 3,
                 textInputAction: TextInputAction.send,
@@ -429,16 +440,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   if (next != _hasInput) setState(() => _hasInput = next);
                 },
                 onSubmitted: (_) {
-                  if (_hasInput && isIdle) _submit();
+                  if (_hasInput && canSend) _submit();
                 },
                 decoration: InputDecoration(
                   hintText: context.tr(
-                    isIdle
+                    canSend
                         ? 'Write one brief message'
                         : 'This turn is complete',
                   ),
                   filled: true,
-                  fillColor: isIdle
+                  fillColor: canSend
                       ? TrueGroundColors.background
                       : TrueGroundColors.surfaceMuted,
                   contentPadding: const EdgeInsets.symmetric(
@@ -472,7 +483,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               child: IconButton.filled(
                 key: ConversationScreen.submitKey,
                 tooltip: context.tr('Send once'),
-                onPressed: isIdle && _hasInput ? _submit : null,
+                onPressed: canSend && _hasInput ? _submit : null,
                 icon: const Icon(Icons.arrow_upward_rounded),
               ),
             ),
