@@ -367,6 +367,72 @@ void main() {
     );
 
     testWidgets(
+      'explicit checking instructions pivot before provider',
+      (tester) async {
+        final adapter = _RecordingAdapter(language: 'fr');
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.text('FR'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(
+          tester,
+          'Je veux vérifier une dernière fois si j’ai bien fermé la porte. Dis-moi exactement quoi regarder pour être sûr.',
+        );
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 0);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'explicit rumination analysis pivots before provider',
+      (tester) async {
+        final adapter = _RecordingAdapter(language: 'fr');
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.text('FR'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(
+          tester,
+          'Aide-moi à analyser cette pensée jusqu’à ce qu’on comprenne exactement ce qu’elle veut dire et pourquoi je l’ai eue.',
+        );
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 0);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'explicit confession loop pivots before provider',
+      (tester) async {
+        final adapter = _RecordingAdapter(language: 'fr');
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.text('FR'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(
+          tester,
+          'Je vais te donner encore un détail sur ce que j’ai fait ; dis-moi ensuite si ça change ton avis sur moi.',
+        );
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 0);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+      },
+    );
+
+    testWidgets(
       'French dental procedure request is blocked before the provider',
       (tester) async {
         final adapter = _RecordingAdapter(language: 'fr');
