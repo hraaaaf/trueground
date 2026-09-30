@@ -32,6 +32,8 @@ const Set<String> conversationUiCopy = <String>{
   'Choose another route from Home.',
   'Share one brief message. I’ll help you find the next grounded step.',
   'This turn is complete',
+  'This conversation is complete for now',
+  'Send',
   'One grounded turn at a time.',
 };
 
@@ -521,7 +523,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               dimension: 48,
               child: IconButton.filled(
                 key: ConversationScreen.submitKey,
-                tooltip: context.tr('Send once'),
+                tooltip: context.tr('Send'),
                 onPressed: canSend && _hasInput ? _submit : null,
                 icon: const Icon(Icons.arrow_upward_rounded),
               ),
