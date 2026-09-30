@@ -1,8 +1,10 @@
 const MODEL = 'openai/gpt-oss-120b';
 const CONTRACT = 'tg11c.response.v1';
 const CLIENT_CONTRACT = 'tg11f.client.v1';
-const MAX_BODY_BYTES = 4096;
+const MAX_BODY_BYTES = 8192;
 const MAX_USER_MESSAGE_LENGTH = 2000;
+const MAX_CONTEXT_MESSAGES = 4;
+const MAX_CONTEXT_MESSAGE_LENGTH = 1200;
 const PROVIDER_TIMEOUT_MS = 12000;
 
 const RESPONSE_SCHEMA = {
@@ -58,13 +60,30 @@ function parseClientPayload(raw) {
   }
   if (!decoded || Array.isArray(decoded) || typeof decoded !== 'object') return null;
   const keys = Object.keys(decoded).sort();
-  if (keys.join(',') !== 'language,schema_version,user_message') return null;
+  if (keys.join(',') !== 'context,language,schema_version,user_message') {
+    return null;
+  }
   if (decoded.schema_version !== CONTRACT) return null;
   if (!['en', 'fr'].includes(decoded.language)) return null;
   if (typeof decoded.user_message !== 'string') return null;
   const message = decoded.user_message.trim();
   if (!message || message.length > MAX_USER_MESSAGE_LENGTH) return null;
-  return { language: decoded.language, userMessage: message };
+  if (!Array.isArray(decoded.context)) return null;
+  if (decoded.context.length > MAX_CONTEXT_MESSAGES) return null;
+
+  const context = [];
+  for (const item of decoded.context) {
+    if (!item || Array.isArray(item) || typeof item !== 'object') return null;
+    const itemKeys = Object.keys(item).sort();
+    if (itemKeys.join(',') !== 'content,role') return null;
+    if (!['user', 'assistant'].includes(item.role)) return null;
+    if (typeof item.content !== 'string') return null;
+    const content = item.content.trim();
+    if (!content || content.length > MAX_CONTEXT_MESSAGE_LENGTH) return null;
+    context.push({ role: item.role, content });
+  }
+
+  return { language: decoded.language, userMessage: message, context };
 }
 
 function parseProviderPayload(value, expectedLanguage) {
@@ -94,6 +113,7 @@ async function callProvider(payload, apiKey) {
         reasoning_effort: 'medium',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
+          ...payload.context,
           {
             role: 'user',
             content: `Language: ${payload.language}\nMessage: ${payload.userMessage}`,
