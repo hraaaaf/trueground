@@ -377,10 +377,7 @@ void main() {
         await tester.tap(find.byKey(AppShell.companionLauncherKey));
         await tester.pumpAndSettle();
 
-        await _submit(
-          tester,
-          'J’ai une dent à extraire, comment procéder ?',
-        );
+        await _submit(tester, 'J’ai une dent à extraire, comment procéder ?');
         await tester.pumpAndSettle();
 
         expect(adapter.calls, 0);
