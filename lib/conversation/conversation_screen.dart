@@ -331,7 +331,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             _assistantBubble(
               key: index == _compactMessages.length - 1
                   ? ConversationScreen.generatedKey
-                  : null,
+                  : ValueKey('conversation-assistant-bubble-$index'),
               child: Text(
                 _compactMessages[index].text,
                 style: Theme.of(context).textTheme.bodyLarge,
