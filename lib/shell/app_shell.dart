@@ -46,9 +46,7 @@ class AppShell extends StatelessWidget {
             key: companionSheetKey,
             color: TrueGroundColors.background,
             clipBehavior: Clip.antiAlias,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(28),
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             child: Column(
               children: <Widget>[
                 const SizedBox(height: 8),
