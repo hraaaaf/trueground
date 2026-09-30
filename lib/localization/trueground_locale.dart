@@ -316,6 +316,7 @@ const Map<String, String> _fr = <String, String>{
   'Open TrueGround companion': 'Ouvrir le compagnon TrueGround',
   'Close companion': 'Fermer le compagnon',
   'TrueGround companion': 'Compagnon TrueGround',
+  'Private • messages are not saved': 'Privé • les messages ne sont pas conservés',
   'Talk it through': 'Parler un instant',
   'One bounded response, then choose your next move.':
       'Une réponse encadrée, puis choisissez votre prochaine action.',
@@ -353,6 +354,10 @@ const Map<String, String> _fr = <String, String>{
       'Aucune réponse générée n’a été affichée. Votre message n’a pas été conservé dans un historique.',
   'Choose another route from Home.':
       'Choisissez une autre option depuis l’accueil.',
+  'Share one brief message. I’ll help you find the next grounded step.':
+      'Partagez un message bref. Je vous aiderai à trouver la prochaine étape concrète.',
+  'This turn is complete': 'Ce tour est terminé',
+  'One grounded turn at a time.': 'Un tour concret à la fois.',
 
   'Loading': 'Chargement',
   'Getting this space ready.': 'Préparation de cet espace.',
