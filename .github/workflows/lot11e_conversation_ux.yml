@@ -76,7 +76,12 @@ jobs:
               test -s "build/lot11e/screenshots/conversation_${width}_${state}.png"
             done
           done
-          sha256sum build/lot11e/screenshots/conversation_*.png
+          for width in 390 768; do
+            for state in idle generated; do
+              test -s "build/lot11e/screenshots/popup_${width}_${state}.png"
+            done
+          done
+          sha256sum build/lot11e/screenshots/conversation_*.png build/lot11e/screenshots/popup_*.png
 
       - name: Capture dashboard before and after
         shell: bash
