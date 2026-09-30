@@ -329,6 +329,7 @@ const Map<String, String> _fr = <String, String>{
   'What is on your mind?': 'Qu’avez-vous en tête ?',
   'Write one brief message': 'Écrivez un message bref',
   'Send once': 'Envoyer une fois',
+  'Send': 'Envoyer',
   'Processing through TrueGround’s bounded conversation rules.':
       'Traitement selon les règles encadrées de TrueGround.',
   'Bounded response': 'Réponse encadrée',
