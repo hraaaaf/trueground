@@ -30,6 +30,9 @@ const Set<String> conversationUiCopy = <String>{
   'Conversation response unavailable',
   'No generated response was shown. This screen did not save your message as chat history.',
   'Choose another route from Home.',
+  'Share one brief message. I’ll help you find the next grounded step.',
+  'This turn is complete',
+  'One grounded turn at a time.',
 };
 
 enum _View { idle, loading, generated, boundary, failClosed }
@@ -49,6 +52,9 @@ class ConversationScreen extends StatefulWidget {
   static const generatedKey = ValueKey('conversation-generated');
   static const boundaryKey = ValueKey('conversation-boundary');
   static const failClosedKey = ValueKey('conversation-fail-closed');
+  static const userBubbleKey = ValueKey('conversation-user-bubble');
+  static const assistantBubbleKey = ValueKey('conversation-assistant-bubble');
+  static const compactComposerKey = ValueKey('conversation-compact-composer');
 
   final BoundedConversationRuntime runtime;
   final ValueChanged<String>? onRoute;
@@ -64,6 +70,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool _hasInput = false;
   String? _response;
   ConversationDecision? _decision;
+  String? _submittedMessage;
 
   @override
   void dispose() {
@@ -89,7 +96,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
         TrueGroundLocaleScope.maybeOf(context)?.language ??
         TrueGroundLanguage.en;
     FocusScope.of(context).unfocus();
-    setState(() => _view = _View.loading);
+    setState(() {
+      _submittedMessage = message;
+      _view = _View.loading;
+    });
 
     final result = await widget.runtime.run(
       message,
@@ -129,27 +139,27 @@ class _ConversationScreenState extends State<ConversationScreen> {
   @override
   Widget build(BuildContext context) {
     if (widget.compact) {
-      return SingleChildScrollView(
+      return Column(
         key: ConversationScreen.screenKey,
-        padding: const EdgeInsets.fromLTRB(
-          TrueGroundSpacing.md,
-          TrueGroundSpacing.sm,
-          TrueGroundSpacing.md,
-          TrueGroundSpacing.lg,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 640),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                _privacyNotice(),
-                const SizedBox(height: TrueGroundSpacing.md),
-                _body(),
-              ],
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(
+                TrueGroundSpacing.md,
+                TrueGroundSpacing.md,
+                TrueGroundSpacing.md,
+                TrueGroundSpacing.lg,
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 640),
+                  child: _compactConversation(),
+                ),
+              ),
             ),
           ),
-        ),
+          _compactComposer(),
+        ],
       );
     }
 
@@ -197,6 +207,281 @@ class _ConversationScreenState extends State<ConversationScreen> {
               _body(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _compactConversation() {
+    final submittedMessage = _submittedMessage;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        if (submittedMessage == null) ...<Widget>[
+          _assistantBubble(
+            child: Text(
+              context.tr(
+                'Share one brief message. I’ll help you find the next grounded step.',
+              ),
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+          const SizedBox(height: TrueGroundSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.only(left: 48),
+            child: Text(
+              context.tr('One grounded turn at a time.'),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 12.5,
+              ),
+            ),
+          ),
+        ],
+        if (submittedMessage != null) ...<Widget>[
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              key: ConversationScreen.userBubbleKey,
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(
+                horizontal: TrueGroundSpacing.md,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: TrueGroundColors.primary,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(6),
+                ),
+              ),
+              child: Text(
+                submittedMessage,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.white,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: TrueGroundSpacing.md),
+        ],
+        _compactAssistantState(),
+      ],
+    );
+  }
+
+  Widget _compactAssistantState() {
+    return switch (_view) {
+      _View.idle => const SizedBox.shrink(),
+      _View.loading => _assistantBubble(
+        key: ConversationScreen.loadingKey,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox.square(
+              dimension: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: TrueGroundSpacing.sm),
+            Flexible(
+              child: Text(
+                context.tr(
+                  'Processing through TrueGround’s bounded conversation rules.',
+                ),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ],
+        ),
+      ),
+      _View.generated => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          _assistantBubble(
+            key: ConversationScreen.generatedKey,
+            child: Text(
+              _response ?? '',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+          const SizedBox(height: TrueGroundSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.only(left: 48, right: 8),
+            child: Text(
+              context.tr(
+                'This response is not a diagnosis, medication instruction, treatment plan, or emergency assessment.',
+              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 12,
+                height: 1.35,
+              ),
+            ),
+          ),
+        ],
+      ),
+      _View.boundary => _assistantBubble(
+        key: ConversationScreen.boundaryKey,
+        child: Text(
+          _compactBoundaryMessage(_decision!),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+      _View.failClosed => _assistantBubble(
+        key: ConversationScreen.failClosedKey,
+        child: Text(
+          context.tr('Conversation response unavailable'),
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+    };
+  }
+
+  String _compactBoundaryMessage(ConversationDecision decision) {
+    if (decision.outcome == ConversationOutcome.privacyBoundary) {
+      return context.tr(
+        'TrueGround will not reveal hidden instructions or private system data.',
+      );
+    }
+    if (decision.outcome == ConversationOutcome.memoryTruthful) {
+      return context.tr(
+        'This build does not keep raw chat history here, and TrueGround will not invent one.',
+      );
+    }
+    return switch (decision.reasonCode) {
+      ConversationReasonCode.medicationBoundary => context.tr(
+        'TrueGround cannot tell you to start, stop, or change medication.',
+      ),
+      ConversationReasonCode.treatmentBoundary => context.tr(
+        'TrueGround cannot create a personalized exposure plan or promise treatment results.',
+      ),
+      _ => context.tr(
+        'TrueGround cannot diagnose OCD or interpret a thought as proof of intent or illness.',
+      ),
+    };
+  }
+
+  Widget _assistantBubble({Key? key, required Widget child}) {
+    return Row(
+      key: key ?? ConversationScreen.assistantBubbleKey,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: <Widget>[
+        Container(
+          width: 36,
+          height: 36,
+          decoration: const BoxDecoration(
+            color: TrueGroundColors.primary,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.eco_rounded,
+            size: 20,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(width: TrueGroundSpacing.sm),
+        Flexible(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            padding: const EdgeInsets.symmetric(
+              horizontal: TrueGroundSpacing.md,
+              vertical: 13,
+            ),
+            decoration: BoxDecoration(
+              color: TrueGroundColors.surface,
+              border: Border.all(color: TrueGroundColors.outline),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(6),
+              ),
+            ),
+            child: child,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _compactComposer() {
+    final isIdle = _view == _View.idle;
+
+    return Container(
+      key: ConversationScreen.compactComposerKey,
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      decoration: const BoxDecoration(
+        color: TrueGroundColors.surface,
+        border: Border(top: BorderSide(color: TrueGroundColors.outline)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            Expanded(
+              child: TextField(
+                key: ConversationScreen.inputKey,
+                controller: _controller,
+                enabled: isIdle,
+                minLines: 1,
+                maxLines: 3,
+                textInputAction: TextInputAction.send,
+                onChanged: (value) {
+                  final next = value.trim().isNotEmpty;
+                  if (next != _hasInput) setState(() => _hasInput = next);
+                },
+                onSubmitted: (_) {
+                  if (_hasInput && isIdle) _submit();
+                },
+                decoration: InputDecoration(
+                  hintText: context.tr(
+                    isIdle
+                        ? 'Write one brief message'
+                        : 'This turn is complete',
+                  ),
+                  filled: true,
+                  fillColor: isIdle
+                      ? TrueGroundColors.background
+                      : TrueGroundColors.surfaceMuted,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: TrueGroundSpacing.md,
+                    vertical: 13,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(
+                      color: TrueGroundColors.outline,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(
+                      color: TrueGroundColors.outline,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(
+                      color: TrueGroundColors.outline,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: TrueGroundSpacing.sm),
+            SizedBox.square(
+              dimension: 48,
+              child: IconButton.filled(
+                key: ConversationScreen.submitKey,
+                tooltip: context.tr('Send once'),
+                onPressed: isIdle && _hasInput ? _submit : null,
+                icon: const Icon(Icons.arrow_upward_rounded),
+              ),
+            ),
+          ],
         ),
       ),
     );
