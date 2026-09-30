@@ -358,6 +358,8 @@ const Map<String, String> _fr = <String, String>{
   'Share one brief message. I’ll help you find the next grounded step.':
       'Partagez un message bref. Je vous aiderai à trouver la prochaine étape concrète.',
   'This turn is complete': 'Ce tour est terminé',
+  'This conversation is complete for now':
+      'Cette conversation est terminée pour le moment',
   'One grounded turn at a time.': 'Un tour concret à la fois.',
 
   'Loading': 'Chargement',
