@@ -22,6 +22,14 @@ class ServerConversationProviderAdapter implements ConversationProviderAdapter {
         'schema_version': conversationRuntimeSchemaVersion,
         'language': request.languageCode,
         'user_message': request.userMessage,
+        'context': request.context
+            .map(
+              (message) => <String, Object?>{
+                'role': message.role,
+                'content': message.content,
+              },
+            )
+            .toList(growable: false),
       }),
     );
 
