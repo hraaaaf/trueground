@@ -117,7 +117,10 @@ void main() {
       expect(adapter.calls, 3);
       expect(adapter.lastRequest?.context, hasLength(4));
       expect(runtime.providerContext, hasLength(4));
-      expect(runtime.providerContext.first.content, 'Second ordinary question.');
+      expect(
+        runtime.providerContext.first.content,
+        'Second ordinary question.',
+      );
       expect(runtime.providerContext.last.role, 'assistant');
     });
 
