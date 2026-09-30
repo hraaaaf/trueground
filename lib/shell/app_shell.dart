@@ -41,7 +41,7 @@ class AppShell extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.28),
       builder: (sheetContext) {
         return FractionallySizedBox(
-          heightFactor: 0.92,
+          heightFactor: 0.82,
           child: Material(
             key: companionSheetKey,
             color: TrueGroundColors.background,
@@ -61,13 +61,38 @@ class AppShell extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 8, 6),
+                  padding: const EdgeInsets.fromLTRB(18, 8, 8, 10),
                   child: Row(
                     children: <Widget>[
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: const BoxDecoration(
+                          color: TrueGroundColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.eco_rounded,
+                          size: 22,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          context.tr('TrueGround companion'),
-                          style: Theme.of(context).textTheme.titleMedium,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              context.tr('TrueGround companion'),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              context.tr('Private • messages are not saved'),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(fontSize: 12.5),
+                            ),
+                          ],
                         ),
                       ),
                       IconButton(
@@ -79,7 +104,6 @@ class AppShell extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Divider(height: 1),
                 Expanded(
                   child: ConversationScreen(
                     runtime: conversationRuntime,
@@ -134,8 +158,25 @@ class AppShell extends StatelessWidget {
                   onPressed: () => _openCompanion(context),
                   backgroundColor: TrueGroundColors.primary,
                   foregroundColor: Colors.white,
-                  elevation: 5,
-                  child: const Icon(Icons.auto_awesome_rounded, size: 26),
+                  elevation: 7,
+                  shape: const CircleBorder(
+                    side: BorderSide(color: Colors.white, width: 1.5),
+                  ),
+                  child: const Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Icon(Icons.chat_bubble_rounded, size: 28),
+                      Positioned(
+                        right: 1,
+                        top: 1,
+                        child: Icon(
+                          Icons.eco_rounded,
+                          size: 11,
+                          color: TrueGroundColors.teal,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               )
             : null,
