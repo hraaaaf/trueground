@@ -81,7 +81,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
   bool _hasInput = false;
   String? _response;
   ConversationDecision? _decision;
-  String? _submittedMessage;
   final List<_CompactMessage> _compactMessages = <_CompactMessage>[];
 
   int get _compactUserMessageCount =>
@@ -133,7 +132,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
         TrueGroundLanguage.en;
     FocusScope.of(context).unfocus();
     setState(() {
-      _submittedMessage = message;
       if (widget.compact) {
         _compactMessages.add(_CompactMessage(isUser: true, text: message));
       }
