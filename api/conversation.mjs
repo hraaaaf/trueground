@@ -70,6 +70,7 @@ function parseClientPayload(raw) {
   if (!message || message.length > MAX_USER_MESSAGE_LENGTH) return null;
   if (!Array.isArray(decoded.context)) return null;
   if (decoded.context.length > MAX_CONTEXT_MESSAGES) return null;
+  if (decoded.context.length % 2 !== 0) return null;
 
   const context = [];
   for (const item of decoded.context) {
@@ -77,6 +78,8 @@ function parseClientPayload(raw) {
     const itemKeys = Object.keys(item).sort();
     if (itemKeys.join(',') !== 'content,role') return null;
     if (!['user', 'assistant'].includes(item.role)) return null;
+    const expectedRole = context.length % 2 === 0 ? 'user' : 'assistant';
+    if (item.role !== expectedRole) return null;
     if (typeof item.content !== 'string') return null;
     const content = item.content.trim();
     if (!content || content.length > MAX_CONTEXT_MESSAGE_LENGTH) return null;
