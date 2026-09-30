@@ -600,8 +600,7 @@ bool _isExplicitCompulsiveInstructionRequest(
       'si ca change ton avis sur moi',
       'si cela change ton avis sur moi',
     ]),
-    ConversationLoopFamily.reassurance ||
-    ConversationLoopFamily.none => false,
+    ConversationLoopFamily.reassurance || ConversationLoopFamily.none => false,
   };
 }
 
