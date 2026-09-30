@@ -124,7 +124,7 @@ async function run() {
     request(validBody(), { origin: 'https://evil.example' }),
   );
   assert.equal(crossOrigin.status, 403);
-  assert.equal(providerCalls, 1);
+  assert.equal(providerCalls, 2);
 
   const missingOrigin = new Request('https://trueground.example/api/conversation', {
     method: 'POST',
@@ -136,13 +136,13 @@ async function run() {
   });
   const noOrigin = await handler.fetch(missingOrigin);
   assert.equal(noOrigin.status, 403);
-  assert.equal(providerCalls, 1);
+  assert.equal(providerCalls, 2);
 
   const extraField = await handler.fetch(
     request({ ...validBody(), hidden: 'nope' }),
   );
   assert.equal(extraField.status, 400);
-  assert.equal(providerCalls, 1);
+  assert.equal(providerCalls, 2);
 
   const missingContract = new Request(
     'https://trueground.example/api/conversation',
@@ -157,7 +157,7 @@ async function run() {
   );
   const badContract = await handler.fetch(missingContract);
   assert.equal(badContract.status, 400);
-  assert.equal(providerCalls, 1);
+  assert.equal(providerCalls, 2);
 
   globalThis.fetch = async () => new Response('provider failure', { status: 500 });
   const providerFailure = await handler.fetch(request(validBody()));
