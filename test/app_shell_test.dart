@@ -68,31 +68,27 @@ void main() {
     },
   );
 
-  testWidgets(
-    'deterministic routing from modal closes the companion first',
-    (tester) async {
-      await _useSurface(tester, const Size(390, 844));
-      await tester.pumpWidget(const TrueGroundApp());
-      await tester.pumpAndSettle();
+  testWidgets('deterministic routing from modal closes the companion first', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
 
-      await tester.tap(find.byKey(AppShell.companionLauncherKey));
-      await tester.pumpAndSettle();
-      await tester.enterText(
-        find.byKey(ConversationScreen.inputKey),
-        'I am in immediate danger.',
-      );
-      await tester.pump();
-      await tester.tap(find.byKey(ConversationScreen.submitKey));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(AppShell.companionLauncherKey));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byKey(ConversationScreen.inputKey),
+      'I am in immediate danger.',
+    );
+    await tester.pump();
+    await tester.tap(find.byKey(ConversationScreen.submitKey));
+    await tester.pumpAndSettle();
 
-      expect(find.byKey(AppShell.companionSheetKey), findsNothing);
-      expect(
-        find.byKey(const ValueKey('screen-urgent-support')),
-        findsOneWidget,
-      );
-      expect(tester.takeException(), isNull);
-    },
-  );
+    expect(find.byKey(AppShell.companionSheetKey), findsNothing);
+    expect(find.byKey(const ValueKey('screen-urgent-support')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final width in <double>[360, 390]) {
     testWidgets('shell renders without overflow at ${width.toInt()} px', (
