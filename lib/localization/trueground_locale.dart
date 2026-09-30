@@ -313,6 +313,11 @@ const Map<String, String> _fr = <String, String>{
       'TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.',
   'Open regular Support': 'Ouvrir le soutien habituel',
 
+  'Open TrueGround companion': 'Ouvrir le compagnon TrueGround',
+  'Close companion': 'Fermer le compagnon',
+  'TrueGround companion': 'Compagnon TrueGround',
+  'Private • messages are not saved':
+      'Privé • les messages ne sont pas conservés',
   'Talk it through': 'Parler un instant',
   'One bounded response, then choose your next move.':
       'Une réponse encadrée, puis choisissez votre prochaine action.',
@@ -324,6 +329,7 @@ const Map<String, String> _fr = <String, String>{
   'What is on your mind?': 'Qu’avez-vous en tête ?',
   'Write one brief message': 'Écrivez un message bref',
   'Send once': 'Envoyer une fois',
+  'Send': 'Envoyer',
   'Processing through TrueGround’s bounded conversation rules.':
       'Traitement selon les règles encadrées de TrueGround.',
   'Bounded response': 'Réponse encadrée',
@@ -350,6 +356,12 @@ const Map<String, String> _fr = <String, String>{
       'Aucune réponse générée n’a été affichée. Votre message n’a pas été conservé dans un historique.',
   'Choose another route from Home.':
       'Choisissez une autre option depuis l’accueil.',
+  'Share one brief message. I’ll help you find the next grounded step.':
+      'Partagez un message bref. Je vous aiderai à trouver la prochaine étape concrète.',
+  'This turn is complete': 'Ce tour est terminé',
+  'This conversation is complete for now':
+      'Cette conversation est terminée pour le moment',
+  'One grounded turn at a time.': 'Un tour concret à la fois.',
 
   'Loading': 'Chargement',
   'Getting this space ready.': 'Préparation de cet espace.',

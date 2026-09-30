@@ -66,7 +66,7 @@ jobs:
         run: flutter test
 
       - name: Release web build
-        run: flutter build web --release
+        run: flutter build web --release --no-web-resources-cdn
 
       - name: Capture LOT11-E state evidence
         run: |
@@ -76,14 +76,19 @@ jobs:
               test -s "build/lot11e/screenshots/conversation_${width}_${state}.png"
             done
           done
-          sha256sum build/lot11e/screenshots/conversation_*.png
+          for width in 390 768; do
+            for state in idle generated second_turn; do
+              test -s "build/lot11e/screenshots/popup_${width}_${state}.png"
+            done
+          done
+          sha256sum build/lot11e/screenshots/conversation_*.png build/lot11e/screenshots/popup_*.png
 
       - name: Capture dashboard before and after
         shell: bash
         run: |
           set -euo pipefail
 
-          base_sha=db9d37a369299bf4746dd172c378b49877011c05
+          base_sha=e00d79234fa16338f07e9b0ea6f98618e0a58cb6
           before_dir=/tmp/trueground-lot11e-before
           rm -rf "$before_dir"
           git worktree add "$before_dir" "$base_sha"
@@ -98,7 +103,7 @@ jobs:
           (
             cd "$before_dir"
             flutter pub get
-            flutter build web --release
+            flutter build web --release --no-web-resources-cdn
           )
 
           python3 -m http.server 7467 --bind 127.0.0.1             --directory build/web >/tmp/lot11e-after.log 2>&1 &

@@ -48,7 +48,7 @@ jobs:
         run: flutter test
 
       - name: Web build proof
-        run: flutter build web --release
+        run: flutter build web --release --no-web-resources-cdn
 
       - name: Local web smoke and visual capture
         shell: bash

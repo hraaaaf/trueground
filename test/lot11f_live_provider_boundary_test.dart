@@ -30,11 +30,60 @@ void main() {
       );
 
       final sent = jsonDecode(captured!) as Map<String, dynamic>;
-      expect(sent.keys.toSet(), {'schema_version', 'language', 'user_message'});
+      expect(sent.keys.toSet(), {
+        'schema_version',
+        'language',
+        'user_message',
+        'context',
+      });
       expect(sent['schema_version'], conversationRuntimeSchemaVersion);
       expect(sent['language'], 'en');
       expect(sent['user_message'], 'Help me choose one useful next step.');
+      expect(sent['context'], isEmpty);
       expect(invocation.payload['language'], 'en');
+    });
+
+    test('adapter serializes bounded ephemeral context', () async {
+      String? captured;
+      final adapter = ServerConversationProviderAdapter(
+        transport: (body) async {
+          captured = body;
+          return const ConversationServerHttpResponse(
+            statusCode: 200,
+            body:
+                '{"schema_version":"tg11c.response.v1","message":"Choose one small next step without resolving the uncertainty.","language":"en","mode":"support"}',
+          );
+        },
+      );
+
+      await adapter.generate(
+        const ConversationProviderRequest(
+          languageCode: 'en',
+          userMessage: 'What next?',
+          context: <ConversationProviderContextMessage>[
+            ConversationProviderContextMessage(
+              role: 'user',
+              content: 'I had a difficult morning.',
+            ),
+            ConversationProviderContextMessage(
+              role: 'assistant',
+              content: 'Choose one small grounded action.',
+            ),
+          ],
+        ),
+      );
+
+      final sent = jsonDecode(captured!) as Map<String, dynamic>;
+      final context = sent['context'] as List<dynamic>;
+      expect(context, hasLength(2));
+      expect(context.first, {
+        'role': 'user',
+        'content': 'I had a difficult morning.',
+      });
+      expect(context.last, {
+        'role': 'assistant',
+        'content': 'Choose one small grounded action.',
+      });
     });
 
     test('non-200 server response fails closed through runtime', () async {

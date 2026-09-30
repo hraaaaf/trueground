@@ -31,7 +31,12 @@ for (const [id, language, user_message, baseline] of cases) {
       'content-type': 'application/json',
       'x-trueground-client': 'tg11f.client.v1',
     },
-    body: JSON.stringify({ schema_version: 'tg11c.response.v1', language, user_message }),
+    body: JSON.stringify({
+      schema_version: 'tg11c.response.v1',
+      language,
+      user_message,
+      context: [],
+    }),
   });
 
   const started = performance.now();

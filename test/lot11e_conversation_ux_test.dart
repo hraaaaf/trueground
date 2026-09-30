@@ -9,6 +9,7 @@ import 'package:trueground/design/app_theme.dart';
 import 'package:trueground/localization/trueground_locale.dart';
 import 'package:trueground/loop/loop_flow_screen.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
+import 'package:trueground/shell/app_shell.dart';
 
 class _RecordingAdapter implements ConversationProviderAdapter {
   _RecordingAdapter({
@@ -96,6 +97,170 @@ void main() {
       expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
       expect(find.text(adapter.message), findsOneWidget);
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
+    });
+
+    testWidgets(
+      'floating companion supports a bounded contextual second turn',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Private • messages are not saved'), findsOneWidget);
+        expect(
+          find.byKey(ConversationScreen.compactComposerKey),
+          findsOneWidget,
+        );
+
+        await _submit(tester, 'Help me choose one useful next step.');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(ConversationScreen.userBubbleKey), findsOneWidget);
+        expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+        expect(find.text(adapter.message), findsOneWidget);
+        expect(find.text('Bounded response'), findsNothing);
+
+        var field = tester.widget<TextField>(
+          find.byKey(ConversationScreen.inputKey),
+        );
+        expect(field.enabled, isTrue);
+
+        await _submit(tester, 'And what could I do after that?');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 2);
+        expect(adapter.lastRequest?.context, hasLength(2));
+        expect(adapter.lastRequest?.context.first.role, 'user');
+        expect(adapter.lastRequest?.context.last.role, 'assistant');
+        expect(find.text(adapter.message), findsNWidgets(2));
+
+        field = tester.widget<TextField>(
+          find.byKey(ConversationScreen.inputKey),
+        );
+        expect(field.enabled, isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'repeated checking in the same popup pivots before a second provider call',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(tester, 'Check the lock again for me.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await _submit(tester, 'Double-check one last time.');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(AppShell.companionSheetKey), findsNothing);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'closing popup clears provider context but keeps the safety session',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Help me choose one useful next step.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await tester.tap(find.byKey(AppShell.companionCloseKey));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'What could I do next?');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 2);
+        expect(adapter.lastRequest?.context, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'safety repetition survives popup close even though provider context resets',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Check the lock again for me.');
+        await tester.pumpAndSettle();
+        expect(adapter.calls, 1);
+
+        await tester.tap(find.byKey(AppShell.companionCloseKey));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+        await _submit(tester, 'Double-check one last time.');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(AppShell.companionSheetKey), findsNothing);
+        expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('popup allows twelve user messages then blocks a thirteenth', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter();
+      await _pumpApp(tester, adapter);
+
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      for (
+        var index = 1;
+        index <= ConversationScreen.compactSessionMaxUserMessages;
+        index++
+      ) {
+        await _submit(tester, 'Ordinary message $index.');
+        await tester.pumpAndSettle();
+      }
+
+      expect(adapter.calls, ConversationScreen.compactSessionMaxUserMessages);
+      expect(adapter.lastRequest?.context, hasLength(4));
+
+      final field = tester.widget<TextField>(
+        find.byKey(ConversationScreen.inputKey),
+      );
+      expect(field.enabled, isFalse);
+      expect(
+        find.text('This conversation is complete for now'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(
+        find.byKey(ConversationScreen.inputKey),
+        'Message thirteen must not leave the UI.',
+      );
+      await tester.pump();
+      await tester.testTextInput.receiveAction(TextInputAction.send);
+      await tester.pumpAndSettle();
+
+      expect(adapter.calls, ConversationScreen.compactSessionMaxUserMessages);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('keyboard send action uses the bounded runtime', (

@@ -3,21 +3,126 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../conversation/conversation_runtime.dart';
+import '../conversation/conversation_screen.dart';
 import '../design/app_theme.dart';
 import '../localization/trueground_locale.dart';
 
 class AppShell extends StatelessWidget {
-  const AppShell({required this.navigationShell, super.key});
+  const AppShell({
+    required this.navigationShell,
+    required this.conversationRuntime,
+    this.showCompanionLauncher = true,
+    super.key,
+  });
 
   static const captureKey = ValueKey('trueground-shell-capture');
+  static const companionLauncherKey = ValueKey('companion-launcher');
+  static const companionSheetKey = ValueKey('companion-sheet');
+  static const companionCloseKey = ValueKey('companion-sheet-close');
 
   final StatefulNavigationShell navigationShell;
+  final BoundedConversationRuntime conversationRuntime;
+  final bool showCompanionLauncher;
 
   void _selectDestination(int index) {
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
     );
+  }
+
+  Future<void> _openCompanion(BuildContext context) async {
+    conversationRuntime.resetProviderContext();
+    await showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.28),
+      builder: (sheetContext) {
+        return FractionallySizedBox(
+          heightFactor: 0.82,
+          child: Material(
+            key: companionSheetKey,
+            color: TrueGroundColors.background,
+            clipBehavior: Clip.antiAlias,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 8),
+                Center(
+                  child: Container(
+                    width: 44,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: TrueGroundColors.outline,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 8, 8, 10),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: const BoxDecoration(
+                          color: TrueGroundColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.eco_rounded,
+                          size: 22,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              context.tr('TrueGround companion'),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              context.tr('Private • messages are not saved'),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(fontSize: 12.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        key: companionCloseKey,
+                        tooltip: context.tr('Close companion'),
+                        onPressed: () => Navigator.of(sheetContext).pop(),
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ConversationScreen(
+                    runtime: conversationRuntime,
+                    compact: true,
+                    onRoute: (route) {
+                      Navigator.of(sheetContext).pop();
+                      context.go(route);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    conversationRuntime.resetProviderContext();
   }
 
   @override
@@ -46,6 +151,39 @@ class AppShell extends StatelessWidget {
                 )
               : navigationShell,
         ),
+        floatingActionButton: showCompanionLauncher
+            ? Semantics(
+                button: true,
+                label: context.tr('Open TrueGround companion'),
+                child: FloatingActionButton(
+                  key: companionLauncherKey,
+                  tooltip: context.tr('Open TrueGround companion'),
+                  onPressed: () => _openCompanion(context),
+                  backgroundColor: TrueGroundColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 7,
+                  shape: const CircleBorder(
+                    side: BorderSide(color: Colors.white, width: 1.5),
+                  ),
+                  child: const Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      Icon(Icons.chat_bubble_rounded, size: 28),
+                      Positioned(
+                        right: 1,
+                        top: 1,
+                        child: Icon(
+                          Icons.eco_rounded,
+                          size: 11,
+                          color: TrueGroundColors.teal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         bottomNavigationBar: SafeArea(
           top: false,
           child: Semantics(
