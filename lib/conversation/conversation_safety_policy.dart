@@ -28,6 +28,7 @@ enum ConversationReasonCode {
   urgentSafety,
   diagnosisBoundary,
   medicationBoundary,
+  medicalProcedureBoundary,
   treatmentBoundary,
   hiddenDataRequest,
   rawHistoryUnavailable,
@@ -325,6 +326,13 @@ bool _isUrgent(String rawMessage, String normalized) {
 }
 
 ConversationDecision? _claimBoundary(String text) {
+  if (_isMedicalProcedureRequest(text)) {
+    return const ConversationDecision(
+      outcome: ConversationOutcome.claimBoundary,
+      reasonCode: ConversationReasonCode.medicalProcedureBoundary,
+    );
+  }
+
   if (_containsAny(text, const <String>[
     'do i have ocd',
     'diagnose me',
@@ -409,6 +417,34 @@ ConversationDecision? _claimBoundary(String text) {
   }
 
   return null;
+}
+
+bool _isMedicalProcedureRequest(String text) {
+  final procedure = _containsAny(text, const <String>[
+    'tooth extraction',
+    'extract a tooth',
+    'remove a tooth',
+    'dental extraction',
+    'dent a extraire',
+    'extraire une dent',
+    'extraction dentaire',
+    'enlever une dent',
+  ]);
+  if (!procedure) return false;
+
+  return _containsAny(text, const <String>[
+    'how',
+    'what should i do',
+    'what do i do',
+    'steps',
+    'procedure',
+    'comment',
+    'que dois je faire',
+    'quoi faire',
+    'comment faire',
+    'comment proceder',
+    'comment peceder',
+  ]);
 }
 
 bool _isHumanSupportRequest(String text) {
