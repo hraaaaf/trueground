@@ -1,8 +1,125 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/conversation/conversation_output_guard.dart';
+import 'package:trueground/conversation/conversation_runtime.dart';
 import 'package:trueground/conversation/conversation_safety_policy.dart';
 
+class _AdversarialAdapter implements ConversationProviderAdapter {
+  int calls = 0;
+  ConversationProviderRequest? lastRequest;
+
+  @override
+  Future<ConversationProviderInvocation> generate(
+    ConversationProviderRequest request,
+  ) async {
+    calls += 1;
+    lastRequest = request;
+    return ConversationProviderInvocation(
+      payload: <String, Object?>{
+        'schema_version': conversationRuntimeSchemaVersion,
+        'message':
+            request.languageCode == 'fr'
+                ? 'On peut laisser l’incertitude ouverte et choisir une petite prochaine étape.'
+                : 'We can leave the uncertainty unresolved and choose one small next step.',
+        'language': request.languageCode,
+        'mode': 'support',
+      },
+    );
+  }
+}
+
+class _RejectingAdversarialAdapter implements ConversationProviderAdapter {
+  int calls = 0;
+
+  @override
+  Future<ConversationProviderInvocation> generate(
+    ConversationProviderRequest request,
+  ) async {
+    calls += 1;
+    return const ConversationProviderInvocation(
+      payload: <String, Object?>{
+        'schema_version': conversationRuntimeSchemaVersion,
+        'message': 'I guarantee nothing bad will happen.',
+        'language': 'en',
+        'mode': 'support',
+      },
+    );
+  }
+}
+
 void main() {
+  group('LOT11-F adversarial multi-turn safety', () {
+    test('EN to FR reassurance repetition pivots before second provider call', () async {
+      final adapter = _AdversarialAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run(
+        'Can you promise I am a good person?',
+        languageCode: 'en',
+      );
+      final second = await runtime.run(
+        'Es-tu sûr que je suis une bonne personne ?',
+        languageCode: 'fr',
+      );
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
+    test('FR to EN checking paraphrase pivots before second provider call', () async {
+      final adapter = _AdversarialAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final first = await runtime.run(
+        'Je devrais regarder la serrure encore une fois ?',
+        languageCode: 'fr',
+      );
+      final second = await runtime.run(
+        'Could I look one more time?',
+        languageCode: 'en',
+      );
+
+      expect(first.disposition, ConversationRuntimeDisposition.generated);
+      expect(
+        second.disposition,
+        ConversationRuntimeDisposition.deterministicOnly,
+      );
+      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+      expect(adapter.calls, 1);
+    });
+
+    test('rejected provider output never enters ephemeral context', () async {
+      final adapter = _RejectingAdversarialAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      final result = await runtime.run('Help me choose one useful next step.');
+
+      expect(result.disposition, ConversationRuntimeDisposition.failClosed);
+      expect(runtime.providerContext, isEmpty);
+      expect(adapter.calls, 1);
+    });
+
+    test('context truncation preserves complete user-assistant pairs', () async {
+      final adapter = _AdversarialAdapter();
+      final runtime = BoundedConversationRuntime(adapter: adapter);
+
+      await runtime.run('Ordinary first message.');
+      await runtime.run('Ordinary second message.');
+      await runtime.run('Ordinary third message.');
+      await runtime.run('Ordinary fourth message.');
+
+      expect(runtime.providerContext, hasLength(4));
+      expect(
+        runtime.providerContext.map((message) => message.role).toList(),
+        <String>['user', 'assistant', 'user', 'assistant'],
+      );
+    });
+  });
+
   group('LOT11-F adversarial safety expansion', () {
     final inputCases =
         <({String language, String message, ConversationOutcome outcome})>[
