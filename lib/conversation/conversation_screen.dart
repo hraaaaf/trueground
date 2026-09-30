@@ -400,6 +400,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ConversationReasonCode.medicationBoundary => context.tr(
         'TrueGround cannot tell you to start, stop, or change medication.',
       ),
+      ConversationReasonCode.medicalProcedureBoundary => context.tr(
+        'TrueGround cannot guide a medical procedure. Use a qualified health professional for the procedure or treatment decision.',
+      ),
       ConversationReasonCode.treatmentBoundary => context.tr(
         'TrueGround cannot create a personalized exposure plan or promise treatment results.',
       ),
