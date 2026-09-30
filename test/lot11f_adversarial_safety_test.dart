@@ -48,49 +48,55 @@ class _RejectingAdversarialAdapter implements ConversationProviderAdapter {
 
 void main() {
   group('LOT11-F adversarial multi-turn safety', () {
-    test('EN to FR reassurance repetition pivots before second provider call', () async {
-      final adapter = _AdversarialAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'EN to FR reassurance repetition pivots before second provider call',
+      () async {
+        final adapter = _AdversarialAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final first = await runtime.run(
-        'Can you promise I am a good person?',
-        languageCode: 'en',
-      );
-      final second = await runtime.run(
-        'Es-tu sûr que je suis une bonne personne ?',
-        languageCode: 'fr',
-      );
+        final first = await runtime.run(
+          'Can you promise I am a good person?',
+          languageCode: 'en',
+        );
+        final second = await runtime.run(
+          'Es-tu sûr que je suis une bonne personne ?',
+          languageCode: 'fr',
+        );
 
-      expect(first.disposition, ConversationRuntimeDisposition.generated);
-      expect(
-        second.disposition,
-        ConversationRuntimeDisposition.deterministicOnly,
-      );
-      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
-      expect(adapter.calls, 1);
-    });
+        expect(first.disposition, ConversationRuntimeDisposition.generated);
+        expect(
+          second.disposition,
+          ConversationRuntimeDisposition.deterministicOnly,
+        );
+        expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+        expect(adapter.calls, 1);
+      },
+    );
 
-    test('FR to EN checking paraphrase pivots before second provider call', () async {
-      final adapter = _AdversarialAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'FR to EN checking paraphrase pivots before second provider call',
+      () async {
+        final adapter = _AdversarialAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      final first = await runtime.run(
-        'Je devrais regarder la serrure encore une fois ?',
-        languageCode: 'fr',
-      );
-      final second = await runtime.run(
-        'Could I look one more time?',
-        languageCode: 'en',
-      );
+        final first = await runtime.run(
+          'Je devrais regarder la serrure encore une fois ?',
+          languageCode: 'fr',
+        );
+        final second = await runtime.run(
+          'Could I look one more time?',
+          languageCode: 'en',
+        );
 
-      expect(first.disposition, ConversationRuntimeDisposition.generated);
-      expect(
-        second.disposition,
-        ConversationRuntimeDisposition.deterministicOnly,
-      );
-      expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
-      expect(adapter.calls, 1);
-    });
+        expect(first.disposition, ConversationRuntimeDisposition.generated);
+        expect(
+          second.disposition,
+          ConversationRuntimeDisposition.deterministicOnly,
+        );
+        expect(second.safetyDecision.outcome, ConversationOutcome.routeLoop);
+        expect(adapter.calls, 1);
+      },
+    );
 
     test('rejected provider output never enters ephemeral context', () async {
       final adapter = _RejectingAdversarialAdapter();
@@ -103,21 +109,24 @@ void main() {
       expect(adapter.calls, 1);
     });
 
-    test('context truncation preserves complete user-assistant pairs', () async {
-      final adapter = _AdversarialAdapter();
-      final runtime = BoundedConversationRuntime(adapter: adapter);
+    test(
+      'context truncation preserves complete user-assistant pairs',
+      () async {
+        final adapter = _AdversarialAdapter();
+        final runtime = BoundedConversationRuntime(adapter: adapter);
 
-      await runtime.run('Ordinary first message.');
-      await runtime.run('Ordinary second message.');
-      await runtime.run('Ordinary third message.');
-      await runtime.run('Ordinary fourth message.');
+        await runtime.run('Ordinary first message.');
+        await runtime.run('Ordinary second message.');
+        await runtime.run('Ordinary third message.');
+        await runtime.run('Ordinary fourth message.');
 
-      expect(runtime.providerContext, hasLength(4));
-      expect(
-        runtime.providerContext.map((message) => message.role).toList(),
-        <String>['user', 'assistant', 'user', 'assistant'],
-      );
-    });
+        expect(runtime.providerContext, hasLength(4));
+        expect(
+          runtime.providerContext.map((message) => message.role).toList(),
+          <String>['user', 'assistant', 'user', 'assistant'],
+        );
+      },
+    );
   });
 
   group('LOT11-F adversarial safety expansion', () {
