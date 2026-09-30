@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import handler from '../../api/conversation.mjs';
 
 const originalFetch = globalThis.fetch;
-const originalKey = process.env.GROQ_API_KEY;
-process.env.GROQ_API_KEY = 'test-only-key';
+const originalKey = process.env.Llm_Key;
+process.env.Llm_Key = 'test-only-key';
 
 function request(body, { origin = 'https://trueground.example' } = {}) {
   return new Request('https://trueground.example/api/conversation', {
@@ -140,6 +140,6 @@ try {
   await run();
 } finally {
   globalThis.fetch = originalFetch;
-  if (originalKey === undefined) delete process.env.GROQ_API_KEY;
-  else process.env.GROQ_API_KEY = originalKey;
+  if (originalKey === undefined) delete process.env.Llm_Key;
+  else process.env.Llm_Key = originalKey;
 }

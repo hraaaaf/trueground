@@ -144,7 +144,7 @@ export default {
     if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return jsonResponse({ error: 'payload_too_large' }, 413);
     const payload = parseClientPayload(raw);
     if (!payload) return jsonResponse({ error: 'invalid_request' }, 400);
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.Llm_Key;
     if (!apiKey) return jsonResponse({ error: 'provider_unavailable' }, 503);
     const generated = await callProvider(payload, apiKey);
     if (!generated) return jsonResponse({ error: 'provider_unavailable' }, 502);
