@@ -9,6 +9,7 @@ import 'package:trueground/design/app_theme.dart';
 import 'package:trueground/localization/trueground_locale.dart';
 import 'package:trueground/loop/loop_flow_screen.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
+import 'package:trueground/shell/app_shell.dart';
 
 class _RecordingAdapter implements ConversationProviderAdapter {
   _RecordingAdapter({
@@ -97,6 +98,42 @@ void main() {
       expect(find.text(adapter.message), findsOneWidget);
       expect(find.byKey(ConversationScreen.inputKey), findsNothing);
     });
+
+    testWidgets(
+      'floating companion renders a polished bounded turn without reopening the loop',
+      (tester) async {
+        final adapter = _RecordingAdapter();
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Private • messages are not saved'), findsOneWidget);
+        expect(find.byKey(ConversationScreen.compactComposerKey), findsOneWidget);
+
+        await tester.enterText(
+          find.byKey(ConversationScreen.inputKey),
+          'Help me choose one useful next step.',
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(ConversationScreen.submitKey));
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 1);
+        expect(find.byKey(ConversationScreen.userBubbleKey), findsOneWidget);
+        expect(find.byKey(ConversationScreen.generatedKey), findsOneWidget);
+        expect(find.text(adapter.message), findsOneWidget);
+        expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
+        expect(find.text('Bounded response'), findsNothing);
+
+        final field = tester.widget<TextField>(
+          find.byKey(ConversationScreen.inputKey),
+        );
+        expect(field.enabled, isFalse);
+        expect(find.text('This turn is complete'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('keyboard send action uses the bounded runtime', (
       tester,
