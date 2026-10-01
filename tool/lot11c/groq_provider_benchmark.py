@@ -717,6 +717,9 @@ def main():
                 if decision is not None:
                     record["runtime_guard_rejected"] = bool(decision["rejected"])
                     record["runtime_guard_violation"] = decision["violation"]
+                    diagnostic = decision.get("reconfession_diagnostic")
+                    if diagnostic is not None:
+                        record["runtime_guard_diagnostic"] = diagnostic
             runtime_guard_bridge_ok = all(
                 r["runtime_guard_rejected"] is not None
                 for r in records + sequence_records
