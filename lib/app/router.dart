@@ -1,5 +1,8 @@
 import 'package:go_router/go_router.dart';
 
+import '../conversation/conversation_runtime.dart';
+import '../conversation/conversation_server_adapter.dart';
+import '../conversation/conversation_screen.dart';
 import '../dashboard/dashboard_v3_screen.dart';
 import '../localization/language_screen.dart';
 import '../loop/loop_flow_screen.dart';
@@ -17,7 +20,14 @@ GoRouter createTrueGroundRouter({
   DateTime Function()? practiceNow,
   PatternMemoryStore? patternMemoryStore,
   DateTime Function()? patternNow,
+  ConversationProviderAdapter? conversationProviderAdapter,
+  Duration conversationProviderTimeout = defaultConversationProviderTimeout,
 }) {
+  final conversationRuntime = BoundedConversationRuntime(
+    adapter: conversationProviderAdapter ?? ServerConversationProviderAdapter(),
+    providerTimeout: conversationProviderTimeout,
+  );
+
   return GoRouter(
     initialLocation: '/',
     routes: <RouteBase>[
@@ -28,7 +38,11 @@ GoRouter createTrueGroundRouter({
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          return AppShell(navigationShell: navigationShell);
+          return AppShell(
+            navigationShell: navigationShell,
+            conversationRuntime: conversationRuntime,
+            showCompanionLauncher: state.uri.path != '/companion',
+          );
         },
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
@@ -38,6 +52,12 @@ GoRouter createTrueGroundRouter({
                 name: 'home',
                 builder: (context, state) => const DashboardV3Screen(),
                 routes: <RouteBase>[
+                  GoRoute(
+                    path: 'companion',
+                    name: 'companion',
+                    builder: (context, state) =>
+                        ConversationScreen(runtime: conversationRuntime),
+                  ),
                   GoRoute(
                     path: 'values',
                     name: 'values',

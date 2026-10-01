@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../conversation/conversation_runtime.dart';
 import '../design/app_theme.dart';
 import '../localization/trueground_locale.dart';
 import '../patterns/pattern_memory_store.dart';
@@ -17,12 +18,16 @@ class TrueGroundApp extends StatefulWidget {
     this.practiceNow,
     this.patternMemoryStore,
     this.patternNow,
+    this.conversationProviderAdapter,
+    this.conversationProviderTimeout = defaultConversationProviderTimeout,
   });
 
   final PracticeCompletionStore? practiceCompletionStore;
   final DateTime Function()? practiceNow;
   final PatternMemoryStore? patternMemoryStore;
   final DateTime Function()? patternNow;
+  final ConversationProviderAdapter? conversationProviderAdapter;
+  final Duration conversationProviderTimeout;
 
   @override
   State<TrueGroundApp> createState() => _TrueGroundAppState();
@@ -36,6 +41,8 @@ class _TrueGroundAppState extends State<TrueGroundApp> {
     practiceNow: widget.practiceNow,
     patternMemoryStore: widget.patternMemoryStore,
     patternNow: widget.patternNow,
+    conversationProviderAdapter: widget.conversationProviderAdapter,
+    conversationProviderTimeout: widget.conversationProviderTimeout,
   );
 
   SharedPreferencesAsync? _preferences;

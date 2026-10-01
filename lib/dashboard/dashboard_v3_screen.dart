@@ -17,13 +17,7 @@ class DashboardV3Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
-    final language =
-        TrueGroundLocaleScope.maybeOf(context)?.language ??
-        TrueGroundLanguage.en;
-    final flexibleCopyLayout = largeText || language == TrueGroundLanguage.fr;
-    return flexibleCopyLayout
-        ? const _AccessibleDashboard()
-        : const _TargetDashboard();
+    return largeText ? const _AccessibleDashboard() : const _TargetDashboard();
   }
 }
 
@@ -75,15 +69,22 @@ class _TargetDashboard extends StatelessWidget {
                         left: 19,
                         right: 19,
                         top: 78,
-                        child: Text(
-                          context.tr('Choose your next move.'),
-                          maxLines: 1,
-                          style: TextStyle(
-                            fontSize: 28.5,
-                            height: 1,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.65,
-                            color: TrueGroundColors.primary,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              context.tr('Choose your next move.'),
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 28.5,
+                                height: 1,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.65,
+                                color: TrueGroundColors.primary,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -194,6 +195,15 @@ class _TargetDashboard extends StatelessWidget {
                           onTap: () => context.go('/patterns'),
                         ),
                       ),
+                      Positioned(
+                        left: 19,
+                        right: 19,
+                        top: 699,
+                        height: 55,
+                        child: _CompanionCard(
+                          onTap: () => context.go('/companion'),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -293,6 +303,8 @@ class _AccessibleDashboard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _ReviewCard(onTap: () => context.go('/patterns')),
+          const SizedBox(height: 8),
+          _CompanionCard(onTap: () => context.go('/companion')),
         ],
       ),
     );
@@ -750,6 +762,79 @@ class _ReviewCard extends StatelessWidget {
                 ),
               ),
               Icon(
+                Icons.chevron_right_rounded,
+                size: 19,
+                color: TrueGroundColors.inkMuted,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CompanionCard extends StatelessWidget {
+  const _CompanionCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label:
+          '${context.tr('Talk it through')}. '
+          '${context.tr('One bounded response, then choose your next move.')}',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: _GlassPanel(
+        accent: const Color(0xFF5CA6B2),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Row(
+            children: <Widget>[
+              _RoundIcon(
+                icon: Icons.chat_bubble_outline_rounded,
+                size: 34,
+                accent: const Color(0xFF5CA6B2),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      context.tr('Talk it through'),
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 13.7,
+                        height: 1,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
+                        color: TrueGroundColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      context.tr(
+                        'One bounded response, then choose your next move.',
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 10.4,
+                        height: 1.12,
+                        fontWeight: FontWeight.w500,
+                        color: TrueGroundColors.inkMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
                 Icons.chevron_right_rounded,
                 size: 19,
                 color: TrueGroundColors.inkMuted,

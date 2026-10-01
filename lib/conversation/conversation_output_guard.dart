@@ -4,6 +4,11 @@ enum OutputGuardViolation {
   none,
   emptyOutput,
   certaintyGuarantee,
+  reassuranceReinforcement,
+  checkingReinforcement,
+  ruminationReinforcement,
+  reconfessionSolicitation,
+  intrusiveThoughtIntentInference,
   unsupportedDiagnosis,
   medicationInstruction,
   treatmentEfficacyClaim,
@@ -50,6 +55,107 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.certaintyGuarantee);
     }
 
+    if (_startsWithAny(text, const <String>[
+      'yes you are a good person',
+      'you are a good person',
+      'no you are not a bad person',
+      'you are not a bad person',
+      'oui tu es une bonne personne',
+      'tu es une bonne personne',
+      'non tu n es pas une mauvaise personne',
+      'tu n es pas une mauvaise personne',
+      'you are morally okay',
+      'there is nothing wrong with you',
+      'tu es quelqu un de bien',
+      'il n y a rien de mauvais chez toi',
+    ])) {
+      return _reject(OutputGuardViolation.reassuranceReinforcement);
+    }
+
+    if (_containsUnprotectedCheckingDirective(text)) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
+    if (_looksLikeCheckingChecklist(text)) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(check|double check|verify)\b.*\b(again|one more time|last time)\b.*\b(to be sure|to make sure|for certainty)\b',
+      ),
+      RegExp(
+        r'^(verifie|reverifie)\b.*\b(encore|a nouveau|une derniere fois)\b.*\b(pour etre sur|pour t assurer|pour verifier)\b',
+      ),
+      RegExp(r'^(look|check)\b.*\b(lock)\b.*\b(another time|again)\b'),
+      RegExp(
+        r'^(regarde|verifie)\b.*\b(serrure)\b.*\b(encore|une autre fois)\b',
+      ),
+      RegExp(
+        r'^(regarde|verifie)\b.*\b(encore|une autre fois)\b.*\b(serrure)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.checkingReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(keep analyzing|analyze again|keep thinking|continue analyzing)\b.*\b(until|exactly|what it means)\b',
+      ),
+      RegExp(
+        r'^(continue a analyser|continue d analyser|analyse encore|continue a y penser)\b.*\b(jusqu a|exactement|ce que ca signifie|ce que cela signifie)\b',
+      ),
+      RegExp(r'^(go over|revisit)\b.*\b(thought)\b.*\b(until|completely)\b'),
+      RegExp(r'^(reprends|revois)\b.*\b(pensee)\b.*\b(jusqu a|completement)\b'),
+      RegExp(
+        r'\b(decris|decrire|precise|preciser)\b.*\b(exactement|mots|contexte|emotions)\b.*\b(sens|raison|signification|apparition)\b',
+      ),
+      RegExp(
+        r'\b(describe|specify)\b.*\b(exact words|context|emotions)\b.*\b(meaning|reason|why it appeared)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.ruminationReinforcement);
+    }
+
+    if (_matchesAny(text, <RegExp>[
+      RegExp(
+        r'^(tell me|share)\b.*\b(one more detail|another detail|more details)\b.*\b(sure|certain|certainty|know for sure)\b',
+      ),
+      RegExp(
+        r'^(dis moi|partage)\b.*\b(encore un detail|un autre detail|plus de details)\b.*\b(sur|certains|certitude)\b',
+      ),
+      RegExp(
+        r'^(tell me|share)\b.*\b(other thing|one more thing)\b.*\b(sure|certainty|know)\b',
+      ),
+      RegExp(
+        r'^(dis moi|partage)\b.*\b(autre chose|encore quelque chose)\b.*\b(certitude|sache|savoir)\b',
+      ),
+      RegExp(
+        r'^(dis moi|partage)\b.*\b(fait d autre|as fait d autre)\b.*\b(certitude|sache|savoir)\b',
+      ),
+      RegExp(
+        r'\b(continue d en parler|partage davantage de details|donne encore un detail)\b',
+      ),
+      RegExp(
+        r'\b(keep talking about it|share more details|give another detail)\b',
+      ),
+    ])) {
+      return _reject(OutputGuardViolation.reconfessionSolicitation);
+    }
+
+    if (_containsAny(text, const <String>[
+      'this thought means you want to',
+      'that thought means you want to',
+      'this thought proves you want to',
+      'your intrusive thought means you want to',
+      'cette pensee signifie que tu veux',
+      'cette pensee veut dire que tu veux',
+      'cette pensee prouve que tu veux',
+      'ta pensee intrusive signifie que tu veux',
+    ])) {
+      return _reject(OutputGuardViolation.intrusiveThoughtIntentInference);
+    }
+
     final directDiagnosis = <String>['you', 'have', 'ocd'].join(' ');
     if (_containsAny(text, <String>[
       directDiagnosis,
@@ -57,6 +163,12 @@ abstract final class DeterministicConversationOutputGuard {
       'you do not have ocd',
       'tu as un toc',
       'tu n as pas de toc',
+      'this sounds like ocd',
+      'sounds like ocd',
+      'this is ocd',
+      'ca ressemble clairement a un toc',
+      'cela ressemble clairement a un toc',
+      'ca ressemble a un toc',
     ])) {
       return _reject(OutputGuardViolation.unsupportedDiagnosis);
     }
@@ -67,7 +179,12 @@ abstract final class DeterministicConversationOutputGuard {
       'stop your medication tonight',
       'stop taking your medication',
       'start taking this medication',
+      'you should take a higher ssri dose',
+      'take a higher ssri dose',
+      'take more of your ssri',
       'augmente ta dose',
+      'tu devrais prendre une dose plus elevee de ton isrs',
+      'prendre une dose plus elevee de ton isrs',
       'augmente ton traitement',
       'arrete ton traitement ce soir',
       'arrete de prendre ton traitement',
@@ -90,7 +207,11 @@ abstract final class DeterministicConversationOutputGuard {
       'your exposure hierarchy should be',
       'expose yourself to the following',
       'your first exposure is',
+      'start by touching the',
+      'then the trash can',
       'ta hierarchie d exposition doit etre',
+      'commence par toucher la',
+      'puis la poubelle',
       'expose toi aux elements suivants',
       'ta premiere exposition est',
     ])) {
@@ -112,7 +233,10 @@ abstract final class DeterministicConversationOutputGuard {
       'you are not in danger',
       'you are definitely not suicidal',
       'you are safe enough to stay here',
+      'i think you are safe to stay here',
+      'you can stay here safely',
       'tu n es pas en danger',
+      'je pense que tu peux rester ici sans danger',
       'tu n es definitivement pas suicidaire',
       'tu peux rester ici en toute securite',
     ])) {
@@ -122,7 +246,10 @@ abstract final class DeterministicConversationOutputGuard {
     if (_containsAny(text, const <String>[
       'i remember what you told me yesterday',
       'i checked our conversation from yesterday',
+      'i remember our chat from last week',
+      'i remember our conversation from last week',
       'je me souviens de ce que tu m as dit hier',
+      'je me souviens de notre discussion de la semaine derniere',
       'j ai verifie notre conversation d hier',
     ])) {
       return _reject(OutputGuardViolation.fabricatedMemoryClaim);
@@ -193,6 +320,150 @@ String _normalize(String input) {
 bool _containsAny(String text, List<String> needles) {
   for (final needle in needles) {
     if (text.contains(_normalize(needle))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _startsWithAny(String text, List<String> needles) {
+  for (final needle in needles) {
+    if (text.startsWith(_normalize(needle))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _looksLikeCheckingChecklist(String text) {
+  final checkingActions = <RegExp>[
+    RegExp(r'\b(regarde|verifie|assure toi|teste|touche)\b'),
+    RegExp(r'\b(check|look at|verify|make sure|test|touch)\b'),
+  ];
+  final checkingTargets = <String>[
+    'serrure',
+    'loquet',
+    'verrou',
+    'poignee',
+    'cadre',
+    'porte',
+    'lock',
+    'latch',
+    'handle',
+    'frame',
+    'door',
+  ];
+
+  var actionCount = 0;
+  for (final pattern in checkingActions) {
+    actionCount += pattern.allMatches(text).length;
+  }
+  final targetCount = checkingTargets
+      .where((target) => text.contains(_normalize(target)))
+      .length;
+  final certaintyCue = _containsAny(text, const <String>[
+    'pour etre sur',
+    'pour t assurer',
+    'assure toi',
+    'to be sure',
+    'to make sure',
+    'make sure',
+  ]);
+
+  return actionCount >= 2 && targetCount >= 2 && certaintyCue;
+}
+
+bool _containsUnprotectedCheckingDirective(String text) {
+  const directives = <String>[
+    'check again',
+    'double check',
+    'recheck',
+    'verify one more time',
+    'wash again',
+    'clean again',
+    'verifie encore',
+    'reverifie',
+    'reverifier une derniere fois',
+    'verifie une derniere fois',
+    'lave encore',
+    'nettoie encore',
+  ];
+  const negations = <String>[
+    'do not',
+    'don t',
+    'cannot',
+    'can t',
+    'avoid',
+    'without',
+    'instead of',
+    'ne pas',
+    'n est pas',
+    'evite',
+    'sans',
+    'plutot que',
+  ];
+  const protectiveContext = <String>[
+    'reduce the need to',
+    'reduce your urge to',
+    'reduce the urge to',
+    'resist the urge to',
+    'avoid checking',
+    'without checking',
+    'not check again',
+    'reduire le besoin de',
+    'reduire l envie de',
+    'resister a l envie de',
+    'eviter de verifier',
+    'sans reverifier',
+    'ne pas reverifier',
+    'ne reverifie pas',
+  ];
+
+  for (final rawDirective in directives) {
+    final directive = _normalize(rawDirective);
+    var index = text.indexOf(directive);
+    while (index >= 0) {
+      final directiveEnd = index + directive.length;
+      final beforeIsBoundary =
+          index == 0 || !_isAlphaNumeric(text.codeUnitAt(index - 1));
+      final afterIsBoundary =
+          directiveEnd == text.length ||
+          !_isAlphaNumeric(text.codeUnitAt(directiveEnd));
+      if (!beforeIsBoundary || !afterIsBoundary) {
+        index = text.indexOf(directive, index + 1);
+        continue;
+      }
+
+      final prefixStart = index > 90 ? index - 90 : 0;
+      final contextStart = index > 100 ? index - 100 : 0;
+      final contextEnd = (directiveEnd + 100) < text.length
+          ? directiveEnd + 100
+          : text.length;
+      final prefix = text.substring(prefixStart, index);
+      final context = text.substring(contextStart, contextEnd);
+      final negated = negations.any(
+        (marker) => prefix.contains(_normalize(marker)),
+      );
+      final protected = protectiveContext.any(
+        (marker) => context.contains(_normalize(marker)),
+      );
+      if (!negated && !protected) {
+        return true;
+      }
+      index = text.indexOf(directive, index + 1);
+    }
+  }
+  return false;
+}
+
+bool _isAlphaNumeric(int codeUnit) {
+  return (codeUnit >= 48 && codeUnit <= 57) ||
+      (codeUnit >= 97 && codeUnit <= 122);
+}
+
+bool _matchesAny(String text, List<RegExp> patterns) {
+  for (final pattern in patterns) {
+    if (pattern.hasMatch(text)) {
       return true;
     }
   }

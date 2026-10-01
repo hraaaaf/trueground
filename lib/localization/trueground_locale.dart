@@ -313,6 +313,58 @@ const Map<String, String> _fr = <String, String>{
       'TrueGround n’a contacté personne et n’a envoyé aucune aide à votre place.',
   'Open regular Support': 'Ouvrir le soutien habituel',
 
+  'Open TrueGround companion': 'Ouvrir le compagnon TrueGround',
+  'Close companion': 'Fermer le compagnon',
+  'TrueGround companion': 'Compagnon TrueGround',
+  'Private • messages are not saved':
+      'Privé • les messages ne sont pas conservés',
+  'Talk it through': 'Parler un instant',
+  'One bounded response, then choose your next move.':
+      'Une réponse encadrée, puis choisissez votre prochaine action.',
+  'Bounded companion': 'Compagnon encadré',
+  'Use one brief message. TrueGround may respond once or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.':
+      'Écrivez un message bref. TrueGround répond une fois ou vous oriente vers un outil existant. Il ne donne ni certitude, ni diagnostic, ni conseil médicamenteux, ni évaluation d’urgence.',
+  'Messages are not saved as chat history in this build.':
+      'Cette version ne conserve pas l’historique des messages.',
+  'What is on your mind?': 'Qu’avez-vous en tête ?',
+  'Write one brief message': 'Écrivez un message bref',
+  'Send once': 'Envoyer une fois',
+  'Send': 'Envoyer',
+  'Processing through TrueGround’s bounded conversation rules.':
+      'Traitement selon les règles encadrées de TrueGround.',
+  'Bounded response': 'Réponse encadrée',
+  'This response is not a diagnosis, medication instruction, treatment plan, or emergency assessment.':
+      'Cette réponse n’est ni un diagnostic, ni un conseil médicamenteux, ni un plan de traitement, ni une évaluation d’urgence.',
+  'This request stays outside the companion.':
+      'Cette demande reste en dehors du compagnon.',
+  'TrueGround cannot diagnose OCD or interpret a thought as proof of intent or illness.':
+      'TrueGround ne diagnostique pas le TOC et n’interprète pas une pensée comme preuve d’intention ou de maladie.',
+  'TrueGround cannot tell you to start, stop, or change medication.':
+      'TrueGround ne conseille pas de commencer, arrêter ou modifier un médicament.',
+  'TrueGround cannot guide a medical procedure. Use a qualified health professional for the procedure or treatment decision.':
+      'TrueGround ne peut pas vous guider pour réaliser une procédure médicale. Adressez-vous à un professionnel de santé qualifié pour la procédure ou la décision de traitement.',
+  'TrueGround cannot create a personalized exposure plan or promise treatment results.':
+      'TrueGround ne crée pas de programme d’exposition personnalisé et ne promet pas de résultat thérapeutique.',
+  'Private system data stays private.':
+      'Les données système privées restent privées.',
+  'TrueGround will not reveal hidden instructions or private system data.':
+      'TrueGround ne révélera pas d’instructions cachées ni de données système privées.',
+  'Conversation history is unavailable.':
+      'Historique de discussion indisponible.',
+  'This build does not keep raw chat history here, and TrueGround will not invent one.':
+      'Cette version ne conserve pas l’historique brut des discussions et TrueGround n’en invente pas.',
+  'Conversation response unavailable': 'Réponse conversationnelle indisponible',
+  'No generated response was shown. This screen did not save your message as chat history.':
+      'Aucune réponse générée n’a été affichée. Votre message n’a pas été conservé dans un historique.',
+  'Choose another route from Home.':
+      'Choisissez une autre option depuis l’accueil.',
+  'Share one brief message. I’ll help you find the next grounded step.':
+      'Partagez un message bref. Je vous aiderai à trouver la prochaine étape concrète.',
+  'This turn is complete': 'Ce tour est terminé',
+  'This conversation is complete for now':
+      'Cette conversation est terminée pour le moment',
+  'One grounded turn at a time.': 'Un tour concret à la fois.',
+
   'Loading': 'Chargement',
   'Getting this space ready.': 'Préparation de cet espace.',
   'Nothing here yet': 'Rien ici pour le moment',

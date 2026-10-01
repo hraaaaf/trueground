@@ -93,6 +93,32 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('FR keeps the same target dashboard geometry at 390 px', (
+    tester,
+  ) async {
+    await _useSurface(tester, const Size(390, 844));
+    await tester.pumpWidget(const TrueGroundApp());
+    await tester.pumpAndSettle();
+
+    final englishGridRect = tester.getRect(
+      find.byKey(DashboardV3Screen.practiceGridKey),
+    );
+
+    await tester.tap(find.text('FR'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Choisissez votre prochaine action.'), findsOneWidget);
+    expect(
+      tester.widget(find.byKey(DashboardV3Screen.practiceGridKey)),
+      isA<Positioned>(),
+    );
+    expect(
+      tester.getRect(find.byKey(DashboardV3Screen.practiceGridKey)),
+      englishGridRect,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('primary loop CTA opens the bounded Loop flow', (tester) async {
     await _useSurface(tester, const Size(390, 844));
     await tester.pumpWidget(const TrueGroundApp());
