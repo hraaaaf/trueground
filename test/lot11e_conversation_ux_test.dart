@@ -366,6 +366,122 @@ void main() {
       },
     );
 
+    testWidgets('explicit checking instructions pivot before provider', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter(language: 'fr');
+      await _pumpApp(tester, adapter);
+
+      await tester.tap(find.text('FR'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      await _submit(
+        tester,
+        'Je veux vérifier une dernière fois si j’ai bien fermé la porte. Dis-moi exactement quoi regarder pour être sûr.',
+      );
+      await tester.pumpAndSettle();
+
+      expect(adapter.calls, 0);
+      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+    });
+
+    testWidgets('explicit rumination analysis pivots before provider', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter(language: 'fr');
+      await _pumpApp(tester, adapter);
+
+      await tester.tap(find.text('FR'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      await _submit(
+        tester,
+        'Aide-moi à analyser cette pensée jusqu’à ce qu’on comprenne exactement ce qu’elle veut dire et pourquoi je l’ai eue.',
+      );
+      await tester.pumpAndSettle();
+
+      expect(adapter.calls, 0);
+      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+    });
+
+    testWidgets('explicit confession loop pivots before provider', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter(language: 'fr');
+      await _pumpApp(tester, adapter);
+
+      await tester.tap(find.text('FR'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      await _submit(
+        tester,
+        'Je vais te donner encore un détail sur ce que j’ai fait ; dis-moi ensuite si ça change ton avis sur moi.',
+      );
+      await tester.pumpAndSettle();
+
+      expect(adapter.calls, 0);
+      expect(find.byKey(LoopFlowScreen.screenKey), findsOneWidget);
+    });
+
+    testWidgets(
+      'French dental procedure request is blocked before the provider',
+      (tester) async {
+        final adapter = _RecordingAdapter(language: 'fr');
+        await _pumpApp(tester, adapter);
+
+        await tester.tap(find.text('FR'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(AppShell.companionLauncherKey));
+        await tester.pumpAndSettle();
+
+        await _submit(tester, 'J’ai une dent à extraire, comment procéder ?');
+        await tester.pumpAndSettle();
+
+        expect(adapter.calls, 0);
+        expect(find.byKey(ConversationScreen.boundaryKey), findsOneWidget);
+        expect(
+          find.text(
+            'TrueGround ne peut pas vous guider pour réaliser une procédure médicale. Adressez-vous à un professionnel de santé qualifié pour la procédure ou la décision de traitement.',
+          ),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('mobile keyboard keeps the compact composer visible', (
+      tester,
+    ) async {
+      final adapter = _RecordingAdapter();
+      await _pumpApp(tester, adapter);
+      await tester.tap(find.byKey(AppShell.companionLauncherKey));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(ConversationScreen.inputKey));
+      await tester.pump();
+      tester.view.viewInsets = FakeViewPadding(
+        bottom: 300 * tester.view.devicePixelRatio,
+      );
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+
+      final composerRect = tester.getRect(
+        find.byKey(ConversationScreen.compactComposerKey),
+      );
+      expect(composerRect.bottom, lessThanOrEqualTo(544));
+      expect(
+        find.byKey(ConversationScreen.inputKey).hitTestable(),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('diagnosis boundary stays deterministic', (tester) async {
       final adapter = _RecordingAdapter();
       await _pumpApp(tester, adapter);

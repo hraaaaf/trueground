@@ -341,6 +341,8 @@ const Map<String, String> _fr = <String, String>{
       'TrueGround ne diagnostique pas le TOC et n’interprète pas une pensée comme preuve d’intention ou de maladie.',
   'TrueGround cannot tell you to start, stop, or change medication.':
       'TrueGround ne conseille pas de commencer, arrêter ou modifier un médicament.',
+  'TrueGround cannot guide a medical procedure. Use a qualified health professional for the procedure or treatment decision.':
+      'TrueGround ne peut pas vous guider pour réaliser une procédure médicale. Adressez-vous à un professionnel de santé qualifié pour la procédure ou la décision de traitement.',
   'TrueGround cannot create a personalized exposure plan or promise treatment results.':
       'TrueGround ne crée pas de programme d’exposition personnalisé et ne promet pas de résultat thérapeutique.',
   'Private system data stays private.':

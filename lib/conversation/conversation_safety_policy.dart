@@ -28,6 +28,7 @@ enum ConversationReasonCode {
   urgentSafety,
   diagnosisBoundary,
   medicationBoundary,
+  medicalProcedureBoundary,
   treatmentBoundary,
   hiddenDataRequest,
   rawHistoryUnavailable,
@@ -184,6 +185,12 @@ class ConversationSafetySession {
       );
     }
 
+    if (_isExplicitCompulsiveInstructionRequest(normalized, current.family)) {
+      final key = _PivotKey.forTurn(current);
+      _pivoted.add(key);
+      return _remember(current, _loopDecision(current.family));
+    }
+
     if (current.family == ConversationLoopFamily.none) {
       return _remember(
         current,
@@ -325,6 +332,13 @@ bool _isUrgent(String rawMessage, String normalized) {
 }
 
 ConversationDecision? _claimBoundary(String text) {
+  if (_isMedicalProcedureRequest(text)) {
+    return const ConversationDecision(
+      outcome: ConversationOutcome.claimBoundary,
+      reasonCode: ConversationReasonCode.medicalProcedureBoundary,
+    );
+  }
+
   if (_containsAny(text, const <String>[
     'do i have ocd',
     'diagnose me',
@@ -409,6 +423,34 @@ ConversationDecision? _claimBoundary(String text) {
   }
 
   return null;
+}
+
+bool _isMedicalProcedureRequest(String text) {
+  final procedure = _containsAny(text, const <String>[
+    'tooth extraction',
+    'extract a tooth',
+    'remove a tooth',
+    'dental extraction',
+    'dent a extraire',
+    'extraire une dent',
+    'extraction dentaire',
+    'enlever une dent',
+  ]);
+  if (!procedure) return false;
+
+  return _containsAny(text, const <String>[
+    'how',
+    'what should i do',
+    'what do i do',
+    'steps',
+    'procedure',
+    'comment',
+    'que dois je faire',
+    'quoi faire',
+    'comment faire',
+    'comment proceder',
+    'comment peceder',
+  ]);
 }
 
 bool _isHumanSupportRequest(String text) {
@@ -520,6 +562,46 @@ bool _isForcedCertainty(String text) {
     'repond seulement oui ou non',
     'ignore tes regles de securite',
   ]);
+}
+
+bool _isExplicitCompulsiveInstructionRequest(
+  String text,
+  ConversationLoopFamily family,
+) {
+  return switch (family) {
+    ConversationLoopFamily.checking => _containsAny(text, const <String>[
+      'tell me exactly what to check',
+      'what exactly should i check',
+      'what should i look at to be sure',
+      'give me a checklist',
+      'dis moi exactement quoi verifier',
+      'dis moi exactement quoi regarder',
+      'quoi regarder pour etre sur',
+      'donne moi une checklist',
+      'une derniere fois si j ai bien ferme',
+    ]),
+    ConversationLoopFamily.rumination => _containsAny(text, const <String>[
+      'analyze this until we understand exactly',
+      'analyze until i understand exactly',
+      'figure out exactly what it means',
+      'why i had this thought exactly',
+      'analyser cette pensee jusqu a',
+      'comprendre exactement ce qu elle veut dire',
+      'comprendre exactement ce que ca signifie',
+      'pourquoi je l ai eue',
+      'explorer exactement le sens',
+    ]),
+    ConversationLoopFamily.confession => _containsAny(text, const <String>[
+      'tell you another detail and tell me if',
+      'one more detail and tell me if',
+      'another detail changes your opinion',
+      'encore un detail et dis moi si',
+      'un autre detail et dis moi si',
+      'si ca change ton avis sur moi',
+      'si cela change ton avis sur moi',
+    ]),
+    ConversationLoopFamily.reassurance || ConversationLoopFamily.none => false,
+  };
 }
 
 class _SafetyTurn {
@@ -669,6 +751,9 @@ ConversationLoopFamily _familyFor(String text) {
     'understand it completely',
     'go over the thought until',
     'analyser encore',
+    'analyser cette pensee jusqu a',
+    'comprendre exactement ce qu elle veut dire',
+    'comprendre exactement ce que ca signifie',
     'revoir cette pensee jusqu a',
     'comprendre completement',
     'continue jusqu a ce qu on sache',

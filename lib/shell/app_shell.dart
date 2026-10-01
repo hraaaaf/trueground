@@ -41,82 +41,89 @@ class AppShell extends StatelessWidget {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.28),
       builder: (sheetContext) {
-        return FractionallySizedBox(
-          heightFactor: 0.82,
-          child: Material(
-            key: companionSheetKey,
-            color: TrueGroundColors.background,
-            clipBehavior: Clip.antiAlias,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: 8),
-                Center(
-                  child: Container(
-                    width: 44,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: TrueGroundColors.outline,
-                      borderRadius: BorderRadius.circular(99),
+        final keyboardInset = MediaQuery.viewInsetsOf(sheetContext).bottom;
+        return AnimatedPadding(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(bottom: keyboardInset),
+          child: FractionallySizedBox(
+            heightFactor: 0.82,
+            child: Material(
+              key: companionSheetKey,
+              color: TrueGroundColors.background,
+              clipBehavior: Clip.antiAlias,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: TrueGroundColors.outline,
+                        borderRadius: BorderRadius.circular(99),
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 8, 8, 10),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: const BoxDecoration(
-                          color: TrueGroundColors.primary,
-                          shape: BoxShape.circle,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 8, 8, 10),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: const BoxDecoration(
+                            color: TrueGroundColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.eco_rounded,
+                            size: 22,
+                            color: Colors.white,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.eco_rounded,
-                          size: 22,
-                          color: Colors.white,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                context.tr('TrueGround companion'),
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                context.tr('Private • messages are not saved'),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontSize: 12.5),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              context.tr('TrueGround companion'),
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              context.tr('Private • messages are not saved'),
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(fontSize: 12.5),
-                            ),
-                          ],
+                        IconButton(
+                          key: companionCloseKey,
+                          tooltip: context.tr('Close companion'),
+                          onPressed: () => Navigator.of(sheetContext).pop(),
+                          icon: const Icon(Icons.close_rounded),
                         ),
-                      ),
-                      IconButton(
-                        key: companionCloseKey,
-                        tooltip: context.tr('Close companion'),
-                        onPressed: () => Navigator.of(sheetContext).pop(),
-                        icon: const Icon(Icons.close_rounded),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: ConversationScreen(
-                    runtime: conversationRuntime,
-                    compact: true,
-                    onRoute: (route) {
-                      Navigator.of(sheetContext).pop();
-                      context.go(route);
-                    },
+                  Expanded(
+                    child: ConversationScreen(
+                      runtime: conversationRuntime,
+                      compact: true,
+                      onRoute: (route) {
+                        Navigator.of(sheetContext).pop();
+                        context.go(route);
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
