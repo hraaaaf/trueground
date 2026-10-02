@@ -819,9 +819,7 @@ class _CompanionCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      context.tr(
-                        'One grounded turn at a time.',
-                      ),
+                      context.tr('One grounded turn at a time.'),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
