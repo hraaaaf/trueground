@@ -221,7 +221,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(_loadRoboto);
 
-
   for (final size in <Size>[
     const Size(360, 800),
     const Size(390, 844),
