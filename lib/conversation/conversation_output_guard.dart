@@ -366,8 +366,12 @@ bool _startsWithAny(String text, List<String> needles) {
 
 bool _looksLikeCheckingChecklist(String text) {
   final checkingActions = <RegExp>[
-    RegExp(r'\b(regarde|verifie|assure toi|teste|touche)\b'),
-    RegExp(r'\b(check|look at|verify|make sure|test|touch)\b'),
+    RegExp(
+      r'\b(regarde|verifie|assure toi|teste|touche|inspecte|examine|compare|confirme|tire)\b',
+    ),
+    RegExp(
+      r'\b(check|look at|verify|make sure|test|touch|inspect|examine|review|compare|confirm|pull)\b',
+    ),
   ];
   final checkingTargets = <String>[
     'serrure',
