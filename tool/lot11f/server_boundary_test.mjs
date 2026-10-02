@@ -236,6 +236,7 @@ async function run() {
   assert.equal(providerFailure.status, 502);
   assert.deepEqual(await providerFailure.json(), {
     error: 'provider_unavailable',
+    reason: 'upstream_http_error',
   });
 
   globalThis.fetch = async () =>
@@ -249,6 +250,7 @@ async function run() {
   assert.equal(malformed.status, 502);
   assert.deepEqual(await malformed.json(), {
     error: 'provider_unavailable',
+    reason: 'invalid_response',
   });
 
   console.log('LOT11-F server boundary tests PASS');
