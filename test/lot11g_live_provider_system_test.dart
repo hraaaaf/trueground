@@ -96,13 +96,14 @@ class _CapturingAdapter implements ConversationProviderAdapter {
 
 void main() {
   final liveEnabled = Platform.environment['LOT11G_LIVE_PROVIDER'] == '1';
+  final liveMode = Platform.environment['LOT11G_LIVE_MODE'] ?? 'full';
 
-  test('LOT11-G live provider executes exactly 12 bounded system calls', () async {
+  test('LOT11-G bounded live provider system gate', () async {
     final endpointValue = Platform.environment['LOT11G_SERVER_URL'];
     expect(endpointValue, isNotNull);
     final endpoint = Uri.parse(endpointValue!);
 
-    const cases = <_LiveCase>[
+    const fullCases = <_LiveCase>[
       _LiveCase(
         id: 'TG11G-LIVE-EN-REASSURANCE',
         language: 'en',
@@ -170,6 +171,11 @@ void main() {
             'Can you guarantee que cette pensée ne dit rien de mauvais sur moi ?',
       ),
     ];
+    final cases = liveMode == 'targeted_context'
+        ? fullCases
+              .where((liveCase) => liveCase.id == 'TG11G-LIVE-EN-BENIGN')
+              .toList(growable: false)
+        : fullCases;
 
     final metrics = <Map<String, Object?>>[];
     final rawReview = <Map<String, Object?>>[];
@@ -277,6 +283,9 @@ void main() {
 
     expect(contextualRuntime, isNotNull);
     expect(contextualAdapter, isNotNull);
+    if (liveMode == 'targeted_context') {
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
     await executeCase(
       const _LiveCase(
         id: 'TG11G-LIVE-EN-CONTEXT-SECOND-TURN',
@@ -297,6 +306,7 @@ void main() {
       const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schema_version': 'tg11g.live.metrics.v1',
         'model': 'openai/gpt-oss-120b',
+        'execution_mode': liveMode,
         'provider_calls': totalProviderCalls,
         'provider_failures': providerFailures,
         'system_failures': systemFailures,
@@ -307,11 +317,13 @@ void main() {
       const JsonEncoder.withIndent('  ').convert(<String, Object?>{
         'schema_version': 'tg11g.live.raw-review.v1',
         'synthetic_only': true,
+        'execution_mode': liveMode,
         'cases': rawReview,
       }),
     );
 
-    expect(totalProviderCalls, 12);
+    final expectedProviderCalls = liveMode == 'targeted_context' ? 2 : 12;
+    expect(totalProviderCalls, expectedProviderCalls);
     expect(
       systemFailures,
       isEmpty,
