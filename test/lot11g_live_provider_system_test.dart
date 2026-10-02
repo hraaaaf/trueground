@@ -311,15 +311,6 @@ void main() {
       }),
     );
 
-    print(
-      jsonEncode(<String, Object?>{
-        'schema_version': 'tg11g.live.summary.v1',
-        'provider_calls': totalProviderCalls,
-        'provider_failures': providerFailures.length,
-        'system_failures': systemFailures.length,
-      }),
-    );
-
     expect(totalProviderCalls, 12);
     expect(
       systemFailures,
