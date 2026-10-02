@@ -17,11 +17,23 @@ class ServerConversationProviderAdapter implements ConversationProviderAdapter {
   Future<ConversationProviderInvocation> generate(
     ConversationProviderRequest request,
   ) async {
+    final normalizedUserMessage = request.userMessage.trim();
+    if (normalizedUserMessage.isEmpty ||
+        normalizedUserMessage.length > conversationRuntimeMaxUserMessageLength ||
+        request.context.length > conversationProviderContextMaxMessages ||
+        request.context.any(
+          (message) =>
+              message.content.trim().isEmpty ||
+              message.content.trim().length > conversationRuntimeMaxUserMessageLength,
+        )) {
+      throw StateError('Conversation request outside bounded contract.');
+    }
+
     final response = await _transport(
       jsonEncode(<String, Object?>{
         'schema_version': conversationRuntimeSchemaVersion,
         'language': request.languageCode,
-        'user_message': request.userMessage,
+        'user_message': normalizedUserMessage,
         'context': request.context
             .map(
               (message) => <String, Object?>{
