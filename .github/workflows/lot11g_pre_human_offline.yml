@@ -45,12 +45,14 @@ jobs:
             test/lot11e_conversation_visual_evidence.dart \
             test/lot11f_live_provider_boundary_test.dart \
             test/lot11g_anti_dependency_ux_test.dart \
+            test/lot11g_live_provider_system_test.dart \
             test/lot11g_pre_human_adversarial_test.dart
           git diff --exit-code
       - name: Node syntax check
         run: |
           node --check api/conversation.mjs
           node --check tool/lot11g/server_contract_characterization.mjs
+          node --check tool/lot11g/live_provider_local_server.mjs
           node --check tool/lot11f/server_boundary_test.mjs
           node --check tool/lot11f/live_provider_smoke.mjs
       - name: Static analysis
