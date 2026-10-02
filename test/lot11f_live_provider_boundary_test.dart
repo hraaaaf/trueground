@@ -86,6 +86,66 @@ void main() {
       });
     });
 
+    test('adapter rejects oversized current message before transport', () async {
+      var calls = 0;
+      final adapter = ServerConversationProviderAdapter(
+        transport: (_) async {
+          calls += 1;
+          return const ConversationServerHttpResponse(
+            statusCode: 200,
+            body:
+                '{"schema_version":"tg11c.response.v1","message":"bounded","language":"en","mode":"support"}',
+          );
+        },
+      );
+
+      await expectLater(
+        adapter.generate(
+          ConversationProviderRequest(
+            languageCode: 'en',
+            userMessage: 'x' * (conversationRuntimeMaxUserMessageLength + 1),
+          ),
+        ),
+        throwsStateError,
+      );
+      expect(calls, 0);
+    });
+
+    test('adapter rejects oversized replay context before transport', () async {
+      var calls = 0;
+      final adapter = ServerConversationProviderAdapter(
+        transport: (_) async {
+          calls += 1;
+          return const ConversationServerHttpResponse(
+            statusCode: 200,
+            body:
+                '{"schema_version":"tg11c.response.v1","message":"bounded","language":"en","mode":"support"}',
+          );
+        },
+      );
+
+      await expectLater(
+        adapter.generate(
+          ConversationProviderRequest(
+            languageCode: 'en',
+            userMessage: 'What next?',
+            context: <ConversationProviderContextMessage>[
+              ConversationProviderContextMessage(
+                role: 'user',
+                content: 'x' * (conversationRuntimeMaxUserMessageLength + 1),
+              ),
+              const ConversationProviderContextMessage(
+                role: 'assistant',
+                content: 'bounded response',
+              ),
+            ],
+          ),
+        ),
+        throwsStateError,
+      );
+      expect(calls, 0);
+    });
+
     test('non-200 server response fails closed through runtime', () async {
       final adapter = ServerConversationProviderAdapter(
         transport: (_) async => const ConversationServerHttpResponse(
