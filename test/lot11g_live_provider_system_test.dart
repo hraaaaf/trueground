@@ -332,6 +332,5 @@ void main() {
       reason:
           'Provider incompatibilities remain failures even when the deterministic guard blocks exposure.',
     );
-  },
   }, skip: liveEnabled ? false : 'LOT11-G live provider gate is opt-in only');
 }
