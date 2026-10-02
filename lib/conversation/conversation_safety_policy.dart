@@ -170,7 +170,17 @@ class ConversationSafetySession {
       );
     }
 
-    final current = _SafetyTurn.fromNormalized(normalized);
+    var current = _SafetyTurn.fromNormalized(normalized);
+    if (current.family == ConversationLoopFamily.none &&
+        _isLoopContinuationCue(normalized)) {
+      for (final previous in _turns.reversed) {
+        if (previous.family == ConversationLoopFamily.none) continue;
+        if (_pivoted.contains(_PivotKey.forTurn(previous))) {
+          current = _SafetyTurn.fromContinuation(normalized, previous);
+          break;
+        }
+      }
+    }
 
     if (_isForcedCertainty(normalized)) {
       final key = _PivotKey.forTurn(current);
@@ -576,6 +586,32 @@ bool _isForcedCertainty(String text) {
   ]);
 }
 
+bool _isLoopContinuationCue(String text) {
+  return _containsAny(text, const <String>[
+    'one final guarantee',
+    'final guarantee',
+    'one last time',
+    'one final time',
+    'yes or no answer',
+    'just one yes or no answer',
+    'keep going until',
+    'continue until',
+    'analyze it until',
+    'analyse it until',
+    'until we are certain',
+    'until we re certain',
+    'une derniere garantie',
+    'une toute derniere fois',
+    'une derniere fois alors',
+    'continuons jusqu a',
+    'continue jusqu a',
+    'analysons jusqu a',
+    'analyser jusqu a',
+    'jusqu a etre certain',
+    'jusqu a ce que tout ait un sens',
+  ]);
+}
+
 bool _isExplicitCompulsiveInstructionRequest(
   String text,
   ConversationLoopFamily family,
@@ -635,6 +671,17 @@ class _SafetyTurn {
       family: _familyFor(normalized),
       tokens: tokens,
       theme: _themeFor(tokens),
+    );
+  }
+
+  factory _SafetyTurn.fromContinuation(
+    String normalized,
+    _SafetyTurn previous,
+  ) {
+    return _SafetyTurn(
+      family: previous.family,
+      tokens: _semanticTokens(normalized),
+      theme: previous.theme,
     );
   }
 
