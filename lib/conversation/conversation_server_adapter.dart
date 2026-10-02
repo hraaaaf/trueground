@@ -19,12 +19,14 @@ class ServerConversationProviderAdapter implements ConversationProviderAdapter {
   ) async {
     final normalizedUserMessage = request.userMessage.trim();
     if (normalizedUserMessage.isEmpty ||
-        normalizedUserMessage.length > conversationRuntimeMaxUserMessageLength ||
+        normalizedUserMessage.length >
+            conversationRuntimeMaxUserMessageLength ||
         request.context.length > conversationProviderContextMaxMessages ||
         request.context.any(
           (message) =>
               message.content.trim().isEmpty ||
-              message.content.trim().length > conversationRuntimeMaxUserMessageLength,
+              message.content.trim().length >
+                  conversationRuntimeMaxUserMessageLength,
         )) {
       throw StateError('Conversation request outside bounded contract.');
     }
