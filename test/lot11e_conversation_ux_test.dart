@@ -6,6 +6,7 @@ import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/conversation/conversation_runtime.dart';
 import 'package:trueground/conversation/conversation_screen.dart';
 import 'package:trueground/design/app_theme.dart';
+import 'package:trueground/localization/language_toggle.dart';
 import 'package:trueground/localization/trueground_locale.dart';
 import 'package:trueground/loop/loop_flow_screen.dart';
 import 'package:trueground/safety/urgent_support_screen.dart';
@@ -614,6 +615,23 @@ void main() {
         expect(find.byKey(ConversationScreen.screenKey), findsOneWidget);
         expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
         expect(find.byKey(ConversationScreen.submitKey), findsOneWidget);
+
+        final brandRect = tester.getRect(find.text('TrueGround'));
+        final toggleRect = tester.getRect(
+          find.byKey(LanguageToggle.toggleKey),
+        );
+        expect(brandRect.right, lessThanOrEqualTo(toggleRect.left));
+
+        await tester.ensureVisible(find.byKey(ConversationScreen.inputKey));
+        await tester.pumpAndSettle();
+        expect(
+          tester.getRect(find.byKey(ConversationScreen.inputKey)).bottom,
+          lessThanOrEqualTo(800),
+        );
+        expect(
+          tester.getRect(find.byKey(ConversationScreen.submitKey)).bottom,
+          lessThanOrEqualTo(800),
+        );
         expect(tester.takeException(), isNull);
       },
     );
