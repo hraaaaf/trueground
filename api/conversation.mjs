@@ -146,19 +146,39 @@ async function callProvider(payload, apiKey) {
       }),
       signal: controller.signal,
     });
-    if (!response.ok) return null;
-    const providerJson = await response.json();
+    if (!response.ok) {
+      return { payload: null, failureReason: 'upstream_http_error' };
+    }
+
+    let providerJson;
+    try {
+      providerJson = await response.json();
+    } catch (_) {
+      return { payload: null, failureReason: 'invalid_response' };
+    }
+
     const content = providerJson?.choices?.[0]?.message?.content;
-    if (typeof content !== 'string') return null;
+    if (typeof content !== 'string') {
+      return { payload: null, failureReason: 'invalid_response' };
+    }
+
     let structured;
     try {
       structured = JSON.parse(content);
     } catch (_) {
-      return null;
+      return { payload: null, failureReason: 'invalid_response' };
     }
-    return parseProviderPayload(structured, payload.language);
-  } catch (_) {
-    return null;
+
+    const parsed = parseProviderPayload(structured, payload.language);
+    if (!parsed) {
+      return { payload: null, failureReason: 'invalid_response' };
+    }
+    return { payload: parsed, failureReason: null };
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      return { payload: null, failureReason: 'timeout' };
+    }
+    return { payload: null, failureReason: 'transport_error' };
   } finally {
     clearTimeout(timer);
   }
@@ -181,9 +201,19 @@ export default {
     const payload = parseClientPayload(raw);
     if (!payload) return jsonResponse({ error: 'invalid_request' }, 400);
     const apiKey = process.env.Llm_Key;
-    if (!apiKey) return jsonResponse({ error: 'provider_unavailable' }, 503);
+    if (!apiKey) {
+      return jsonResponse(
+        { error: 'provider_unavailable', reason: 'not_configured' },
+        503,
+      );
+    }
     const generated = await callProvider(payload, apiKey);
-    if (!generated) return jsonResponse({ error: 'provider_unavailable' }, 502);
-    return jsonResponse(generated, 200);
+    if (!generated.payload) {
+      return jsonResponse(
+        { error: 'provider_unavailable', reason: generated.failureReason },
+        502,
+      );
+    }
+    return jsonResponse(generated.payload, 200);
   },
 };
