@@ -89,7 +89,25 @@ async function run() {
   const upstream500Body = await upstream500.json();
   assert.deepEqual(upstream500Body, {
     error: 'provider_unavailable',
-    reason: 'upstream_http_error',
+    reason: 'upstream_unavailable',
+  });
+
+  globalThis.fetch = async () =>
+    new Response('rate limited', { status: 429 });
+  const rateLimited = await handler.fetch(request(body('ordinary message')));
+  assert.equal(rateLimited.status, 502);
+  assert.deepEqual(await rateLimited.json(), {
+    error: 'provider_unavailable',
+    reason: 'rate_limited',
+  });
+
+  globalThis.fetch = async () =>
+    new Response('provider auth failure', { status: 403 });
+  const authFailure = await handler.fetch(request(body('ordinary message')));
+  assert.equal(authFailure.status, 502);
+  assert.deepEqual(await authFailure.json(), {
+    error: 'provider_unavailable',
+    reason: 'provider_auth_error',
   });
 
   globalThis.fetch = async () =>
