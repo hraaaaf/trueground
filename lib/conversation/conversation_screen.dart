@@ -222,6 +222,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   Expanded(
                     child: Text(
                       'TrueGround',
+                      textScaler: TextScaler.noScaling,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: TrueGroundColors.primary,
                         fontWeight: FontWeight.w700,
