@@ -617,9 +617,7 @@ void main() {
         expect(find.byKey(ConversationScreen.submitKey), findsOneWidget);
 
         final brandRect = tester.getRect(find.text('TrueGround'));
-        final toggleRect = tester.getRect(
-          find.byKey(LanguageToggle.toggleKey),
-        );
+        final toggleRect = tester.getRect(find.byKey(LanguageToggle.toggleKey));
         expect(brandRect.right, lessThanOrEqualTo(toggleRect.left));
 
         await tester.ensureVisible(find.byKey(ConversationScreen.inputKey));
