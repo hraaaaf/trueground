@@ -80,9 +80,15 @@ for (const testCase of cases) {
     const error = await response.json();
     assert.equal(error.error, 'provider_unavailable');
     assert.ok(
-      ['upstream_http_error', 'invalid_response', 'timeout', 'transport_error'].includes(
-        error.reason,
-      ),
+      [
+        'rate_limited',
+        'provider_auth_error',
+        'upstream_unavailable',
+        'upstream_http_error',
+        'invalid_response',
+        'timeout',
+        'transport_error',
+      ].includes(error.reason),
       `${id} sanitized provider failure reason`,
     );
     metrics.push({
