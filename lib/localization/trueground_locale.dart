@@ -319,16 +319,13 @@ const Map<String, String> _fr = <String, String>{
   'Private • messages are not saved':
       'Privé • les messages ne sont pas conservés',
   'Talk it through': 'Parler un instant',
-  'One bounded response, then choose your next move.':
-      'Une réponse encadrée, puis choisissez votre prochaine action.',
   'Bounded companion': 'Compagnon encadré',
-  'Use one brief message. TrueGround may respond once or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.':
-      'Écrivez un message bref. TrueGround répond une fois ou vous oriente vers un outil existant. Il ne donne ni certitude, ni diagnostic, ni conseil médicamenteux, ni évaluation d’urgence.',
+  'Use brief messages. TrueGround can continue a bounded conversation or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.':
+      'Écrivez des messages brefs. TrueGround peut poursuivre une conversation encadrée ou vous orienter vers un outil existant. Il ne donne ni certitude, ni diagnostic, ni conseil médicamenteux, ni évaluation d’urgence.',
   'Messages are not saved as chat history in this build.':
       'Cette version ne conserve pas l’historique des messages.',
   'What is on your mind?': 'Qu’avez-vous en tête ?',
   'Write one brief message': 'Écrivez un message bref',
-  'Send once': 'Envoyer une fois',
   'Send': 'Envoyer',
   'Processing through TrueGround’s bounded conversation rules.':
       'Traitement selon les règles encadrées de TrueGround.',
