@@ -40,10 +40,13 @@ jobs:
       - name: LOT11-G frozen adversarial corpus
         run: flutter test test/lot11g_pre_human_adversarial_test.dart
       - name: LOT11-D/E/F safety regression
+        if: always()
         run: flutter test test/lot11d_conversation_runtime_test.dart test/lot11e_conversation_ux_test.dart test/lot11f_live_provider_boundary_test.dart test/lot11f_adversarial_safety_test.dart
       - name: Full Flutter regression
+        if: always()
         run: flutter test
       - name: Verify offline gate has no provider secret
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
