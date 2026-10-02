@@ -397,23 +397,25 @@ bool _looksLikeCheckingChecklist(String text) {
   final targetCount = checkingTargets
       .where((target) => text.contains(_normalize(target)))
       .length;
-  final certaintyCue = _containsAny(text, const <String>[
-    'pour etre sur',
-    'pour t assurer',
-    'assure toi',
-    'to be sure',
-    'to make sure',
-    'make sure',
-    'certain',
-    'certainty',
-    'so you can be certain',
-    'settle this',
-    'peace of mind',
-    'etre certain',
-    'certitude',
-    'trancher',
-    'pour etre tranquille',
-  ]);
+  final certaintyCue =
+      _containsAny(text, const <String>[
+        'pour etre sur',
+        'pour t assurer',
+        'assure toi',
+        'to be sure',
+        'to make sure',
+        'make sure',
+        'so you can be certain',
+        'settle this',
+        'peace of mind',
+        'etre certain',
+        'trancher',
+        'pour etre tranquille',
+      ]) ||
+      _matchesAny(text, <RegExp>[
+        RegExp(r'\b(certain|certainty)\b'),
+        RegExp(r'\b(certain|certaine|certains|certaines|certitude)\b'),
+      ]);
 
   return actionCount >= 1 && targetCount >= 1 && certaintyCue;
 }
