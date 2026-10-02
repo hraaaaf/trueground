@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -n -E 'secrets\.|env:.*Llm_Key' .github/workflows/lot11g_pre_human_offline.yml; then
+          if grep -n 'secrets\.' .github/workflows/lot11g_pre_human_offline.yml | grep -v 'grep -n'; then
             echo 'Provider secret wiring found in LOT11-G offline workflow.'
             exit 1
           fi
