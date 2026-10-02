@@ -11,6 +11,7 @@ const Set<String> conversationRuntimeRequiredKeys = <String>{
 const Set<String> conversationRuntimeLanguages = <String>{'en', 'fr'};
 const Set<String> conversationRuntimeModes = <String>{'support', 'clarify'};
 const int conversationRuntimeMaxMessageLength = 1200;
+const int conversationRuntimeMaxUserMessageLength = 1200;
 const Duration defaultConversationProviderTimeout = Duration(seconds: 15);
 const int conversationProviderContextMaxMessages = 4;
 
