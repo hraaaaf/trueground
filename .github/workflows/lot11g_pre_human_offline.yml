@@ -1,0 +1,51 @@
+name: LOT 11G Pre-Human Offline Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+      - name: Resolve dependencies
+        run: flutter pub get
+      - name: Format check
+        run: |
+          dart format test/lot11g_pre_human_adversarial_test.dart
+          git diff --exit-code
+      - name: Node syntax check
+        run: node --check tool/lot11g/server_contract_characterization.mjs
+      - name: Static analysis
+        run: flutter analyze
+      - name: Server contract characterization
+        run: node tool/lot11g/server_contract_characterization.mjs
+      - name: LOT11-G frozen adversarial corpus
+        run: flutter test test/lot11g_pre_human_adversarial_test.dart
+      - name: LOT11-D/E/F safety regression
+        run: flutter test test/lot11d_conversation_runtime_test.dart test/lot11e_conversation_ux_test.dart test/lot11f_live_provider_boundary_test.dart test/lot11f_adversarial_safety_test.dart
+      - name: Full Flutter regression
+        run: flutter test
+      - name: Verify offline gate has no provider secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'Grok_key_secret|GROQ_API_KEY|gsk_' .github/workflows/lot11g_pre_human_offline.yml tool/lot11g test/lot11g_pre_human_adversarial_test.dart; then
+            echo 'Provider credential reference found in LOT11-G offline gate.'
+            exit 1
+          fi
+          echo 'LOT11G_OFFLINE_NO_PROVIDER_SECRET_PASS'
