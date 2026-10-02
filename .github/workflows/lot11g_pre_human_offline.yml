@@ -29,10 +29,20 @@ jobs:
         run: flutter pub get
       - name: Format check
         run: |
-          dart format test/lot11g_pre_human_adversarial_test.dart
+          dart format \
+            lib/conversation/conversation_runtime.dart \
+            lib/conversation/conversation_server_adapter.dart \
+            lib/conversation/conversation_safety_policy.dart \
+            lib/conversation/conversation_output_guard.dart \
+            test/lot11f_live_provider_boundary_test.dart \
+            test/lot11g_pre_human_adversarial_test.dart
           git diff --exit-code
       - name: Node syntax check
-        run: node --check tool/lot11g/server_contract_characterization.mjs
+        run: |
+          node --check api/conversation.mjs
+          node --check tool/lot11g/server_contract_characterization.mjs
+          node --check tool/lot11f/server_boundary_test.mjs
+          node --check tool/lot11f/live_provider_smoke.mjs
       - name: Static analysis
         run: flutter analyze
       - name: Server contract characterization
@@ -50,8 +60,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -R -n -E 'Grok_key_secret|GROQ_API_KEY|gsk_' .github/workflows/lot11g_pre_human_offline.yml tool/lot11g test/lot11g_pre_human_adversarial_test.dart; then
-            echo 'Provider credential reference found in LOT11-G offline gate.'
+          if grep -n -E 'secrets\.|env:.*Llm_Key' .github/workflows/lot11g_pre_human_offline.yml; then
+            echo 'Provider secret wiring found in LOT11-G offline workflow.'
+            exit 1
+          fi
+          if grep -R -n -E 'Grok_key_secret|GROQ_API_KEY|gsk_' tool/lot11g test/lot11g_pre_human_adversarial_test.dart; then
+            echo 'Provider credential marker found in LOT11-G offline source.'
             exit 1
           fi
           echo 'LOT11G_OFFLINE_NO_PROVIDER_SECRET_PASS'
