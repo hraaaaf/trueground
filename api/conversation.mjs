@@ -147,7 +147,15 @@ async function callProvider(payload, apiKey) {
       signal: controller.signal,
     });
     if (!response.ok) {
-      return { payload: null, failureReason: 'upstream_http_error' };
+      const failureReason =
+        response.status === 429
+          ? 'rate_limited'
+          : response.status === 401 || response.status === 403
+            ? 'provider_auth_error'
+            : response.status >= 500
+              ? 'upstream_unavailable'
+              : 'upstream_http_error';
+      return { payload: null, failureReason };
     }
 
     let providerJson;
