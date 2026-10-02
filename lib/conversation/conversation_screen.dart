@@ -9,13 +9,11 @@ import 'conversation_safety_policy.dart';
 
 const Set<String> conversationUiCopy = <String>{
   'Talk it through',
-  'One bounded response, then choose your next move.',
   'Bounded companion',
-  'Use one brief message. TrueGround may respond once or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.',
+  'Use brief messages. TrueGround can continue a bounded conversation or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.',
   'Messages are not saved as chat history in this build.',
   'What is on your mind?',
   'Write one brief message',
-  'Send once',
   'Processing through TrueGround’s bounded conversation rules.',
   'Bounded response',
   'This response is not a diagnosis, medication instruction, treatment plan, or emergency assessment.',
@@ -244,7 +242,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               const SizedBox(height: TrueGroundSpacing.sm),
               Text(
                 context.tr(
-                  'Use one brief message. TrueGround may respond once or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.',
+                  'Use brief messages. TrueGround can continue a bounded conversation or route you to an existing tool. It will not provide certainty, diagnosis, medication changes, or emergency assessment.',
                 ),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
@@ -602,7 +600,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 key: ConversationScreen.submitKey,
                 onPressed: _hasInput ? _submit : null,
                 icon: const Icon(Icons.arrow_forward_rounded),
-                label: Text(context.tr('Send once')),
+                label: Text(context.tr('Send')),
               ),
             ],
           ),
