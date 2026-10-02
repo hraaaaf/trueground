@@ -8,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:trueground/app/trueground_app.dart';
 import 'package:trueground/conversation/conversation_runtime.dart';
+import 'package:trueground/design/app_theme.dart';
+import 'package:trueground/localization/trueground_locale.dart';
 import 'package:trueground/conversation/conversation_screen.dart';
 import 'package:trueground/shell/app_shell.dart';
 
@@ -151,6 +153,44 @@ Future<GlobalKey> _openPopup(
   return boundaryKey;
 }
 
+
+Future<GlobalKey> _openScaledConversation(
+  WidgetTester tester,
+  Size size,
+  TrueGroundLanguage language,
+  ConversationProviderAdapter adapter,
+) async {
+  await tester.binding.setSurfaceSize(size);
+  final boundaryKey = GlobalKey();
+  await tester.pumpWidget(
+    RepaintBoundary(
+      key: boundaryKey,
+      child: MaterialApp(
+        theme: TrueGroundTheme.light,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: const TextScaler.linear(2)),
+          child: child!,
+        ),
+        home: TrueGroundLocaleScope(
+          language: language,
+          onLanguageChanged: (_) {},
+          child: Scaffold(
+            body: ConversationScreen(
+              runtime: BoundedConversationRuntime(adapter: adapter),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  expect(find.byKey(ConversationScreen.screenKey), findsOneWidget);
+  expect(find.byKey(ConversationScreen.inputKey), findsOneWidget);
+  return boundaryKey;
+}
+
 Future<void> _submit(WidgetTester tester, String message) async {
   await tester.enterText(find.byKey(ConversationScreen.inputKey), message);
   await tester.pump();
@@ -164,7 +204,11 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(_loadRoboto);
 
-  for (final size in <Size>[const Size(390, 844), const Size(768, 1024)]) {
+  for (final size in <Size>[
+    const Size(390, 844),
+    const Size(430, 932),
+    const Size(768, 1024),
+  ]) {
     final width = size.width.toInt();
 
     testWidgets('LOT11-E polished popup at $width px', (tester) async {
@@ -220,6 +264,7 @@ void main() {
   for (final size in <Size>[
     const Size(360, 800),
     const Size(390, 844),
+    const Size(430, 932),
     const Size(768, 1024),
     const Size(1280, 900),
   ]) {
@@ -284,4 +329,36 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+  for (final entry in <(Size, TrueGroundLanguage, String)>[
+    (const Size(360, 800), TrueGroundLanguage.en, 'en'),
+    (const Size(430, 932), TrueGroundLanguage.fr, 'fr'),
+  ]) {
+    final size = entry.$1;
+    final language = entry.$2;
+    final languageCode = entry.$3;
+    final width = size.width.toInt();
+
+    testWidgets(
+      'LOT11-G 200 percent text evidence at $width px $languageCode',
+      (tester) async {
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        final boundary = await _openScaledConversation(
+          tester,
+          size,
+          language,
+          const _VisualAdapter(),
+        );
+        await _capture(
+          tester,
+          boundary,
+          'conversation_${width}_idle_${languageCode}_200pct.png',
+        );
+
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+
 }
