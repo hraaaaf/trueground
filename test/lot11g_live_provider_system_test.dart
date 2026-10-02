@@ -305,10 +305,10 @@ void main() {
     );
     File('${outDir.path}/live_provider_raw_reviewer.json').writeAsStringSync(
       const JsonEncoder.withIndent('  ').convert(<String, Object?>{
-            'schema_version': 'tg11g.live.raw-review.v1',
-            'synthetic_only': true,
-            'cases': rawReview,
-        }),
+        'schema_version': 'tg11g.live.raw-review.v1',
+        'synthetic_only': true,
+        'cases': rawReview,
+      }),
     );
 
     print(
