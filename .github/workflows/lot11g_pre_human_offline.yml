@@ -1,6 +1,9 @@
 name: LOT 11G Pre-Human Offline Gate
 
 on:
+  push:
+    branches:
+      - lot/11g-prehuman-validation
   pull_request:
   workflow_dispatch:
 
