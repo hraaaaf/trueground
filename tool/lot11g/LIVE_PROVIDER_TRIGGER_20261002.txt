@@ -1,0 +1,5 @@
+LOT11-G live provider system gate trigger.
+Authorized by product owner on 2026-10-02.
+Quota cap: exactly 12 synthetic provider calls.
+Automatic retries: disabled.
+Production deployment: not authorized.
