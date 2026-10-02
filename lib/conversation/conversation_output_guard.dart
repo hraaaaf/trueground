@@ -72,6 +72,15 @@ abstract final class DeterministicConversationOutputGuard {
       return _reject(OutputGuardViolation.reassuranceReinforcement);
     }
 
+    if (_containsAny(text, const <String>[
+      'you are definitely a good person',
+      'this thought means nothing bad about you',
+      'tu es definitivement quelqu un de bien',
+      'cette pensee ne veut rien dire de mauvais sur toi',
+    ])) {
+      return _reject(OutputGuardViolation.reassuranceReinforcement);
+    }
+
     if (_containsUnprotectedCheckingDirective(text)) {
       return _reject(OutputGuardViolation.checkingReinforcement);
     }
@@ -113,6 +122,15 @@ abstract final class DeterministicConversationOutputGuard {
       RegExp(
         r'\b(describe|specify)\b.*\b(exact words|context|emotions)\b.*\b(meaning|reason|why it appeared)\b',
       ),
+      RegExp(
+        r'\b(list|map)\b.*\b(reason|explanation)s?\b.*\b(thought|image)\b.*\b(until|eliminate|narrow)\b',
+      ),
+      RegExp(
+        r'\b(listons|lister|cartographier)\b.*\b(raisons|explications)\b.*\b(pensee|image)\b.*\b(jusqu a|eliminer|eliminons)\b',
+      ),
+      RegExp(
+        r'\b(repasse|repasser)\b.*\bmentalement\b.*\b(scene)\b.*\b(jusqu a)\b',
+      ),
     ])) {
       return _reject(OutputGuardViolation.ruminationReinforcement);
     }
@@ -139,6 +157,12 @@ abstract final class DeterministicConversationOutputGuard {
       RegExp(
         r'\b(keep talking about it|share more details|give another detail)\b',
       ),
+      RegExp(
+        r'^(tell me|share)\b.*\b(every detail|full timeline)\b.*\b(kind of person|what it says about you|what this says about you)\b',
+      ),
+      RegExp(
+        r'^(raconte moi|partage)\b.*\b(chaque detail|toute la chronologie)\b.*\b(ce que cela dit de toi|quel genre de personne|ce que ca dit de toi)\b',
+      ),
     ])) {
       return _reject(OutputGuardViolation.reconfessionSolicitation);
     }
@@ -152,6 +176,8 @@ abstract final class DeterministicConversationOutputGuard {
       'cette pensee veut dire que tu veux',
       'cette pensee prouve que tu veux',
       'ta pensee intrusive signifie que tu veux',
+      'part of you must want to do it',
+      'une partie de toi doit vouloir le faire',
     ])) {
       return _reject(OutputGuardViolation.intrusiveThoughtIntentInference);
     }
@@ -183,6 +209,7 @@ abstract final class DeterministicConversationOutputGuard {
       'take a higher ssri dose',
       'take more of your ssri',
       'augmente ta dose',
+      'tu devrais augmenter ta dose',
       'tu devrais prendre une dose plus elevee de ton isrs',
       'prendre une dose plus elevee de ton isrs',
       'augmente ton traitement',
@@ -197,6 +224,7 @@ abstract final class DeterministicConversationOutputGuard {
       'this will cure your ocd',
       'this exercise is guaranteed to work',
       'cet exercice reduira ton toc',
+      'cet exercice va reduire ton toc',
       'cet exercice guerira ton toc',
       'cet exercice est garanti efficace',
     ])) {
@@ -250,6 +278,7 @@ abstract final class DeterministicConversationOutputGuard {
       'i remember our conversation from last week',
       'je me souviens de ce que tu m as dit hier',
       'je me souviens de notre discussion de la semaine derniere',
+      'je me souviens exactement de ce que tu m as dit la semaine derniere',
       'j ai verifie notre conversation d hier',
     ])) {
       return _reject(OutputGuardViolation.fabricatedMemoryClaim);
@@ -352,6 +381,9 @@ bool _looksLikeCheckingChecklist(String text) {
     'handle',
     'frame',
     'door',
+    'bolt',
+    'position',
+    'photo',
   ];
 
   var actionCount = 0;
@@ -368,9 +400,18 @@ bool _looksLikeCheckingChecklist(String text) {
     'to be sure',
     'to make sure',
     'make sure',
+    'certain',
+    'certainty',
+    'so you can be certain',
+    'settle this',
+    'peace of mind',
+    'etre certain',
+    'certitude',
+    'trancher',
+    'pour etre tranquille',
   ]);
 
-  return actionCount >= 2 && targetCount >= 2 && certaintyCue;
+  return actionCount >= 1 && targetCount >= 1 && certaintyCue;
 }
 
 bool _containsUnprotectedCheckingDirective(String text) {
