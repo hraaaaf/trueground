@@ -103,7 +103,10 @@ void main() {
         adapter.generate(
           ConversationProviderRequest(
             languageCode: 'en',
-            userMessage: 'x' * (conversationRuntimeMaxUserMessageLength + 1),
+            userMessage: List<String>.filled(
+              conversationRuntimeMaxUserMessageLength + 1,
+              'x',
+            ).join(),
           ),
         ),
         throwsStateError,
@@ -132,7 +135,10 @@ void main() {
             context: <ConversationProviderContextMessage>[
               ConversationProviderContextMessage(
                 role: 'user',
-                content: 'x' * (conversationRuntimeMaxUserMessageLength + 1),
+                content: List<String>.filled(
+                  conversationRuntimeMaxUserMessageLength + 1,
+                  'x',
+                ).join(),
               ),
               const ConversationProviderContextMessage(
                 role: 'assistant',
