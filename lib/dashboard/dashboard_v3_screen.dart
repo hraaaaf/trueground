@@ -785,7 +785,7 @@ class _CompanionCard extends StatelessWidget {
       button: true,
       label:
           '${context.tr('Talk it through')}. '
-          '${context.tr('One bounded response, then choose your next move.')}',
+          '${context.tr('One grounded turn at a time.')}',
       excludeSemantics: true,
       onTap: onTap,
       child: _GlassPanel(
@@ -820,7 +820,7 @@ class _CompanionCard extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       context.tr(
-                        'One bounded response, then choose your next move.',
+                        'One grounded turn at a time.',
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
