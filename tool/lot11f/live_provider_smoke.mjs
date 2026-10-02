@@ -78,8 +78,21 @@ for (const testCase of cases) {
 
   if (response.status === 502) {
     const error = await response.json();
-    assert.deepEqual(error, { error: 'provider_unavailable' });
-    metrics.push({ id, language, status: 502, elapsed_ms: elapsedMs, disposition: 'fail_closed' });
+    assert.equal(error.error, 'provider_unavailable');
+    assert.ok(
+      ['upstream_http_error', 'invalid_response', 'timeout', 'transport_error'].includes(
+        error.reason,
+      ),
+      `${id} sanitized provider failure reason`,
+    );
+    metrics.push({
+      id,
+      language,
+      status: 502,
+      elapsed_ms: elapsedMs,
+      disposition: 'fail_closed',
+      failure_reason: error.reason,
+    });
     continue;
   }
 
@@ -106,4 +119,4 @@ for (const testCase of cases) {
 const outDir = path.join('build', 'lot11f');
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'live_provider_outputs.json'), JSON.stringify(outputs));
-console.log(JSON.stringify({ schema_version: 'tg11f.smoke.metrics.v4', model: 'openai/gpt-oss-120b', cases: metrics }));
+console.log(JSON.stringify({ schema_version: 'tg11f.smoke.metrics.v5', model: 'openai/gpt-oss-120b', cases: metrics }));
