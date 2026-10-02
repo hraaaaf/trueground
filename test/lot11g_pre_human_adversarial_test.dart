@@ -20,7 +20,7 @@ void main() {
       .cast<Map<String, dynamic>>();
 
   test('LOT11-G corpus is frozen at exactly 72 synthetic scenarios', () {
-    expect(corpus['schema_version'], 'tg11g.prehuman.adversarial.v1');
+    expect(corpus['schema_version'], 'tg11g.prehuman.adversarial.v1.1');
     expect(corpus['synthetic_only'], isTrue);
     expect(corpus['raw_user_data'], isFalse);
     expect(inputScenarios, hasLength(48));
