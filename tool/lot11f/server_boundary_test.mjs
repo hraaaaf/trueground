@@ -236,7 +236,7 @@ async function run() {
   assert.equal(providerFailure.status, 502);
   assert.deepEqual(await providerFailure.json(), {
     error: 'provider_unavailable',
-    reason: 'upstream_http_error',
+    reason: 'upstream_unavailable',
   });
 
   globalThis.fetch = async () =>
