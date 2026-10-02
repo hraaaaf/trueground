@@ -41,6 +41,7 @@ jobs:
             lib/conversation/conversation_screen.dart \
             lib/dashboard/dashboard_v3_screen.dart \
             lib/localization/trueground_locale.dart \
+            test/lot11e_conversation_ux_test.dart \
             test/lot11e_conversation_visual_evidence.dart \
             test/lot11f_live_provider_boundary_test.dart \
             test/lot11g_anti_dependency_ux_test.dart \
