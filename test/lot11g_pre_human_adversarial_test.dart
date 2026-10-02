@@ -82,4 +82,24 @@ void main() {
       });
     }
   });
+  group('LOT11-G live finding regressions', () {
+    test('French uncertainty wording does not trigger checking false positive', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Plutôt que de vérifier la serrure, laissez l’incertitude ouverte et passez à votre prochaine activité.',
+      );
+      expect(result.isRejected, isFalse);
+    });
+
+    test('French certainty checking instruction remains rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Vérifiez la serrure pour obtenir une certitude avant de partir.',
+      );
+      expect(result.isRejected, isTrue);
+      expect(
+        result.violation,
+        OutputGuardViolation.checkingReinforcement,
+      );
+    });
+  });
+
 }
