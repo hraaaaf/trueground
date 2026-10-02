@@ -108,7 +108,6 @@ Future<void> _capture(
   }
 }
 
-
 Future<GlobalKey> _dashboard(
   WidgetTester tester,
   Size size,
@@ -171,7 +170,6 @@ Future<GlobalKey> _openPopup(
   expect(find.byKey(ConversationScreen.compactComposerKey), findsOneWidget);
   return boundaryKey;
 }
-
 
 Future<GlobalKey> _openScaledConversation(
   WidgetTester tester,
@@ -238,11 +236,7 @@ void main() {
     ) async {
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final boundary = await _dashboard(
-        tester,
-        size,
-        const _VisualAdapter(),
-      );
+      final boundary = await _dashboard(tester, size, const _VisualAdapter());
       await _capture(
         tester,
         boundary,
@@ -407,6 +401,4 @@ void main() {
       },
     );
   }
-
-
 }
