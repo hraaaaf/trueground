@@ -108,6 +108,25 @@ Future<void> _capture(
   }
 }
 
+
+Future<GlobalKey> _dashboard(
+  WidgetTester tester,
+  Size size,
+  ConversationProviderAdapter adapter,
+) async {
+  await tester.binding.setSurfaceSize(size);
+  final boundaryKey = GlobalKey();
+  await tester.pumpWidget(
+    RepaintBoundary(
+      key: boundaryKey,
+      child: TrueGroundApp(conversationProviderAdapter: adapter),
+    ),
+  );
+  await tester.pumpAndSettle();
+  expect(find.text('Talk it through'), findsOneWidget);
+  return boundaryKey;
+}
+
 Future<GlobalKey> _open(
   WidgetTester tester,
   Size size,
@@ -203,6 +222,35 @@ Future<void> _submit(WidgetTester tester, String message) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(_loadRoboto);
+
+
+  for (final size in <Size>[
+    const Size(360, 800),
+    const Size(390, 844),
+    const Size(430, 932),
+    const Size(768, 1024),
+    const Size(1280, 900),
+  ]) {
+    final width = size.width.toInt();
+
+    testWidgets('LOT11-G dashboard companion entry at $width px', (
+      tester,
+    ) async {
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final boundary = await _dashboard(
+        tester,
+        size,
+        const _VisualAdapter(),
+      );
+      await _capture(
+        tester,
+        boundary,
+        'dashboard_${width}_companion_entry.png',
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   for (final size in <Size>[
     const Size(390, 844),
