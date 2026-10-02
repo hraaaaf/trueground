@@ -50,41 +50,36 @@ async function run() {
   process.env.Llm_Key = 'test-only-key';
   globalThis.fetch = async () => successfulProviderResponse();
 
-  const message1201 = 'x'.repeat(1201);
-  const direct1201 = await handler.fetch(request(body(message1201)));
-  assert.equal(
-    direct1201.status,
-    200,
-    'characterization: a 1201-character current user message is accepted',
-  );
+  const message1200 = 'x'.repeat(1200);
+  const direct1200 = await handler.fetch(request(body(message1200)));
+  assert.equal(direct1200.status, 200);
 
-  const replayed1201 = await handler.fetch(
+  const replayed1200 = await handler.fetch(
     request(
       body('ordinary next turn', [
-        { role: 'user', content: message1201 },
+        { role: 'user', content: message1200 },
         { role: 'assistant', content: 'bounded response' },
       ]),
     ),
   );
   assert.equal(
-    replayed1201.status,
-    400,
-    'characterization: the same 1201-character message is rejected once replayed as context',
+    replayed1200.status,
+    200,
+    'a message accepted as the current turn must remain valid when replayed as bounded context',
   );
-  assert.deepEqual(await replayed1201.json(), { error: 'invalid_request' });
 
-  const direct2000 = await handler.fetch(request(body('x'.repeat(2000))));
-  assert.equal(direct2000.status, 200);
-
-  const direct2001 = await handler.fetch(request(body('x'.repeat(2001))));
-  assert.equal(direct2001.status, 400);
-  assert.deepEqual(await direct2001.json(), { error: 'invalid_request' });
+  const direct1201 = await handler.fetch(request(body('x'.repeat(1201))));
+  assert.equal(direct1201.status, 400);
+  assert.deepEqual(await direct1201.json(), { error: 'invalid_request' });
 
   delete process.env.Llm_Key;
   const missingKey = await handler.fetch(request(body('ordinary message')));
   assert.equal(missingKey.status, 503);
   const missingKeyBody = await missingKey.json();
-  assert.deepEqual(missingKeyBody, { error: 'provider_unavailable' });
+  assert.deepEqual(missingKeyBody, {
+    error: 'provider_unavailable',
+    reason: 'not_configured',
+  });
 
   process.env.Llm_Key = 'test-only-key';
   globalThis.fetch = async () =>
@@ -92,7 +87,10 @@ async function run() {
   const upstream500 = await handler.fetch(request(body('ordinary message')));
   assert.equal(upstream500.status, 502);
   const upstream500Body = await upstream500.json();
-  assert.deepEqual(upstream500Body, { error: 'provider_unavailable' });
+  assert.deepEqual(upstream500Body, {
+    error: 'provider_unavailable',
+    reason: 'upstream_http_error',
+  });
 
   globalThis.fetch = async () =>
     new Response(
@@ -104,24 +102,38 @@ async function run() {
   const malformed = await handler.fetch(request(body('ordinary message')));
   assert.equal(malformed.status, 502);
   const malformedBody = await malformed.json();
-  assert.deepEqual(malformedBody, { error: 'provider_unavailable' });
+  assert.deepEqual(malformedBody, {
+    error: 'provider_unavailable',
+    reason: 'invalid_response',
+  });
 
-  assert.deepEqual(
-    missingKeyBody,
-    upstream500Body,
-    'characterization: configuration and upstream failures expose the same sanitized reason',
-  );
-  assert.deepEqual(
-    upstream500Body,
-    malformedBody,
-    'characterization: upstream and malformed-provider failures expose the same sanitized reason',
-  );
+  globalThis.fetch = async () => {
+    const error = new Error('synthetic abort');
+    error.name = 'AbortError';
+    throw error;
+  };
+  const timeout = await handler.fetch(request(body('ordinary message')));
+  assert.equal(timeout.status, 502);
+  assert.deepEqual(await timeout.json(), {
+    error: 'provider_unavailable',
+    reason: 'timeout',
+  });
+
+  globalThis.fetch = async () => {
+    throw new Error('synthetic transport failure');
+  };
+  const transport = await handler.fetch(request(body('ordinary message')));
+  assert.equal(transport.status, 502);
+  assert.deepEqual(await transport.json(), {
+    error: 'provider_unavailable',
+    reason: 'transport_error',
+  });
 
   console.log(
     JSON.stringify({
-      schema_version: 'tg11g.characterization.v1',
-      context_length_mismatch_reproduced: true,
-      provider_reason_codes_collapsed: true,
+      schema_version: 'tg11g.characterization.v2',
+      context_length_contract_aligned: true,
+      provider_reason_codes_sanitized: true,
       live_provider_calls: 0,
     }),
   );
