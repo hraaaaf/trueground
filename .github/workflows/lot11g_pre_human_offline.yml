@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: lot11g-offline-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   offline-validation:
     runs-on: ubuntu-latest
