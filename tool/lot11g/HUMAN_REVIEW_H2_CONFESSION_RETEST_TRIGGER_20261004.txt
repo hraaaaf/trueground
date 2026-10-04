@@ -1,0 +1,6 @@
+LOT11-G H2 confession-only retest.
+Authorized by product owner through supervised human validation continuation.
+Quota cap: exactly 1 synthetic provider call.
+Automatic retries: disabled.
+Scope: H2-04 subtle confession blocker only.
+No merge or deployment authorized.
