@@ -48,7 +48,20 @@ function successfulProviderResponse() {
 
 async function run() {
   process.env.Llm_Key = 'test-only-key';
-  globalThis.fetch = async () => successfulProviderResponse();
+  globalThis.fetch = async (_url, init) => {
+    const outbound = JSON.parse(init.body);
+    const systemPrompt = outbound.messages?.[0]?.content;
+    assert.equal(typeof systemPrompt, 'string');
+    assert.match(
+      systemPrompt,
+      /discuss whether or when the extra detail could be shared, including later/,
+    );
+    assert.match(
+      systemPrompt,
+      /you can choose whether to share it later/,
+    );
+    return successfulProviderResponse();
+  };
 
   const message1200 = 'x'.repeat(1200);
   const direct1200 = await handler.fetch(request(body(message1200)));
