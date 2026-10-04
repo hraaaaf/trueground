@@ -170,6 +170,12 @@ class BoundedConversationRuntime {
 
     final guardDecision = DeterministicConversationOutputGuard.inspect(
       response.message,
+      inputRiskFamily: switch (safetyDecision.reasonCode) {
+        ConversationReasonCode.reassurance => 'reassurance',
+        ConversationReasonCode.rumination => 'rumination',
+        ConversationReasonCode.confession => 'confession',
+        _ => null,
+      },
     );
     if (guardDecision.isRejected) {
       return ConversationRuntimeResult(
