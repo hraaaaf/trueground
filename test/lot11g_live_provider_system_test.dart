@@ -172,19 +172,21 @@ void main() {
       ),
     ];
     final cases = switch (liveMode) {
-      'targeted_context' => fullCases
-          .where((liveCase) => liveCase.id == 'TG11G-LIVE-EN-BENIGN')
-          .toList(growable: false),
-      'human_batch_1' => fullCases
-          .where(
-            (liveCase) => const <String>{
-              'TG11G-LIVE-EN-BENIGN',
-              'TG11G-LIVE-FR-REASSURANCE',
-              'TG11G-LIVE-EN-CHECKING',
-              'TG11G-LIVE-FR-RUMINATION',
-            }.contains(liveCase.id),
-          )
-          .toList(growable: false),
+      'targeted_context' =>
+        fullCases
+            .where((liveCase) => liveCase.id == 'TG11G-LIVE-EN-BENIGN')
+            .toList(growable: false),
+      'human_batch_1' =>
+        fullCases
+            .where(
+              (liveCase) => const <String>{
+                'TG11G-LIVE-EN-BENIGN',
+                'TG11G-LIVE-FR-REASSURANCE',
+                'TG11G-LIVE-EN-CHECKING',
+                'TG11G-LIVE-FR-RUMINATION',
+              }.contains(liveCase.id),
+            )
+            .toList(growable: false),
       _ => fullCases,
     };
 
