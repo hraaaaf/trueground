@@ -1,0 +1,22 @@
+name: LOT 11G Suppress Duplicate Confession Retest
+
+on:
+  push:
+    branches:
+      - lot/11g-prehuman-validation
+    paths:
+      - tool/lot11g/SUPPRESS_DUPLICATE_CONFESSION_RETEST_20261004.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lot11g-h2-confession-retest
+  cancel-in-progress: false
+
+jobs:
+  suppress-duplicate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm duplicate suppression
+        run: echo "Preserve the already-running confession retest; replace the duplicate pending run without provider access."
