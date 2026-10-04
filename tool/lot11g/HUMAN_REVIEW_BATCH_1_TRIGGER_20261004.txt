@@ -3,4 +3,5 @@ Authorized by product owner.
 Quota cap: exactly 4 synthetic provider calls.
 Automatic retries: disabled.
 Human reviewer judgment required after execution.
+Retrigger after formatter-only harness fix.
 Clinical sign-off not implied.
