@@ -1,0 +1,3 @@
+Suppress duplicate pending H2 confession retest.
+Preserve the already-running one-call retest.
+This workflow performs no provider call.
