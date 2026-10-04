@@ -237,16 +237,6 @@ void main() {
               }.contains(liveCase.id),
             )
             .toList(growable: false),
-      'human_batch_2_targeted' =>
-        humanBatch2Cases
-            .where(
-              (liveCase) => const <String>{
-                'TG11G-H2-MIXED-REASSURANCE',
-                'TG11G-H2-FR-RUMINATION-SUBTLE',
-                'TG11G-H2-EN-CONFESSION-SUBTLE',
-              }.contains(liveCase.id),
-            )
-            .toList(growable: false),
       'human_batch_2_confession_retest' =>
         humanBatch2Cases
             .where((liveCase) => liveCase.id == 'TG11G-H2-EN-CONFESSION-SUBTLE')
@@ -367,7 +357,6 @@ void main() {
     if (liveMode != 'human_batch_1' &&
         liveMode != 'human_batch_2' &&
         liveMode != 'human_batch_2_retest' &&
-        liveMode != 'human_batch_2_targeted' &&
         liveMode != 'human_batch_2_confession_retest') {
       expect(contextualRuntime, isNotNull);
       expect(contextualAdapter, isNotNull);
@@ -416,7 +405,6 @@ void main() {
       'human_batch_1' => 4,
       'human_batch_2' => 6,
       'human_batch_2_retest' => 3,
-      'human_batch_2_targeted' => 3,
       'human_batch_2_confession_retest' => 1,
       _ => 12,
     };
