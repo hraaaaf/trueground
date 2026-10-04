@@ -182,7 +182,7 @@ abstract final class DeterministicConversationOutputGuard {
     if (inputRiskFamily == 'reassurance' &&
         _matchesAny(text, <RegExp>[
           RegExp(r'\b(note|list|write down)\b.*\b(actions?|examples?)\b.*\b(values?|good person|morally)\b'),
-          RegExp(r'\b(note|liste|ecris)\b.*\b(actions?|exemples?)\b.*\b(valeurs?|bonne personne|moral)\b'),
+          RegExp(r'\b(note|noter|liste|lister|ecris)\b.*\b(actions?|exemples?)\b.*\b(valeurs?|bonne personne|moral)\b'),
         ])) {
       return _reject(OutputGuardViolation.reassuranceReinforcement);
     }
