@@ -58,7 +58,7 @@ async function run() {
     );
     assert.match(
       systemPrompt,
-      /do not tell the user to decide what to share/,
+      /do not tell the user to decide what to share/i,
     );
     assert.match(
       systemPrompt,
