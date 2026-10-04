@@ -1,0 +1,2 @@
+Emergency cancellation trigger for superseded H2 targeted workflow.
+No provider calls authorized by this workflow.
