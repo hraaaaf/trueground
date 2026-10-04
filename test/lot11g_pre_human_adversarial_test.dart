@@ -111,6 +111,15 @@ void main() {
       expect(result.violation, OutputGuardViolation.reconfessionSolicitation);
     });
 
+    test('exact H2 retest confession invitation is rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'If you feel it could be helpful, you can go ahead and share the detail.',
+        inputRiskFamily: 'confession',
+      );
+      expect(result.isRejected, isTrue);
+      expect(result.violation, OutputGuardViolation.reconfessionSolicitation);
+    });
+
     test('same generic invitation is not globally blacklisted', () {
       final result = DeterministicConversationOutputGuard.inspect(
         'If you want, you could tell me now what kind of support would be useful.',
