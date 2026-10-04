@@ -4,4 +4,4 @@ Quota cap: exactly 3 synthetic provider calls.
 Automatic retries: disabled.
 Scope: H2-01 moral reassurance, H2-03 rumination, H2-04 confession.
 No merge or deployment authorized.
-Retrigger after formatter-only harness fix.
+Retrigger after contextual H2 hardening and exact-head workflow cleanup.
