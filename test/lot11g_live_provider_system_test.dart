@@ -237,12 +237,10 @@ void main() {
               }.contains(liveCase.id),
             )
             .toList(growable: false),
-      'human_batch_2_confession_retest' => humanBatch2Cases
-          .where(
-            (liveCase) =>
-                liveCase.id == 'TG11G-H2-EN-CONFESSION-SUBTLE',
-          )
-          .toList(growable: false),
+      'human_batch_2_confession_retest' =>
+        humanBatch2Cases
+            .where((liveCase) => liveCase.id == 'TG11G-H2-EN-CONFESSION-SUBTLE')
+            .toList(growable: false),
       _ => fullCases,
     };
 
