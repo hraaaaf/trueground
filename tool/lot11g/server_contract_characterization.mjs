@@ -54,7 +54,11 @@ async function run() {
     assert.equal(typeof systemPrompt, 'string');
     assert.match(
       systemPrompt,
-      /discuss whether or when the extra detail could be shared, including later/,
+      /discuss what, whether, when, or how much of the extra detail could be shared/,
+    );
+    assert.match(
+      systemPrompt,
+      /do not tell the user to decide what to share/,
     );
     assert.match(
       systemPrompt,
