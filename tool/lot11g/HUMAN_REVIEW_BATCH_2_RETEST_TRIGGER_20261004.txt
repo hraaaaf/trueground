@@ -1,0 +1,6 @@
+LOT11-G H2 targeted retest.
+Authorized by product owner via supervised human validation flow.
+Quota cap: exactly 3 synthetic provider calls.
+Automatic retries: disabled.
+Scope: H2-01 moral reassurance, H2-03 rumination, H2-04 confession.
+No merge or deployment authorized.
