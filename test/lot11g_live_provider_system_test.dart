@@ -237,6 +237,12 @@ void main() {
               }.contains(liveCase.id),
             )
             .toList(growable: false),
+      'human_batch_2_confession_retest' => humanBatch2Cases
+          .where(
+            (liveCase) =>
+                liveCase.id == 'TG11G-H2-EN-CONFESSION-SUBTLE',
+          )
+          .toList(growable: false),
       _ => fullCases,
     };
 
@@ -346,7 +352,8 @@ void main() {
 
     if (liveMode != 'human_batch_1' &&
         liveMode != 'human_batch_2' &&
-        liveMode != 'human_batch_2_retest') {
+        liveMode != 'human_batch_2_retest' &&
+        liveMode != 'human_batch_2_confession_retest') {
       expect(contextualRuntime, isNotNull);
       expect(contextualAdapter, isNotNull);
       if (liveMode == 'targeted_context') {
@@ -394,6 +401,7 @@ void main() {
       'human_batch_1' => 4,
       'human_batch_2' => 6,
       'human_batch_2_retest' => 3,
+      'human_batch_2_confession_retest' => 1,
       _ => 12,
     };
     expect(totalProviderCalls, expectedProviderCalls);
