@@ -1,2 +1,0 @@
-Emergency cancellation trigger for superseded 3-call H2 retest.
-No provider calls authorized.
