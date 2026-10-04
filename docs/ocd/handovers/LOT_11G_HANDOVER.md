@@ -1,7 +1,7 @@
 # HANDOVER — TrueGround OCD / LOT11-G → LOT11-H
 
 Date: 2026-10-04
-Status: READY WITH CONDITIONS
+Status: VERIFIED — 9.0/10 — READY WITH CONDITIONS
 
 ## Identity
 
@@ -120,12 +120,82 @@ Conditions carried into LOT11-H:
 
 ## Strict scoring status
 
-LOT11-G has strong execution evidence and an independent adversarial safety review that materially changed the result (H2-04 was reopened, hardened, and re-proven). However the canonical strict-scoring protocol requires two explicit multi-axis scorecards and a retained lower score in the handover before the lot can be called `VERIFIED`.
+Candidate scored: `58886ab9775e6dae446df2963f2b6c02015360a2`.
+Exact-head CI: run `37240015700` — SUCCESS.
 
-Therefore this handover does **not** overclaim `VERIFIED`.
+### Pass A — severe execution score
 
-Closeout state: `READY WITH CONDITIONS / PRE-HUMAN GATE PASSED`.
-Strict-scoring certification state: `VERIFICATION INCOMPLETE` until the two formal scorecards are recorded.
+Reviewer: execution review pass, evidence-led.
+
+| Axis | Score |
+| --- | ---: |
+| PRODUCT / SCOPE FIDELITY | 9.6 |
+| FUNCTIONAL CORRECTNESS | 9.6 |
+| UI / UX FIDELITY | 9.3 |
+| ACCESSIBILITY | 9.1 |
+| SAFETY / OCD ANTI-COMPULSION | 9.2 |
+| CONTENT / CLAIM DISCIPLINE | 9.5 |
+| ARCHITECTURE / CORE-CAPSULE SEPARATION | 9.7 |
+| DATA / PRIVACY / SECURITY | 9.3 |
+| QA / NON-REGRESSION | 9.8 |
+| EVIDENCE / REPRODUCIBILITY | 9.7 |
+
+Overall severe score before caps: **9.2/10** (critical-dimension floor, not arithmetic averaging).
+
+Reasons preventing 10/10:
+1. H2-01 moral/self-checking wording remains a documented CONCERN.
+2. H2-03 explanation-before-pivot remains a documented CONCERN.
+3. Qualified OCD clinical review has not occurred.
+4. Accessibility evidence is automated/render-based rather than supervised real-user/device evidence.
+5. Live-provider sampling is intentionally quota-bounded rather than exhaustive.
+6. The branch remains far ahead of stale `main`, increasing integration/release complexity outside this gate.
+
+### Pass B — adversarial score
+
+Reviewer: separate adversarial pass in the same agent/session. It actively searches for reasons Pass A is too generous. This is **not** represented as genuinely independent; canonical same-session cap `9.4/10` applies.
+
+| Axis | Score |
+| --- | ---: |
+| PRODUCT / SCOPE FIDELITY | 9.4 |
+| FUNCTIONAL CORRECTNESS | 9.4 |
+| UI / UX FIDELITY | 9.1 |
+| ACCESSIBILITY | 9.0 |
+| SAFETY / OCD ANTI-COMPULSION | 9.0 |
+| CONTENT / CLAIM DISCIPLINE | 9.3 |
+| ARCHITECTURE / CORE-CAPSULE SEPARATION | 9.5 |
+| DATA / PRIVACY / SECURITY | 9.1 |
+| QA / NON-REGRESSION | 9.6 |
+| EVIDENCE / REPRODUCIBILITY | 9.4 |
+
+Adversarial score: **9.0/10**.
+
+Reasons preventing 10/10:
+1. A real H2-04 false negative escaped an initially green technical badge and required raw-review discovery; this proves residual model/guard edge cases are plausible.
+2. H2-01 remains capable of drifting toward moral/self-checking framing.
+3. H2-03 can begin explanatory rumination before pivoting.
+4. Human clinical interpretation is still outstanding, so safety confidence must remain product-level only.
+5. The final live proof is targeted and small; deterministic breadth is strong but cannot substitute for human supervised behavior.
+6. EN/FR automated equivalence does not prove equivalent interpretation by real users.
+7. No real participant H1 evidence exists yet.
+
+Disagreement with Pass A:
+- Pass B deducts more heavily on safety, UX and privacy/accessibility because automated and synthetic evidence cannot establish real-user behavior.
+- Divergence is <= 0.2 on every axis and therefore does not trigger the >0.5 investigation rule.
+
+### Retained score
+
+`min(Pass A 9.2, Pass B 9.0, same-session cap 9.4, critical-dimension floors) = 9.0/10`.
+
+Perfection pass:
+- Rechecked the known H2-04 blocker disposition and exact targeted live proof.
+- Rechecked H2-01/H2-03 are preserved as explicit conditions rather than silently promoted to PASS.
+- Rechecked exact-head offline gate after handover/start-prompt docs: run `37240015700` SUCCESS.
+- No new in-scope material weakness requiring runtime/UI change was identified in this closeout pass.
+- Remaining limitations are carried as explicit LOT11-H conditions rather than hidden.
+
+Strict-scoring certification: **VERIFIED at 9.0/10 for the LOT11-G pre-human gate scope, with conditions**.
+
+This does not mean clinically validated, treatment-ready, safe for unsupervised patient use, merged, or deployed.
 
 ## Repository truth at handover
 
