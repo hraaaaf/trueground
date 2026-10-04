@@ -1,0 +1,5 @@
+LOT11-G targeted live context retest trigger.
+Authorized by product owner.
+Quota cap: exactly 2 synthetic provider calls.
+Automatic retries: disabled.
+Production deployment: not authorized.
