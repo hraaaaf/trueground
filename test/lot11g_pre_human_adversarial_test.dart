@@ -127,12 +127,15 @@ void main() {
       expect(result.violation, OutputGuardViolation.reassuranceReinforcement);
     });
 
-    test('ordinary values action outside reassurance context remains allowed', () {
-      final result = DeterministicConversationOutputGuard.inspect(
-        'Choisissez une petite action en accord avec vos valeurs pour aujourd hui.',
-      );
-      expect(result.isRejected, isFalse);
-    });
+    test(
+      'ordinary values action outside reassurance context remains allowed',
+      () {
+        final result = DeterministicConversationOutputGuard.inspect(
+          'Choisissez une petite action en accord avec vos valeurs pour aujourd hui.',
+        );
+        expect(result.isRejected, isFalse);
+      },
+    );
 
     test('plausible causal explanation in rumination context is rejected', () {
       final result = DeterministicConversationOutputGuard.inspect(
@@ -152,5 +155,4 @@ void main() {
       expect(decision.reasonCode, ConversationReasonCode.rumination);
     });
   });
-
 }
