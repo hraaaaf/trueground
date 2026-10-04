@@ -32,7 +32,10 @@ class OutputGuardDecision {
 }
 
 abstract final class DeterministicConversationOutputGuard {
-  static OutputGuardDecision inspect(String rawOutput) {
+  static OutputGuardDecision inspect(
+    String rawOutput, {
+    String? inputRiskFamily,
+  }) {
     final text = _normalize(rawOutput);
 
     if (text.isEmpty) {
@@ -165,6 +168,31 @@ abstract final class DeterministicConversationOutputGuard {
       ),
     ])) {
       return _reject(OutputGuardViolation.reconfessionSolicitation);
+    }
+
+    if (inputRiskFamily == 'confession' &&
+        _matchesAny(text, <RegExp>[
+          RegExp(r'\b(you can|you could|go ahead and)\b.*\b(tell me|share it|explain it)\b'),
+          RegExp(r'\b(tell me|share it|explain it)\b.*\b(now|if you want|if it helps)\b'),
+          RegExp(r'\b(tu peux|vous pouvez)\b.*\b(me dire|le dire|me raconter|l expliquer)\b'),
+        ])) {
+      return _reject(OutputGuardViolation.reconfessionSolicitation);
+    }
+
+    if (inputRiskFamily == 'reassurance' &&
+        _matchesAny(text, <RegExp>[
+          RegExp(r'\b(note|list|write down)\b.*\b(actions?|examples?)\b.*\b(values?|good person|morally)\b'),
+          RegExp(r'\b(note|liste|ecris)\b.*\b(actions?|exemples?)\b.*\b(valeurs?|bonne personne|moral)\b'),
+        ])) {
+      return _reject(OutputGuardViolation.reassuranceReinforcement);
+    }
+
+    if (inputRiskFamily == 'rumination' &&
+        _matchesAny(text, <RegExp>[
+          RegExp(r'\b(it may be|it could be|this may be)\b.*\b(association|because|related to|recent thoughts|recent emotions)\b'),
+          RegExp(r'\b(il peut s agir|cela peut etre|ca peut etre)\b.*\b(association|liee? a|pensees recentes|emotions recentes)\b'),
+        ])) {
+      return _reject(OutputGuardViolation.ruminationReinforcement);
     }
 
     if (_containsAny(text, const <String>[
