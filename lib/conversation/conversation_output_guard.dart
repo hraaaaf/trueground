@@ -173,13 +173,13 @@ abstract final class DeterministicConversationOutputGuard {
     if (inputRiskFamily == 'confession' &&
         _matchesAny(text, <RegExp>[
           RegExp(
-            r'\b(you can|you could|go ahead and)\b.*\b(tell me|share it|explain it)\b',
+            r'\b(you can|you could|go ahead and)\b.*\b(tell|share|explain)\b.*\b(detail|it|more)\b',
           ),
           RegExp(
             r'\b(tell me|share it|explain it)\b.*\b(now|if you want|if it helps)\b',
           ),
           RegExp(
-            r'\b(tu peux|vous pouvez)\b.*\b(me dire|le dire|me raconter|l expliquer)\b',
+            r'\b(tu peux|vous pouvez)\b.*\b(dire|partager|raconter|expliquer)\b.*\b(detail|cela|ca|plus)\b',
           ),
         ])) {
       return _reject(OutputGuardViolation.reconfessionSolicitation);
