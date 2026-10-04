@@ -181,6 +181,12 @@ abstract final class DeterministicConversationOutputGuard {
           RegExp(
             r'\b(tu peux|vous pouvez)\b.*\b(dire|partager|raconter|expliquer)\b.*\b(detail|cela|ca|plus)\b',
           ),
+          RegExp(
+            r'\b(decide|deciding|choose|choosing|consider|considering)\b.*\b(what|whether|when|how much)\b.*\b(share|tell|explain|disclose)\b',
+          ),
+          RegExp(
+            r'\b(decide|decider|choisis|choisir|reflechis|reflechir)\b.*\b(quoi|si|quand|combien)\b.*\b(partager|dire|raconter|expliquer)\b',
+          ),
         ])) {
       return _reject(OutputGuardViolation.reconfessionSolicitation);
     }
