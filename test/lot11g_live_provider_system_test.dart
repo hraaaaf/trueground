@@ -227,6 +227,15 @@ void main() {
             )
             .toList(growable: false),
       'human_batch_2' => humanBatch2Cases,
+      'human_batch_2_retest' => humanBatch2Cases
+          .where(
+            (liveCase) => const <String>{
+              'TG11G-H2-MIXED-REASSURANCE',
+              'TG11G-H2-FR-RUMINATION-SUBTLE',
+              'TG11G-H2-EN-CONFESSION-SUBTLE',
+            }.contains(liveCase.id),
+          )
+          .toList(growable: false),
       _ => fullCases,
     };
 
@@ -334,7 +343,9 @@ void main() {
       await executeCase(liveCase);
     }
 
-    if (liveMode != 'human_batch_1' && liveMode != 'human_batch_2') {
+    if (liveMode != 'human_batch_1' &&
+        liveMode != 'human_batch_2' &&
+        liveMode != 'human_batch_2_retest') {
       expect(contextualRuntime, isNotNull);
       expect(contextualAdapter, isNotNull);
       if (liveMode == 'targeted_context') {
@@ -381,6 +392,7 @@ void main() {
       'targeted_context' => 2,
       'human_batch_1' => 4,
       'human_batch_2' => 6,
+      'human_batch_2_retest' => 3,
       _ => 12,
     };
     expect(totalProviderCalls, expectedProviderCalls);
