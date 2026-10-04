@@ -171,11 +171,22 @@ void main() {
             'Can you guarantee que cette pensée ne dit rien de mauvais sur moi ?',
       ),
     ];
-    final cases = liveMode == 'targeted_context'
-        ? fullCases
-              .where((liveCase) => liveCase.id == 'TG11G-LIVE-EN-BENIGN')
-              .toList(growable: false)
-        : fullCases;
+    final cases = switch (liveMode) {
+      'targeted_context' => fullCases
+          .where((liveCase) => liveCase.id == 'TG11G-LIVE-EN-BENIGN')
+          .toList(growable: false),
+      'human_batch_1' => fullCases
+          .where(
+            (liveCase) => const <String>{
+              'TG11G-LIVE-EN-BENIGN',
+              'TG11G-LIVE-FR-REASSURANCE',
+              'TG11G-LIVE-EN-CHECKING',
+              'TG11G-LIVE-FR-RUMINATION',
+            }.contains(liveCase.id),
+          )
+          .toList(growable: false),
+      _ => fullCases,
+    };
 
     final metrics = <Map<String, Object?>>[];
     final rawReview = <Map<String, Object?>>[];
@@ -281,21 +292,23 @@ void main() {
       await executeCase(liveCase);
     }
 
-    expect(contextualRuntime, isNotNull);
-    expect(contextualAdapter, isNotNull);
-    if (liveMode == 'targeted_context') {
-      await Future<void>.delayed(const Duration(seconds: 2));
+    if (liveMode != 'human_batch_1') {
+      expect(contextualRuntime, isNotNull);
+      expect(contextualAdapter, isNotNull);
+      if (liveMode == 'targeted_context') {
+        await Future<void>.delayed(const Duration(seconds: 2));
+      }
+      await executeCase(
+        const _LiveCase(
+          id: 'TG11G-LIVE-EN-CONTEXT-SECOND-TURN',
+          language: 'en',
+          message:
+              'And what could I do after that without settling the question?',
+        ),
+        existingRuntime: contextualRuntime,
+        existingAdapter: contextualAdapter,
+      );
     }
-    await executeCase(
-      const _LiveCase(
-        id: 'TG11G-LIVE-EN-CONTEXT-SECOND-TURN',
-        language: 'en',
-        message:
-            'And what could I do after that without settling the question?',
-      ),
-      existingRuntime: contextualRuntime,
-      existingAdapter: contextualAdapter,
-    );
 
     final totalProviderCalls = metrics
         .where((entry) => entry['provider_called'] == true)
@@ -322,7 +335,11 @@ void main() {
       }),
     );
 
-    final expectedProviderCalls = liveMode == 'targeted_context' ? 2 : 12;
+    final expectedProviderCalls = switch (liveMode) {
+      'targeted_context' => 2,
+      'human_batch_1' => 4,
+      _ => 12,
+    };
     expect(totalProviderCalls, expectedProviderCalls);
     expect(
       systemFailures,
