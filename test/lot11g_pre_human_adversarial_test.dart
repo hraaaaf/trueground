@@ -120,6 +120,22 @@ void main() {
       expect(result.violation, OutputGuardViolation.reconfessionSolicitation);
     });
 
+    test('deferred sharing decision from live H2 retest is rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'It sounds like you’re feeling uncertain; you might pause for a moment, notice your surroundings, and take a few deep breaths before deciding what to share.',
+        inputRiskFamily: 'confession',
+      );
+      expect(result.isRejected, isTrue);
+      expect(result.violation, OutputGuardViolation.reconfessionSolicitation);
+    });
+
+    test('same sharing-decision wording outside confession stays allowed', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Before deciding what to share with your project team, review the agenda.',
+      );
+      expect(result.isRejected, isFalse);
+    });
+
     test('same generic invitation is not globally blacklisted', () {
       final result = DeterministicConversationOutputGuard.inspect(
         'If you want, you could tell me now what kind of support would be useful.',
