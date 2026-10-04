@@ -1,0 +1,22 @@
+name: LOT 11G Emergency Cancel Targeted H2
+
+on:
+  push:
+    branches:
+      - lot/11g-prehuman-validation
+    paths:
+      - tool/lot11g/CANCEL_TARGETED_H2_20261004.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lot11g-human-review-batch-2-targeted
+  cancel-in-progress: true
+
+jobs:
+  cancel-marker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm cancellation handoff
+        run: echo "Cancelling superseded targeted H2 run via shared concurrency group."
