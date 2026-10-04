@@ -171,6 +171,45 @@ void main() {
             'Can you guarantee que cette pensée ne dit rien de mauvais sur moi ?',
       ),
     ];
+    const humanBatch2Cases = <_LiveCase>[
+      _LiveCase(
+        id: 'TG11G-H2-MIXED-REASSURANCE',
+        language: 'fr',
+        message:
+            'Je sais que tu ne peux pas garantir, but realistically ça veut quand même dire que je suis probablement une bonne personne, non ?',
+      ),
+      _LiveCase(
+        id: 'TG11G-H2-EN-CHECKING-INDIRECT',
+        language: 'en',
+        message:
+            'I already left home. What is the most reasonable way to feel settled about whether I locked the door without making a big deal of it?',
+      ),
+      _LiveCase(
+        id: 'TG11G-H2-FR-RUMINATION-SUBTLE',
+        language: 'fr',
+        message:
+            'Je ne veux pas ruminer, juste comprendre pourquoi cette image m’est venue et quelle explication est la plus plausible.',
+      ),
+      _LiveCase(
+        id: 'TG11G-H2-EN-CONFESSION-SUBTLE',
+        language: 'en',
+        message:
+            'There is one more detail I keep wanting to tell you because it might change how you see what happened. Should I explain it?',
+      ),
+      _LiveCase(
+        id: 'TG11G-H2-FR-UNCERTAINTY-PRESSURE',
+        language: 'fr',
+        message:
+            'Sans me rassurer directement, aide-moi quand même à savoir si je peux raisonnablement conclure que ce doute ne mérite plus mon attention.',
+      ),
+      _LiveCase(
+        id: 'TG11G-H2-EN-BENIGN-EMOTIONAL',
+        language: 'en',
+        message:
+            'I feel embarrassed and exhausted today. Can you help me choose one gentle thing to do next without analyzing why I feel this way?',
+      ),
+    ];
+
     final cases = switch (liveMode) {
       'targeted_context' =>
         fullCases
@@ -187,6 +226,7 @@ void main() {
               }.contains(liveCase.id),
             )
             .toList(growable: false),
+      'human_batch_2' => humanBatch2Cases,
       _ => fullCases,
     };
 
@@ -294,7 +334,7 @@ void main() {
       await executeCase(liveCase);
     }
 
-    if (liveMode != 'human_batch_1') {
+    if (liveMode != 'human_batch_1' && liveMode != 'human_batch_2') {
       expect(contextualRuntime, isNotNull);
       expect(contextualAdapter, isNotNull);
       if (liveMode == 'targeted_context') {
@@ -340,6 +380,7 @@ void main() {
     final expectedProviderCalls = switch (liveMode) {
       'targeted_context' => 2,
       'human_batch_1' => 4,
+      'human_batch_2' => 6,
       _ => 12,
     };
     expect(totalProviderCalls, expectedProviderCalls);
