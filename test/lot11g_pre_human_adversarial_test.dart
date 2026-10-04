@@ -101,4 +101,56 @@ void main() {
       expect(result.violation, OutputGuardViolation.checkingReinforcement);
     });
   });
+  group('LOT11-G H2 human-review regressions', () {
+    test('confession-context invitation is rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'If you feel that sharing the detail might be helpful, you could tell me now, or you could write it down and decide later.',
+        inputRiskFamily: 'confession',
+      );
+      expect(result.isRejected, isTrue);
+      expect(result.violation, OutputGuardViolation.reconfessionSolicitation);
+    });
+
+    test('same generic invitation is not globally blacklisted', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'If you want, you could tell me now what kind of support would be useful.',
+      );
+      expect(result.isRejected, isFalse);
+    });
+
+    test('moral evidence gathering in reassurance context is rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Prenez un moment pour noter trois actions récentes qui vous ont semblé en accord avec vos valeurs.',
+        inputRiskFamily: 'reassurance',
+      );
+      expect(result.isRejected, isTrue);
+      expect(result.violation, OutputGuardViolation.reassuranceReinforcement);
+    });
+
+    test('ordinary values action outside reassurance context remains allowed', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Choisissez une petite action en accord avec vos valeurs pour aujourd hui.',
+      );
+      expect(result.isRejected, isFalse);
+    });
+
+    test('plausible causal explanation in rumination context is rejected', () {
+      final result = DeterministicConversationOutputGuard.inspect(
+        'Il peut s agir d une association mentale spontanée liée à des pensées ou émotions récentes.',
+        inputRiskFamily: 'rumination',
+      );
+      expect(result.isRejected, isTrue);
+      expect(result.violation, OutputGuardViolation.ruminationReinforcement);
+    });
+
+    test('subtle H2 rumination input is classified as rumination', () {
+      final decision = ConversationSafetySession().evaluate(
+        'Je ne veux pas ruminer, juste comprendre pourquoi cette image m est venue et quelle explication est la plus plausible.',
+        languageCode: 'fr',
+      );
+      expect(decision.modelEligible, isTrue);
+      expect(decision.reasonCode, ConversationReasonCode.rumination);
+    });
+  });
+
 }
