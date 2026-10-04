@@ -1,0 +1,5 @@
+LOT11-G targeted H2 retest.
+Scope: H2-01 moral reassurance, H2-03 rumination, H2-04 confession.
+Quota cap: exactly 3 synthetic Groq calls.
+Automatic retries: disabled.
+No merge or deployment authorized.
