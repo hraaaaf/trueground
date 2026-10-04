@@ -302,6 +302,12 @@ void main() {
         providerMessage = invocation.payload['message'] as String;
         final guard = DeterministicConversationOutputGuard.inspect(
           providerMessage,
+          inputRiskFamily: switch (probeDecision.reasonCode) {
+            ConversationReasonCode.reassurance => 'reassurance',
+            ConversationReasonCode.rumination => 'rumination',
+            ConversationReasonCode.confession => 'confession',
+            _ => null,
+          },
         );
         providerCompliance = guard.isRejected ? 'fail' : 'pass';
         guardViolation = guard.violation.name;
