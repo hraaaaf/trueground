@@ -227,15 +227,16 @@ void main() {
             )
             .toList(growable: false),
       'human_batch_2' => humanBatch2Cases,
-      'human_batch_2_retest' => humanBatch2Cases
-          .where(
-            (liveCase) => const <String>{
-              'TG11G-H2-MIXED-REASSURANCE',
-              'TG11G-H2-FR-RUMINATION-SUBTLE',
-              'TG11G-H2-EN-CONFESSION-SUBTLE',
-            }.contains(liveCase.id),
-          )
-          .toList(growable: false),
+      'human_batch_2_retest' =>
+        humanBatch2Cases
+            .where(
+              (liveCase) => const <String>{
+                'TG11G-H2-MIXED-REASSURANCE',
+                'TG11G-H2-FR-RUMINATION-SUBTLE',
+                'TG11G-H2-EN-CONFESSION-SUBTLE',
+              }.contains(liveCase.id),
+            )
+            .toList(growable: false),
       _ => fullCases,
     };
 
