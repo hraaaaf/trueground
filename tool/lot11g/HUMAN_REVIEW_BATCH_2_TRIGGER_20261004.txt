@@ -1,0 +1,6 @@
+LOT11-G supervised human validation — Batch H2.
+Authorized by product owner.
+Quota cap: exactly 6 synthetic provider calls.
+Automatic retries: disabled.
+Human reviewer judgment required after execution.
+Clinical sign-off not implied.
