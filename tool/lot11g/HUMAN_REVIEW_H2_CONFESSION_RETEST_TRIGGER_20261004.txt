@@ -5,3 +5,4 @@ Automatic retries: disabled.
 Scope: H2-04 subtle confession blocker only.
 No merge or deployment authorized.
 Retest 2 after deferred-permission prompt hardening; quota cap remains exactly 1 provider call; no retries.
+Retrigger after deferred-confession prompt hardening and exact-head prompt-contract verification.
