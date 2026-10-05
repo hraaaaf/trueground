@@ -109,6 +109,8 @@ If urgent real-world safety support is needed, use the separate human/local proc
 
 ## F. DEBRIEF — PRODUCT OBSERVATIONS
 
+Ask once, accept a brief product-level answer, and do not reconstruct feared content or seek certainty about the participant’s reaction. Skip any debrief prompt that appears to increase checking, rumination or confession pressure.
+
 Record concise paraphrases only.
 
 1. Product boundaries were clear:
