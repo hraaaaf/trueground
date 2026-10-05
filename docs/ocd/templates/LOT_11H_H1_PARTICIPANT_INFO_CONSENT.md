@@ -27,7 +27,9 @@ You are being invited to take part in a supervised product test of TrueGround.
 
 The purpose is to observe whether the product is understandable, bounded and safe enough for a small controlled alpha. We are testing the product, not testing you.
 
-This is **not**:
+This is not a clinical trial, diagnosis, therapy, treatment, autonomous ERP session, medication service, emergency service, or proof of therapeutic efficacy.
+
+In particular, this is **not**:
 - a clinical trial;
 - a diagnosis;
 - therapy or treatment;
@@ -157,7 +159,9 @@ Vous êtes invité(e) à participer à un test produit supervisé de TrueGround.
 
 L’objectif est d’observer si le produit est compréhensible, borné et suffisamment sûr pour une petite alpha contrôlée. Nous évaluons le produit, pas vous.
 
-Ce test n’est **pas** :
+Ce test n’est pas un essai clinique, un diagnostic, une thérapie, un traitement, une séance d’ERP autonome, un service médicamenteux, un service d’urgence ni une preuve d’efficacité thérapeutique.
+
+En particulier, ce test n’est **pas** :
 - un essai clinique ;
 - un diagnostic ;
 - une thérapie ou un traitement ;
