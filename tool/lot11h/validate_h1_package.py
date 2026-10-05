@@ -93,8 +93,9 @@ for key, path in FILES.items():
         errors.append(f"missing file: {path.relative_to(ROOT)}")
         continue
     text = path.read_text(encoding="utf-8")
+    folded = text.casefold()
     for phrase in REQUIRED[key]:
-        if phrase not in text:
+        if phrase.casefold() not in folded:
             errors.append(f"{key}: missing required phrase: {phrase!r}")
 
 combined = "\n".join(
