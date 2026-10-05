@@ -1,0 +1,55 @@
+name: LOT11-H H1 package
+
+on:
+  push:
+    branches:
+      - lot/11h-supervised-alpha-h1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  h1-package-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Validate H1 package
+        run: python3 tool/lot11h/validate_h1_package.py
+
+      - name: Node syntax check
+        run: node --check api/conversation.mjs
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: LOT11-G safety regression
+        run: |
+          flutter test test/lot11g_pre_human_adversarial_test.dart
+          flutter test test/lot11g_anti_dependency_ux_test.dart
+          flutter test test/lot11f_adversarial_safety_test.dart
+
+      - name: Full Flutter non-regression
+        run: flutter test
+
+      - name: Prove offline gate uses no Groq secret
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R "secrets\.GROQ\|GROQ_API_KEY" .github/workflows/lot11h_h1_package.yml; then
+            echo "LOT11-H H1 package workflow must not reference Groq secrets."
+            exit 1
+          fi
+          echo "No Groq secret referenced by LOT11-H H1 package workflow."
