@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: lot11h-h1-package-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   h1-package-offline:
     runs-on: ubuntu-latest
