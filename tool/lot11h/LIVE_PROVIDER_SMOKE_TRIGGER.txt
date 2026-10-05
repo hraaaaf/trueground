@@ -1,0 +1,1 @@
+LOT11-H H1 synthetic live-provider smoke trigger. Synthetic inputs only; max two provider calls; no participant data.
