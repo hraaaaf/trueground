@@ -45,11 +45,12 @@ jobs:
         run: flutter test
 
       - name: Prove offline gate uses no Groq secret
-        shell: bash
         run: |
-          set -euo pipefail
-          if grep -R "secrets\.GROQ\|GROQ_API_KEY" .github/workflows/lot11h_h1_package.yml; then
-            echo "LOT11-H H1 package workflow must not reference Groq secrets."
-            exit 1
-          fi
-          echo "No Groq secret referenced by LOT11-H H1 package workflow."
+          python3 - <<'PY'
+          from pathlib import Path
+          workflow = Path(".github/workflows/lot11h_h1_package.yml").read_text(encoding="utf-8")
+          forbidden = ["secrets." + "GROQ", "GROQ" + "_API_KEY"]
+          if any(item in workflow for item in forbidden):
+              raise SystemExit("LOT11-H H1 package workflow must not reference Groq secrets.")
+          print("No Groq secret referenced by LOT11-H H1 package workflow.")
+          PY
