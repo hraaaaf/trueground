@@ -282,12 +282,14 @@ The H1 protocol does not define clinical crisis care and must not be used as one
 
 ## 12. POST-SESSION DEBRIEF
 
+Ask each question once and accept a brief product-level answer. Do not ask the participant to reconstruct the feared content, prove what a response meant, or reach certainty about whether they reacted “correctly.” If a debrief question itself appears to increase checking, rumination or confession pressure, skip it and record that the question was not pursued.
+
 Ask bounded product questions:
 
 - Was it clear what TrueGround could and could not do?
 - Did any answer feel like it was trying to settle the feared question for you?
 - Did anything make you want to ask the same question again just to get more certainty?
-- Did any wording feel moralizing, like it was asking you to judge whether you were a good/bad person?
+- Did any wording feel moralizing or invite identity/moral self-checking?
 - Did the app start explaining the feared topic before helping you move on?
 - Did anything invite you to add one more confession/detail?
 - Was any boundary, error or route confusing?
