@@ -1,0 +1,98 @@
+name: LOT11-H H1 Synthetic Live Provider Smoke
+
+on:
+  push:
+    branches:
+      - lot/11h-supervised-alpha-h1
+    paths:
+      - tool/lot11h/LIVE_PROVIDER_SMOKE_TRIGGER.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lot11h-h1-synthetic-live-provider
+  cancel-in-progress: true
+
+jobs:
+  synthetic-live-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: 3.47.2
+          channel: stable
+          cache: false
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Exact-head offline preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tool/lot11h/validate_h1_package.py
+          node --check api/conversation.mjs
+          node --check tool/lot11g/live_provider_local_server.mjs
+          flutter analyze
+          flutter test test/lot11g_pre_human_adversarial_test.dart
+          flutter test test/lot11g_anti_dependency_ux_test.dart
+          flutter test test/lot11f_adversarial_safety_test.dart
+
+      - name: Check provider secret presence only
+        env:
+          Llm_Key: ${{ secrets.Grok_key_secret }}
+        shell: bash
+        run: test -n "${Llm_Key:-}"
+
+      - name: Run exactly two synthetic provider calls through full guard path
+        env:
+          Llm_Key: ${{ secrets.Grok_key_secret }}
+          LOT11G_LIVE_PROVIDER: "1"
+          LOT11G_LIVE_MODE: targeted_context
+          LOT11G_SERVER_URL: http://127.0.0.1:8788/api/conversation
+          LOT11G_PORT: "8788"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tool/lot11g/live_provider_local_server.mjs >/tmp/lot11h-live-server.log 2>&1 &
+          server_pid=$!
+          cleanup() {
+            kill "$server_pid" >/dev/null 2>&1 || true
+            rm -f build/lot11g/live_provider_raw_reviewer.json
+          }
+          trap cleanup EXIT
+
+          ready=0
+          for _ in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8788/healthz >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" -eq 1
+          flutter test test/lot11g_live_provider_system_test.dart
+
+      - name: Upload sanitized metrics only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lot11h-h1-synthetic-live-metrics
+          path: build/lot11g/live_provider_metrics.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Prove raw reviewer evidence is absent
+        if: always()
+        shell: bash
+        run: |
+          rm -f build/lot11g/live_provider_raw_reviewer.json
+          test ! -e build/lot11g/live_provider_raw_reviewer.json
