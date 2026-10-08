@@ -1,0 +1,64 @@
+name: LOT11-H Internal Synthetic Dry-Run
+
+on:
+  push:
+    branches:
+      - lot/11h-supervised-alpha-h1
+    paths:
+      - tool/lot11h/internal_dry_run_matrix.json
+      - tool/lot11h/validate_internal_dry_run.py
+      - docs/ocd/reviews/LOT_11H_H1_INTERNAL_DRY_RUN_PACK.md
+      - .github/workflows/lot11h_internal_dry_run.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lot11h-internal-dry-run-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-offline-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      LOT11G_LIVE_PROVIDER: "0"
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Validate synthetic-only manifest and inherited corpus
+        run: |
+          python3 tool/lot11h/validate_h1_package.py
+          python3 tool/lot11h/validate_internal_dry_run.py
+
+      - name: Set up Flutter 3.47.2
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version: '3.47.2'
+          channel: stable
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Offline synthetic safety and UX regressions
+        run: |
+          flutter test test/lot11g_pre_human_adversarial_test.dart
+          flutter test test/lot11g_anti_dependency_ux_test.dart
+          flutter test test/lot11f_adversarial_safety_test.dart
+          flutter test test/lot11e_conversation_ux_test.dart
+
+      - name: Prove dedicated dry-run workflow has no provider credentials or live-mode steps
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path(".github/workflows/lot11h_internal_dry_run.yml").read_text()
+          forbidden = ["secrets." + "Grok", "secrets." + "GROQ", "Llm_" + "Key:", "live_provider_local_server.mjs"]
+          if any(item in s for item in forbidden):
+              raise SystemExit("A provider-credential/live-mode reference was found.")
+          print("PASS: no provider secret reference or live server step.")
+          PY
