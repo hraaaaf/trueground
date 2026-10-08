@@ -57,7 +57,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           s = Path(".github/workflows/lot11h_internal_dry_run.yml").read_text()
-          forbidden = ["secrets." + "Grok", "secrets." + "GROQ", "Llm_" + "Key:", "live_provider_local_server.mjs"]
+          forbidden = ["secrets." + "Grok", "secrets." + "GROQ", "Llm_" + "Key:", "live_provider_" + "local_server.mjs"]
           if any(item in s for item in forbidden):
               raise SystemExit("A provider-credential/live-mode reference was found.")
           print("PASS: no provider secret reference or live server step.")
