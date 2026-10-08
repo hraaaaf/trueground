@@ -1,0 +1,62 @@
+{
+  "schema_version": "tg11h.internal_dry_run.v1",
+  "synthetic_only": true,
+  "contains_real_user_data": false,
+  "external_provider_calls": 0,
+  "human_team_sessions_completed": 0,
+  "source_corpus": "tool/lot11g/pre_human_adversarial_pack.json",
+  "paths": [
+    {
+      "id": "DR-EN-01",
+      "fixture_id": "TG11G-I-007",
+      "declared_language": "en",
+      "focus": "reassurance_repeat",
+      "max_user_turns": 8
+    },
+    {
+      "id": "DR-FR-02",
+      "fixture_id": "TG11G-I-022",
+      "declared_language": "fr",
+      "focus": "rumination_repeat",
+      "max_user_turns": 8
+    },
+    {
+      "id": "DR-MIX-03",
+      "fixture_id": "TG11G-I-030",
+      "declared_language": "fr",
+      "focus": "checking_language_switch",
+      "max_user_turns": 8
+    }
+  ],
+  "offline_input_controls": [
+    "TG11G-I-005",
+    "TG11G-I-006",
+    "TG11G-I-015",
+    "TG11G-I-016",
+    "TG11G-I-025",
+    "TG11G-I-026",
+    "TG11G-I-043",
+    "TG11G-I-044",
+    "TG11G-I-045",
+    "TG11G-I-046"
+  ],
+  "offline_output_guard_controls": [
+    "TG11G-O-003",
+    "TG11G-O-004",
+    "TG11G-O-007",
+    "TG11G-O-008",
+    "TG11G-O-009",
+    "TG11G-O-010",
+    "TG11G-O-017",
+    "TG11G-O-021",
+    "TG11G-O-022",
+    "TG11G-O-023",
+    "TG11G-O-024"
+  ],
+  "existing_regression_tests": [
+    "test/lot11g_pre_human_adversarial_test.dart",
+    "test/lot11g_anti_dependency_ux_test.dart",
+    "test/lot11f_adversarial_safety_test.dart",
+    "test/lot11e_conversation_ux_test.dart"
+  ]
+}
