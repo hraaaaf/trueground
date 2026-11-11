@@ -40,5 +40,18 @@ jobs:
       - name: Run all 78 supervisor unit tests (offline)
         working-directory: engineering/aimb-j1h/src
         run: node --test
+      - name: Parse Windows gate only - never execute against a host
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'engineering/aimb-j1h/windows-gate.ps1').Path,
+            [ref]$tokens,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          Write-Host 'Windows offline-first gate PS1 syntax verified.'
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
