@@ -1,30 +1,28 @@
-# AIMB J1-H — Validation isolée
+# AI Machine Bridge — J1-H V0.7.4 / GitHub Actions
 
-> **Hors périmètre TrueGround.** Cette zone est réservée aux tests de préproduction de AI Machine Bridge. Ne pas la relier au build, aux dépendances ni au déploiement de TrueGround.
+**Projet indépendant de TrueGround**. Les sources sont hébergées temporairement dans `engineering/aimb-j1h/src/` sur une **branche de PR en brouillon**. Ne pas connecter ces fichiers au build ou au déploiement de TrueGround.
 
-## État
+## Validations automatisées
 
-- Patch de référence V074 présent dans `patch-v074.diff`.
-- SHA-256 du patch : `c5a3080d35793afe8f5b7e6d5b09d9e65e9103f6d857b07fadd1f681744b0a82`.
-- Vérification Windows et Linux via GitHub Actions : **contrôle du patch uniquement**, sans secrets.
-- **Non encore inclus** : les sources V073, les sources finales V074, les 78 tests E2E, l'exécution réseau Cloudflare et l'exécution sur Windows personnel. La CI actuelle ne doit jamais être présentée comme preuve d'un E2E.
+- SHA-256 exact du patch `patch-v074.diff` : `c5a3080d35793afe8f5b7e6d5b09d9e65e9103f6d857b07fadd1f681744b0a82`.
+- SHA-256 exact **des huit modules V074** dans `source-integrity.test.mjs` ; code clé : superviseur `fbc0674f592880f8b3f91bbfe80cad7dd19f8a276fb9329bdd67a027aea9d136`, runner `c2d9662d388be15b31d8360999e07c4d2a44d5885d1a9599975938e56b7ca0c7`.
+- Suite native **78 tests Node** dans `src/` sans accès réseau ni secret.
+- Matrice Linux Ubuntu + Windows Server hébergé GitHub, Node.js 22 et 24.
+- `.gitattributes` force LF pour préserver les empreintes sur Windows.
+- Workflow en **lecture seule** GitHub : pas de Cloudflare, Vercel, tâches planifiées, fixture ou fusion automatique.
 
-## Garanties des fichiers à importer pour une deuxième PR/commit sur cette branche
+## Ce que la matrice GitHub ne prouve pas
 
-| Fichier | SHA-256 de référence |
-|---|---|
-| V073 `supervisor-v07.mjs` | `a77b65e8ab5d42f1cd642a9c632ae74fe8b019c7ac41a4c3acf2e3b7d2e4b29f` |
-| V073 `e2e-windows-runner.mjs` | `b95c1aba31e41b6a9eae6eb06d7eb2357f49f0b55b09db4f52f1d1206a443b93` |
-| V074 `supervisor-v07.mjs` | `fbc0674f592880f8b3f91bbfe80cad7dd19f8a276fb9329bdd67a027aea9d136` |
-| V074 `e2e-windows-runner.mjs` | `c2d9662d388be15b31d8360999e07c4d2a44d5885d1a9599975938e56b7ca0c7` |
+La validation GitHub n'établit **ni** la session WSS 180 secondes sur le vrai PC Windows, **ni** la cause du poll +5,1 s. Elle n'établit pas non plus les quotas D1/DO de 24h ou la qualification humaine d'intégration. Le projet utilise une clé privée de fixture locale pour les requêtes signées ; **ne pas stocker cette clé dans ce dépôt public ni dans les logs GitHub Actions**.
 
-La référence complète du patch et du test de démarrage est documentée dans [Notion](https://app.notion.com/p/41577c663362810c9d98faee098fb947). Avant d'ajouter des sources à **ce dépôt public**, effectuer une revue de confidentialité et vérifier qu'elles ne contiennent ni clé privée, ni nonce, ni identifiant sensible. Aucun worker en production ou tâche Windows ne doit être activé par cette CI.
+## Gates restants pour clôture humaine J1-H
 
-## Prochaines étapes
+1. CI offline 78/78 et SHA parfait sur les quatre combinaisons.
+2. Sur PC Windows local : diagnostic V074 70 secondes, `STAGE_BOOT`, `supervisor_started`, `websocket_connected` ou erreur de connect explicitement bornée 12 secondes ; consigner et traiter toute erreur.
+3. Si connexion réelle confirmée : session 180 secondes avec preuves de `poll_started/poll_finished`, distinction wakeup/fallback/retry, preuve de l'origine ou de l'indétermination du poll +5,1 s.
+4. D1 staging, Durable Objects/quotas 24 heures et sécurité par revue indépendante, avant GO de production explicite.
+5. PR en brouillon : **aucun merge sans approbation humaine**, et **aucun déploiement Vercel ou Cloudflare**.
 
-1. Faire passer la validation de référence sur Linux et Windows hébergés GitHub, via la PR.
-2. Ajouter les sources et tests revus afin de faire tourner les 78 tests Node dans une étape CI autonome.
-3. Conserver un gate Windows physique distinct pour WebSocket sur le vrai PC, suivi de D1/DO 24h et d'une revue indépendante.
-4. Ne jamais fusionner, déclencher de déploiement ni modifier Cloudflare sans GO spécifique.
+[Référence du patch exact dans Notion](https://app.notion.com/p/41577c663362810c9d98faee098fb947).
 
-**Roadmap (état de référence)** : J1-H 76 %, J1-Q 55 %, J1-I 40 %, J1-J 15 %.
+**Roadmap initiale** : J1-H 76 %, J1-Q 55 %, J1-I 40 %, J1-J 15 %.
