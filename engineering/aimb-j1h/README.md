@@ -15,6 +15,24 @@
 
 La validation GitHub n'établit **ni** la session WSS 180 secondes sur le vrai PC Windows, **ni** la cause du poll +5,1 s. Elle n'établit pas non plus les quotas D1/DO de 24h ou la qualification humaine d'intégration. Le projet utilise une clé privée de fixture locale pour les requêtes signées ; **ne pas stocker cette clé dans ce dépôt public ni dans les logs GitHub Actions**.
 
+## Exécution Windows réelle — uniquement sur le PC autorisé
+
+Le fichier [windows-gate.ps1](./windows-gate.ps1) est un **script offline-first**. Il ne se lance jamais automatiquement via GitHub Actions et ne modifie ni tâche planifiée ni service Windows.
+
+Depuis Codex sur le PC Windows, après revue humaine du script, le récupérer dans une copie locale GitHub, puis :
+
+```powershell
+# Par défaut : SHA + 78 tests, aucun accès réseau staging
+powershell -NoProfile -File .\engineering\aimb-j1h\windows-gate.ps1
+
+# Seulement après vérification de staging V7 et clé fixture privée locale :
+powershell -NoProfile -File .\engineering\aimb-j1h\windows-gate.ps1 -RunStaging
+```
+
+Le paramètre `-RunStaging` exige `AIMB_J1H_PRIVATE_KEY_PATH` défini dans l'environnement local et produit les fichiers de preuve sous `%TEMP%/AIMB_J1H_V074_GATE_...`. Aucune clé privée n'est copiée dans le dépôt, ni affichée.
+
+Si le PC est hors ligne ou si la clé locale manque, le résultat est **NO-GO pour le test réseau** : il ne doit pas être remplacé par un résultat GitHub Actions hébergé.
+
 ## Gates restants pour clôture humaine J1-H
 
 1. CI offline 78/78 et SHA parfait sur les quatre combinaisons.
