@@ -5,28 +5,40 @@ on:
     paths:
       - 'engineering/aimb-j1h/**'
       - '.github/workflows/aimb-j1h-ci.yml'
+      - '.gitattributes'
 permissions:
   contents: read
 concurrency:
   group: aimb-j1h-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  patch-reference:
-    name: Reference patch (${{ matrix.os }})
+  verify-and-unit-test:
+    name: AIMB V074 ${{ matrix.os }} / Node ${{ matrix.node }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 5
+    timeout-minutes: 8
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        node: ['22', '24']
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - name: Verify byte-exact patch and scope
-        run: node --test engineering/aimb-j1h/patch-integrity.test.mjs
-      - name: Instructions
-        run: echo "Patch-only integrity gate. Full 78 tests require adding vetted V074 source/test fixtures; NO Windows host or Cloudflare integration is exercised."
+          node-version: ${{ matrix.node }}
+      - name: Verify patch and 8 source hashes
+        run: node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
+      - name: Syntax check key modules
+        working-directory: engineering/aimb-j1h/src
+        run: |
+          node --check supervisor-v07.mjs
+          node --check e2e-windows-runner.mjs
+      - name: Run all 78 supervisor unit tests (offline)
+        working-directory: engineering/aimb-j1h/src
+        run: node --test
+      - name: No deployment or E2E claim
+        run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
