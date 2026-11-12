@@ -44,3 +44,20 @@ Si le PC est hors ligne ou si la clé locale manque, le résultat est **NO-GO po
 [Référence du patch exact dans Notion](https://app.notion.com/p/41577c663362810c9d98faee098fb947).
 
 **Roadmap initiale** : J1-H 76 %, J1-Q 55 %, J1-I 40 %, J1-J 15 %.
+
+## Gate GitHub Windows pour le véritable staging signé (12 novembre 2026)
+
+Le fichier `live-staging-gate.mjs` valide l'empreinte RFC 7638 de la clé privée déjà autorisée par la configuration Cloudflare avant de faire le moindre appel signé. Empreinte publique attendue : `3a98cf5776bf8b243f7c6a423c505015e45a7870d002512c38eed85b8e3a5dbb`. La clé publique est **publique**, la clé **privée ne doit jamais être commitée**.
+
+Le job `live-staging-signed-wss` est **désactivé par défaut** et réservé à la PR #38 du dépôt d'origine. Trois conditions doivent être réunies : le label de PR `aimb-j1h-live-approved`, la variable Actions de dépôt `AIMB_J1H_LIVE_STAGE_READY=true`, et l'environnement GitHub `aimb-j1h-staging` avec secret d'environnement `AIMB_J1H_FIXTURE_PEM_B64` (contenu : Base64 de la clé privée PEM **existante** correspondant à l'empreinte publique). Configurer des reviewers obligatoires sur cet environnement avant d'y ajouter le secret. Ne jamais publier cette valeur dans une PR, un commentaire, un log ou un ticket.
+
+La création/activation de cet environnement et l'ajout du secret nécessitent une intervention humaine dans les paramètres GitHub. Le GO verbal autorise le test, **mais il ne fournit pas la clé privée ni les protections GitHub**. Le CI automatique ne remplace pas cette configuration.
+
+Après approbation de l'environnement, le job :
+1. refait le contrôle byte-exact et les 78 tests hors ligne avant chargement de la clé ;
+2. charge temporairement le secret dans un fichier du runner, effacé systématiquement ;
+3. vérifie l'empreinte RSA, la santé du staging et la connexion WSS signée ;
+4. lance **70 secondes réelles**, puis **180 secondes réelles** uniquement si la première session réussit ;
+5. publie seulement des compteurs d'événements et des métriques synthétiques, pas les traces brutes ni les nonces.
+
+Cette validation autorise seulement des polls et reçus de jobs **fixture** dans le staging isolé. Elle n'exécute aucune commande Windows réelle, n'écrit aucun fichier utilisateur, ne modifie ni la production V15, ni le déploiement Cloudflare, ni Vercel. Un résultat PASS ne prouve pas à lui seul la cause du poll +5,1 s ni les quotas 24 h D1/DO.
