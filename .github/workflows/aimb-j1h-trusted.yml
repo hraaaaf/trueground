@@ -1,0 +1,65 @@
+name: AIMB J1-H trusted signed staging Windows
+on:
+  push:
+    branches:
+      - aimb-j1h-trusted-runner
+    paths:
+      - '.github/workflows/aimb-j1h-trusted.yml'
+      - 'engineering/aimb-j1h/**'
+permissions:
+  contents: read
+concurrency:
+  group: aimb-j1h-trusted-staging
+  cancel-in-progress: false
+jobs:
+  live-signed-staging:
+    name: Signed staging 70s then 180s from dedicated trusted branch
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/aimb-j1h-trusted-runner' &&
+      vars.AIMB_J1H_LIVE_STAGE_READY == 'true'
+    runs-on: windows-latest
+    environment: aimb-j1h-staging
+    timeout-minutes: 10
+    steps:
+      - name: Checkout only trusted branch commit, never PR code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify immutable source hashes and syntax before secret access
+        run: |
+          node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
+          node --check engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Verify 78 tests before secret access
+        working-directory: engineering/aimb-j1h/src
+        run: node --test
+      - name: Materialize pre-existing authorized fixture key
+        shell: pwsh
+        env:
+          AIMB_KEY_B64: ${{ secrets.AIMB_J1H_FIXTURE_PEM_B64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:AIMB_KEY_B64)) { throw 'NO_GO_SECRET_MISSING' }
+          $data = [Convert]::FromBase64String($env:AIMB_KEY_B64)
+          if ($data.Length -lt 1000 -or $data.Length -gt 8192) { throw 'NO_GO_INVALID_KEY_LENGTH' }
+          $pem = [Text.Encoding]::UTF8.GetString($data)
+          if (-not ($pem.StartsWith('-----BEGIN PRIVATE KEY-----') -or $pem.StartsWith('-----BEGIN RSA PRIVATE KEY-----'))) {
+            throw 'NO_GO_EXPECTED_PEM_KEY_FORMAT'
+          }
+          $path = Join-Path $env:RUNNER_TEMP 'aimb-j1h-fixture.pem'
+          [IO.File]::WriteAllBytes($path, $data)
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "AIMB_J1H_PRIVATE_KEY_PATH=$path"
+          [Array]::Clear($data, 0, $data.Length)
+          Remove-Item Env:\AIMB_KEY_B64 -ErrorAction SilentlyContinue
+      - name: Signed WSS staging proof on real wall clock
+        run: node engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Destroy temporary fixture copy
+        if: always()
+        shell: pwsh
+        run: |
+          Remove-Item -LiteralPath (Join-Path $env:RUNNER_TEMP 'aimb-j1h-fixture.pem') -Force -ErrorAction SilentlyContinue
+          Write-Host 'Temporary fixture copy removed'
