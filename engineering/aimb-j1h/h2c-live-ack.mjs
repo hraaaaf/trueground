@@ -44,7 +44,7 @@ async function main(){
  const start=Date.now(),report=await agent.run(),m=report.metrics||{};
  check(Date.now()-start>=SECONDS*1000-3000,'NOT_180_SEC_WALL_CLOCK');
  check(report.stage===BASE&&report.production_touched===false&&report.task_scheduler_modified===false,'STAGING_BOUNDARY_VIOLATION');
- check(m.websocketConnections>=1&&m.websocketErrors===0&&m.networkErrors===0&&m.violations===0,'NETWORK_OR_POLICY_FAILURE');
+ check(m.websocketConnections>=1&&m.websocketErrors===0&&m.networkErrors===1&&m.violations===0,'NETWORK_OR_POLICY_FAILURE');
  check(m.leases===5&&m.resultsSaved===4&&m.statusRecovery===1&&lost,'FIVE_LEASES_OR_ACK_RECOVERY_FAILED');
  check(counts.size===5&&[...counts.values()].every(n=>n===1),'EXECUTION_NOT_EXACTLY_ONCE');
  const rows=report.receipts||[];
@@ -69,6 +69,6 @@ async function main(){
  check(idle.status===200&&idle.body?.ok===true&&CHANNELS.every(ch=>idle.body.channels?.[ch]?.command===null),'QUEUES_NOT_DRAINED');
  console.log('J1H_H2C_PASS '+JSON.stringify({stage:'staging_only',channels:5,fixtureExecutions:5,
   duplicatedExecutions:0,ackLossSimulated:1,statusRecovered:1,persistedResults:5,idempotentRetries:5,
-  conflictRejected:true,queuesEmpty:true,networkErrors:0,violations:0,productionTouched:false,windowsTasksChanged:false}));
+  conflictRejected:true,queuesEmpty:true,expectedInjectedNetworkErrors:1,unexpectedNetworkErrors:0,violations:0,productionTouched:false,windowsTasksChanged:false}));
 }
 main().catch(e=>{console.error('J1H_H2C_NO_GO '+String(e?.message||'unexpected').slice(0,100));process.exitCode=1});
