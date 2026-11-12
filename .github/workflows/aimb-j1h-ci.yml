@@ -55,3 +55,22 @@ jobs:
           Write-Host 'Windows offline-first gate PS1 syntax verified.'
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
+
+  staging-transport-probe:
+    name: AIMB staging transport (Windows, unsigned only)
+    runs-on: windows-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check staging HTTPS and anonymous WebSocket refusal
+        run: node engineering/aimb-j1h/staging-network-probe.mjs
+      - name: Scope declaration
+        if: always()
+        run: echo "Read-only anonymous transport only; signed WSS and 70s/180s supervisor NOT tested"
