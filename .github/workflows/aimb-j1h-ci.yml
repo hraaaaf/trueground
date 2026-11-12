@@ -74,3 +74,24 @@ jobs:
       - name: Scope declaration
         if: always()
         run: echo "Read-only anonymous transport only; signed WSS and 70s/180s supervisor NOT tested"
+
+  hermetic-signed-wss:
+    name: AIMB signed TLS/WebSocket loopback (Windows, ephemeral keys)
+    runs-on: windows-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: RSA signed WSS + real TLS + supervisor wake + ACK recovery
+        run: node --test engineering/aimb-j1h/signed-wss-loopback.test.mjs
+      - name: State limits
+        if: always()
+        run: echo "Loopback with generated ephemeral fixture keys and accelerated virtual clock; signed remote staging WSS and wall-clock 70s/180s NOT proven"
