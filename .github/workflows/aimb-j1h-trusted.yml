@@ -20,7 +20,7 @@ jobs:
       vars.AIMB_J1H_LIVE_STAGE_READY == 'true'
     runs-on: windows-latest
     environment: aimb-j1h-staging
-    timeout-minutes: 10
+    timeout-minutes: 14
     steps:
       - name: Checkout only trusted branch commit, never PR code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -36,6 +36,7 @@ jobs:
           node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
           node --check engineering/aimb-j1h/live-staging-gate.mjs
           node --check engineering/aimb-j1h/h2b-live-wakeup.mjs
+          node --check engineering/aimb-j1h/h2c-live-ack.mjs
       - name: Verify 78 tests before secret access
         working-directory: engineering/aimb-j1h/src
         run: node --test
@@ -56,6 +57,9 @@ jobs:
           Add-Content -LiteralPath $env:GITHUB_ENV -Value "AIMB_J1H_PRIVATE_KEY_PATH=$path"
           [Array]::Clear($data, 0, $data.Length)
           Remove-Item Env:\AIMB_KEY_B64 -ErrorAction SilentlyContinue
+      - name: H2-C five staging fixtures / simulated lost ACK / idempotence
+        if: vars.AIMB_J1H_H2C_RUN == 'true'
+        run: node engineering/aimb-j1h/h2c-live-ack.mjs
       - name: Signed WSS staging proof on real wall clock
         run: node engineering/aimb-j1h/live-staging-gate.mjs
       - name: H2-B signed staging wake notification and replay proof
