@@ -121,11 +121,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Fail-closed source hash, syntax and unit checks before any key injection
+      - name: Fail-closed source hashes and syntax before any key injection
         run: |
           node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
-          node --test engineering/aimb-j1h/src/*.test.mjs
           node --check engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Run 78 offline tests before loading the fixture secret
+        working-directory: engineering/aimb-j1h/src
+        run: node --test
       - name: Materialize approved fixture key from protected GitHub Environment
         shell: pwsh
         env:
