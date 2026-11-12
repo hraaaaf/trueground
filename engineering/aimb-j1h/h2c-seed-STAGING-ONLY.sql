@@ -1,0 +1,13 @@
+-- AIMB J1-H H2-C: synthetic allowlisted fixtures ONLY; no production D1 use.
+-- Execute exclusively against D1 UUID c4a5e40a-adf5-45a1-b188-87c7a9dba04f.
+-- Fail closed if any staging queue nonempty. Run ONLY after GitHub job H2C_READY.
+-- All inserts are isolated to device j1h-staging-fixture, 110 second expiry.
+INSERT INTO commands (id,device_id,action,status,created_at,expires_at) SELECT lower(hex(randomblob(4))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(6))), 'j1h-staging-fixture','get_system_info','pending',unixepoch(),unixepoch()+110 WHERE NOT EXISTS(SELECT 1 FROM commands);
+INSERT INTO file_jobs (id,device_id,action,filename,status,created_at,expires_at) SELECT lower(hex(randomblob(4))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(6))),'j1h-staging-fixture','list_authorized_files',NULL,'pending',unixepoch(),unixepoch()+110 WHERE NOT EXISTS(SELECT 1 FROM file_jobs);
+INSERT INTO maintenance_jobs (id,device_id,action,argument,status,created_at,expires_at) SELECT lower(hex(randomblob(4))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(6))),'j1h-staging-fixture','get_bridge_tasks',NULL,'pending',unixepoch(),unixepoch()+110 WHERE NOT EXISTS(SELECT 1 FROM maintenance_jobs);
+INSERT INTO workspace_jobs (id,device_id,requester_sub,action,filename,content_text,content_sha256,status,created_at,expires_at) SELECT lower(hex(randomblob(4))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(6))),'j1h-staging-fixture','j1h-h2c-synthetic','list_workspace_files',NULL,NULL,NULL,'pending',unixepoch(),unixepoch()+110 WHERE NOT EXISTS(SELECT 1 FROM workspace_jobs);
+INSERT INTO project_jobs (id,device_id,requester_sub,action,args_json,status,created_at,expires_at) SELECT lower(hex(randomblob(4))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(2))||'-'||hex(randomblob(6))),'j1h-staging-fixture','j1h-h2c-synthetic','list_project_files','{}','pending',unixepoch(),unixepoch()+110 WHERE NOT EXISTS(SELECT 1 FROM project_jobs);
+SELECT 'h2c_seed_summary' AS proof,
+ (SELECT COUNT(*) FROM commands) AS commands, (SELECT COUNT(*) FROM file_jobs) AS files,
+ (SELECT COUNT(*) FROM maintenance_jobs) AS maintenance, (SELECT COUNT(*) FROM workspace_jobs) AS workspace,
+ (SELECT COUNT(*) FROM project_jobs) AS projects;
