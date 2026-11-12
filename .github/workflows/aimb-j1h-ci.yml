@@ -2,6 +2,7 @@ name: AIMB J1-H isolated validation
 on:
   workflow_dispatch:
   pull_request:
+    types: [opened, reopened, synchronize, labeled]
     paths:
       - 'engineering/aimb-j1h/**'
       - '.github/workflows/aimb-j1h-ci.yml'
@@ -53,6 +54,8 @@ jobs:
           )
           if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
           Write-Host 'Windows offline-first gate PS1 syntax verified.'
+      - name: Validate live signed gate syntax without secrets
+        run: node --check engineering/aimb-j1h/live-staging-gate.mjs
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
 
@@ -95,3 +98,57 @@ jobs:
       - name: State limits
         if: always()
         run: echo "Loopback with generated ephemeral fixture keys and accelerated virtual clock; signed remote staging WSS and wall-clock 70s/180s NOT proven"
+
+  live-staging-signed-wss:
+    name: AIMB live staging signed WSS (protected manual gate)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.number == 38 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(github.event.pull_request.labels.*.name, 'aimb-j1h-live-approved') &&
+      vars.AIMB_J1H_LIVE_STAGE_READY == 'true'
+    runs-on: windows-latest
+    environment: aimb-j1h-staging
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout immutable PR SHA
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fail-closed source hash, syntax and unit checks before any key injection
+        run: |
+          node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
+          node --test engineering/aimb-j1h/src/*.test.mjs
+          node --check engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Materialize approved fixture key from protected GitHub Environment
+        shell: pwsh
+        env:
+          AIMB_KEY_B64: ${{ secrets.AIMB_J1H_FIXTURE_PEM_B64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:AIMB_KEY_B64)) { throw 'NO_GO_PROTECTED_ENVIRONMENT_SECRET_MISSING' }
+          $bytes = [Convert]::FromBase64String($env:AIMB_KEY_B64)
+          if ($bytes.Length -lt 1000 -or $bytes.Length -gt 8192) { throw 'NO_GO_INVALID_KEY_LENGTH' }
+          $pem = [Text.Encoding]::UTF8.GetString($bytes)
+          if (-not ($pem.StartsWith('-----BEGIN PRIVATE KEY-----') -or $pem.StartsWith('-----BEGIN RSA PRIVATE KEY-----'))) {
+            throw 'NO_GO_EXPECTED_PEM_KEY_FORMAT'
+          }
+          $keyPath = Join-Path $env:RUNNER_TEMP 'aimb-j1h-fixture.pem'
+          [IO.File]::WriteAllBytes($keyPath, $bytes)
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "AIMB_J1H_PRIVATE_KEY_PATH=$keyPath"
+          [Array]::Clear($bytes,0,$bytes.Length)
+          Remove-Item Env:\AIMB_KEY_B64 -ErrorAction SilentlyContinue
+      - name: RSA fingerprint gate then real signed staging supervisor 70s + 180s
+        run: node engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Erase fixture key regardless of outcome
+        if: always()
+        shell: pwsh
+        run: |
+          $keyPath = Join-Path $env:RUNNER_TEMP 'aimb-j1h-fixture.pem'
+          Remove-Item -LiteralPath $keyPath -Force -ErrorAction SilentlyContinue
+          Write-Host 'Fixture key cleanup complete; no raw supervisor logs or artifacts published.'
