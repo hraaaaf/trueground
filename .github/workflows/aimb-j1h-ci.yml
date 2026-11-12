@@ -54,8 +54,10 @@ jobs:
           )
           if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
           Write-Host 'Windows offline-first gate PS1 syntax verified.'
-      - name: Validate live signed gate syntax without secrets
-        run: node --check engineering/aimb-j1h/live-staging-gate.mjs
+      - name: Verify live signed gate fails closed without staging secrets
+        run: |
+          node --check engineering/aimb-j1h/live-staging-gate.mjs
+          node --test engineering/aimb-j1h/live-staging-gate.test.mjs
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
 
