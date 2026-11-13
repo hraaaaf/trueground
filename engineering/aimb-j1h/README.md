@@ -65,3 +65,16 @@ Cette validation autorise seulement des polls et reçus de jobs **fixture** dans
 ## J1-H 2026-11-13 — WSS wake rate cap (tests offlines uniquement)
 
 La cadence de reveil WebSocket du superviseur groupe est bornee a 15 secondes entre fin de lot et nouveau lot; la cadence au repos reste de 60 secondes. Deux nouveaux tests mettent sous charge les evenements WSS repetes et preservent le reveil rapide apres une periode calme. Les huit modules dans `source-integrity.test.mjs` et dans la porte Windows sont re-epingles aux nouveaux SHA-256. Ce patch ne concerne PAS les trois anciens pollers, qui doivent rester desactives apres l'incident D1. Le changement n'a pas ete deploye sur Windows/Cloudflare; un test signe reel et l'audit des quotas de 24h restent obligatoires.
+
+## 2026-11-13 — porte H2-B pour le vrai Worker signé (NO-GO tant que branche trusted non synchronisée)
+
+Le code candidat de cette PR applique 15 000 ms de délai minimum entre traitements signés consécutifs. Le test H2-B historique, sur la **branche protégée** `aimb-j1h-trusted-runner`, exigeait à tort une latence de notification inférieure à 5 s et son superviseur était encore à 78 tests. Cette branche historique n'a pas été modifiée ici, afin de **ne pas déclencher un workflow signant des requêtes avec une ancienne version de code**.
+
+Trois modules préparés dans cette PR :
+- `h2b-rate-evidence.mjs` : vérification pure, stricte et en échec fermé : présence du WebSocket signé, notification unique, rejet du replay, 70 secondes au temps réel, espacement minimum de 15 s entre lots, latence bornée à 17 s et aucune action Windows / production.
+- `h2b-rate-evidence.test.mjs` : tests sans secrets, comprenant un rejet explicite des polls à 250 ms et 5,1 s, des erreurs de réseau et de l'absence de preuve d'exécution.
+- `h2b-live-wakeup.mjs` : lanceur signé **préparé mais jamais exécuté ici**, conserve l'URL Cloudflare staging épinglée et la clé fixture Auth/RSA préexistante, puis applique le validateur précédent.
+
+L'étape CI vérifie la syntaxe de ce lanceur et exécute uniquement les tests **purs** sur Windows/Linux Node 22/24 ; elle ne transmet aucune clé, ne crée aucun job et ne peut donc pas valider la session signée réelle. La branche trusted doit être **mise à jour seulement après revue et validation humaine**, avec conservation des protections d'environnement, clé fixture existante et vérification des pins de tous les fichiers. La branche principale, le plugin ChatGPT, le Worker Cloudflare et les trois anciens pollers Windows ne doivent pas être modifiés pour accomplir cette étape.
+
+**Preuve à obtenir plus tard :** workflow GitHub du trusted runner exécuté avec secrets protégés, 70 s puis 180 s *wall-clock*, résultat signé `J1H_LIVE_TEST_PASS`, `J1H_H2B_PASS`, aucune fuite, relevés D1/DO avant/après et gate humain distinct. Ne jamais interpréter la CI locale comme ces preuves.
