@@ -67,17 +67,13 @@ jobs:
       - name: Run offline Node and Win32 mock suite
         run: |
           $ErrorActionPreference = 'Stop'
-          Push-Location engineering/aimb-j1-dev
-          try {
-            $tests = Get-ChildItem -Recurse -Filter '*.test.mjs' | ForEach-Object { $_.FullName }
-            node --test --test-reporter=spec @tests
-            if ($LASTEXITCODE -ne 0) { throw 'NODE_TESTS_FAILED' }
-          } finally { Pop-Location }
+          pwsh -NoProfile -NonInteractive -File engineering/aimb-j1-dev/run-restricted-windows-tests.ps1 -Suite Node
+          if ($LASTEXITCODE -ne 0) { throw 'NODE_TESTS_FAILED' }
       - name: Run native PowerShell 7 Win32 adversarial tests
         run: |
-          pwsh -NoProfile -NonInteractive -File engineering/aimb-j1-dev/native-read-gate.test.ps1
+          pwsh -NoProfile -NonInteractive -File engineering/aimb-j1-dev/run-restricted-windows-tests.ps1 -Suite PowerShell7
           if ($LASTEXITCODE -ne 0) { throw 'POWERSHELL_7_TESTS_FAILED' }
       - name: Run Windows PowerShell 5.1 Win32 adversarial tests
         run: |
-          powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File engineering/aimb-j1-dev/native-read-gate.test.ps1
+          pwsh -NoProfile -NonInteractive -File engineering/aimb-j1-dev/run-restricted-windows-tests.ps1 -Suite PowerShell51
           if ($LASTEXITCODE -ne 0) { throw 'POWERSHELL_51_TESTS_FAILED' }

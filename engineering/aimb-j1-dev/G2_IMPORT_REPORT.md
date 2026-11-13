@@ -13,13 +13,14 @@
 - Gitleaks scan of the candidate source: PASS, zero findings after replacing one test-only nonce string that matched the generic-api-key rule. The test now generates a fresh random nonce at runtime. Scanner report was saved outside the source snapshot.
 - Two-pass content review checked the explicit file inventory, source/tests, workflow, filenames, file sizes, private-key markers, secret-scan output, public endpoint/identity literals, and local path references. No private key, token, `.env`, local database, personal data, or local filesystem path is included in the published allowlist.
 - The only workflow added is offline Windows CI, guarded to this branch and this directory, with read-only `contents` permission, immutable action SHAs, no secrets/environment, no staging requests, and no deploy step.
-- Offline workflow SHA-256: `322a6e86e8dbeaec6b344c53e9589ae1d76107df0585132bda943e8460a4c0fe`.
+- Offline workflow SHA-256: `2fd6e7495600b91cd50cd055b997a1d5b7930af30d8e122bf4d537c651328f01`.
 
 ## CI correction record
 
 - First candidate workflow run `43334495405` failed at the manifest step because the export publisher omitted `SHA256SUMS.txt` itself from the Git tree. The source manifest was valid; no Node or PowerShell candidate test ran in that attempt.
 - Corrected the publication set to include the manifest file (which lists every other allowlisted source/document file), and refreshed its SHA-256 entries. A follow-up Windows CI run is required before calling G2 successful.
 - The second run `43334713725` found a byte-level SHA mismatch after Windows checkout. The repository root attributes did not specify normalization for this new directory. Added a scoped `.gitattributes` rule (`* -text`) so the SHA manifest validates the exact committed bytes instead of line-ending-transformed working copies. A local regression probe with `core.autocrlf=true` passed. The workflow now includes the relative filename and expected/actual hashes in a future mismatch error; those diagnostics contain no secrets. The follow-up CI run must verify this fix.
+- Third run `43335124720` passed credential checks, SHA manifest, and syntax, then failed in Node tests because the hosted Windows process is elevated and the native gate correctly returned `ELEVATED_PROCESS_DENIED`. The security gate remains unchanged. Added `run-restricted-windows-tests.ps1`, a fixed-suite launcher that uses a Windows restricted LUA token for Node, PowerShell 7, and Windows PowerShell 5.1 when the parent is elevated; it has no arbitrary command interface. The same launcher passed the three suites locally under the existing non-elevated Lenovo session. A fourth GitHub run must validate its restricted-token path.
 
 ## Local validation on Windows
 
