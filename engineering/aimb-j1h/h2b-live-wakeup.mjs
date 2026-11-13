@@ -4,7 +4,8 @@ import {readFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
 import {dirname,join} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {BASE,DEVICE,requireStagingUrl,signRequest} from './src/e2e-windows-runner.mjs';
+import {BASE,requireStagingUrl,signRequest} from './src/e2e-windows-runner.mjs';
+import {verifyBoundedWake} from './h2b-rate-evidence.mjs';
 
 const ROOT=dirname(fileURLToPath(import.meta.url));
 const SUPERVISOR=join(ROOT,'src','supervisor-v07.mjs');
@@ -70,15 +71,8 @@ async function run(){
  if(!sendPromise)fail('SIGNED_WSS_SESSION_NEVER_CONNECTED');
  const sent=await sendPromise;
  if(code!==0)fail('SUPERVISOR_EXIT_FAILURE');
- const report=parseReport(output),m=report.metrics||{};
- if(Date.now()-start<DURATION*1000-3000)fail('NOT_REAL_WALL_CLOCK');
- if(report.stage!==BASE||report.production_touched!==false||report.task_scheduler_modified!==false)fail('STAGING_BOUNDARY_VIOLATION');
- if(m.websocketWakeups!==1||m.pollReasons?.wakeup!==1)fail('WAKEUP_POLL_NOT_OBSERVED');
- if(m.websocketConnections!==1||m.websocketErrors!==0||m.networkErrors!==0||m.violations!==0||m.shortPollIntervals!==0)fail('TRANSPORT_DIAGNOSTIC_FAILURE');
- if(m.wakeupPollLatencyMs?.length!==1)fail('WAKEUP_LATENCY_MISSING');
- const latency=m.wakeupPollLatencyMs[0];
- if(!Number.isFinite(latency)||latency<0||latency>5000)fail('WAKEUP_LATENCY_OVER_5S');
- if(!Array.isArray(report.pollTrace)||!report.pollTrace.some(p=>p.reason==='wakeup'&&p.status==='ok'))fail('WAKEUP_RESULT_NOT_CONFIRMED');
- console.log('J1H_H2B_PASS '+JSON.stringify({stage:'staging_only',device:DEVICE,wallClockSeconds:DURATION,elapsedMs:Date.now()-start,websocketConnections:m.websocketConnections,websocketWakeups:m.websocketWakeups,wakeupPolls:m.pollReasons.wakeup,wakeupToPollMs:latency,batchPolls:m.batchPolls,notificationDelivered:sent.delivered,replayRejected:sent.replayRejected,networkErrors:m.networkErrors,violations:m.violations,productionTouched:false,windowsTasksChanged:false,fixtureJobsExecuted:0,ackRecoveryNotTested:true}));
+ const report=parseReport(output);
+ const summary=verifyBoundedWake({report,sent,wallClockSeconds:DURATION,elapsedMs:Date.now()-start});
+ console.log('J1H_H2B_PASS '+JSON.stringify(summary));
 }
 run().catch(e=>{console.error('J1H_H2B_NO_GO '+String(e?.message||'unexpected').slice(0,100));process.exitCode=1});

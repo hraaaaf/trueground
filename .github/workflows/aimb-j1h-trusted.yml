@@ -37,9 +37,13 @@ jobs:
           node --check engineering/aimb-j1h/live-staging-gate.mjs
           node --check engineering/aimb-j1h/h2b-live-wakeup.mjs
           node --check engineering/aimb-j1h/h2c-live-ack.mjs
-      - name: Verify 78 tests before secret access
+      - name: Verify 80 tests before secret access
         working-directory: engineering/aimb-j1h/src
         run: node --test
+      - name: Fail-closed cadence and D1 proof checks before secret access
+        run: |
+          node --check engineering/aimb-j1h/h2b-live-wakeup.mjs
+          node --test engineering/aimb-j1h/h2b-rate-evidence.test.mjs engineering/aimb-j1h/d1-safety-gate.test.mjs
       - name: Materialize pre-existing authorized fixture key
         shell: pwsh
         env:
@@ -58,7 +62,7 @@ jobs:
           [Array]::Clear($data, 0, $data.Length)
           Remove-Item Env:\AIMB_KEY_B64 -ErrorAction SilentlyContinue
       - name: H2-C five staging fixtures / simulated lost ACK / idempotence
-        if: vars.AIMB_J1H_H2C_RUN == 'true'
+        if: vars.AIMB_J1H_H2C_RUN == 'true' && vars.AIMB_J1H_H2C_EXPLICIT_GO == 'true'
         run: node engineering/aimb-j1h/h2c-live-ack.mjs
       - name: Signed WSS staging proof on real wall clock
         run: node engineering/aimb-j1h/live-staging-gate.mjs
