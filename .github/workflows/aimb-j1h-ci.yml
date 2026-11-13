@@ -77,6 +77,8 @@ jobs:
           node-version: '24'
       - name: Check staging HTTPS and anonymous WebSocket refusal
         run: node engineering/aimb-j1h/staging-network-probe.mjs
+      - name: Check staging MCP OAuth metadata and anonymous refusal (no D1 jobs)
+        run: node engineering/aimb-j1h/staging-mcp-smoke.mjs
       - name: Scope declaration
         if: always()
         run: echo "Read-only anonymous transport only; signed WSS and 70s/180s supervisor NOT tested"
