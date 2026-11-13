@@ -38,7 +38,7 @@ jobs:
         run: |
           node --check supervisor-v07.mjs
           node --check e2e-windows-runner.mjs
-      - name: Run all 78 supervisor unit tests (offline)
+      - name: Run all 80 supervisor unit tests (offline)
         working-directory: engineering/aimb-j1h/src
         run: node --test
       - name: Parse Windows gate only - never execute against a host
