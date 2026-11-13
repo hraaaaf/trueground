@@ -24,6 +24,7 @@
 - Fourth run `43335814239` launched the restricted Node suite, but `DISABLE_MAX_PRIVILEGE | LUA_TOKEN` prevented child PowerShell initialization (`0xC0000142`).
 - Fifth run `43336070404` still returned `0xC0000142` for PowerShell children under the LUA-filtered process. The isolated-token approach is not reliable for the nested PowerShell test harness.
 - Replaced that approach with a disposable local standard user created only on the ephemeral GitHub runner, granted read/execute on the candidate tree and modify access to its temporary logs, then deleted in `finally`. Its password is generated in memory and never emitted or stored. The candidate code's elevated-process rejection remains unchanged. This account-creation path has not yet been exercised by GitHub Actions; the next run is required to validate it. The Lenovo local non-elevated test results remain the direct evidence for the native path.
+- Sixth run `43336977155` stopped before tests because the generated local account name exceeded Windows' 20-character limit. Shortened the random account name; no account or test process was created by that failed setup. The next run must validate the complete CI path.
 
 ## Local validation on Windows
 

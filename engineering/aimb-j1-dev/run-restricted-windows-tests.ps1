@@ -32,7 +32,7 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
 # GitHub-hosted Windows jobs run elevated, while the candidate intentionally fails closed there.
 # Create a disposable standard account for this fixed test suite and remove it in finally.
 Import-Module Microsoft.PowerShell.LocalAccounts -ErrorAction Stop
-$username = 'aimbci' + [guid]::NewGuid().ToString('N').Substring(0,16)
+$username = 'ac' + [guid]::NewGuid().ToString('N').Substring(0,16)
 $plainPassword = [guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N') + 'Aa1!'
 $password = ConvertTo-SecureString $plainPassword -AsPlainText -Force
 $plainPassword = $null
