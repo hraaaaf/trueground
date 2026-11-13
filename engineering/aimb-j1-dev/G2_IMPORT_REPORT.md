@@ -38,3 +38,11 @@
 ## Limits and gate
 
 This is an audited source import and offline CI candidate, not a live integration. The placeholder staging pins intentionally do not identify the deployed staging Worker, D1 database, or Auth0 tenant. No GitHub secret or variable was changed, no trusted/live workflow was run, no D1 write or deployment occurred, and PR #39 must remain draft and unmerged. A successful CI run validates this imported snapshot only; it does not authorize staging or production use.
+
+## Seventh CI attempt and correction
+
+- Run `43337188765` (`cd76f1366c93fa4ddae2e17a4612e9251bca67d0`) passed credential screening, the exported SHA-256 manifest, and syntax checks for 25 JavaScript files, but failed the Node suite. The failure was confined to test setup: the test process inherited the hosted administrator's `USERPROFILE` and `TEMP`, so the newly created standard account could not create its temporary fixtures there (`EPERM`).
+- Updated the fixed-suite launcher to bootstrap the disposable user's Windows profile, resolve its registered path by the exact temporary SID, verify that path remains under `C:\Users\<temporary-user>`, and point child `USERPROFILE`, `TEMP`, and `TMP` to the disposable profile / ACL-scoped test directory. The native security gate and its non-elevated requirement are unchanged. The fixture E2E still uses only the exact allowlisted `%USERPROFILE%\AI_Machine_Bridge_DEV_FIXTURE` parent and removes the per-run fixture.
+- Updated local run results after this correction: Node 89/89 PASS, PowerShell 7 17/17 PASS, and Windows PowerShell 5.1 16 PASS / 0 FAIL / 1 admin-only symlink-creation SKIP. The helper parser and changed JavaScript syntax checks pass. The complete elevated GitHub account/profile path still requires a new CI run.
+
+- Eighth run `43338031993` failed at SHA verification before tests because its manifest contained the new report hash but the atomic Git tree update omitted the changed report file itself; CI correctly detected the inconsistency (`G2_IMPORT_REPORT.md`). This was a publication-set mistake, not a test/runtime failure. The next commit includes the report and manifest together, and the required candidate CI run must verify that exact tree.
