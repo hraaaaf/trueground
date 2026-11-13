@@ -1,0 +1,42 @@
+--- a/supervisor-v07.mjs
++++ b/supervisor-v07.mjs
+@@ -182,6 +182,7 @@
+  async run(){
+   if(this.running)throw Error('ALREADY_RUNNING');
+   this.running=true;this.metrics.startedAt=new Date().toISOString();this.startAt=this.localTime();
++  this.emitEvidence('supervisor_started',{monotonicMs:this.startAt,durationSec:this.durationMs/1000,stagingOnly:true});
+   try{
+    while(!this.stopRequested){
+     const now=this.localTime();if(now-this.startAt>=this.durationMs)break;
+@@ -202,11 +203,12 @@
+  const {help,durationSec}=parseSupervisorArgs(argv);
+  if(help){console.log('Usage: node supervisor-v07.mjs --duration-sec 180 (70..86400). Local private RSA key path: AIMB_J1H_PRIVATE_KEY_PATH. STAGING ONLY.');return 0}
+  validateEnv();
++ console.log('STAGE_BOOT',JSON.stringify({event:'initializing_fixture_key',at:new Date().toISOString(),stagingOnly:true}));
+  const key=loadKey();
+  const supervisor=new SupervisorV07({key,durationSec});
+  supervisor.on('evidence',entry=>{const out=entry.type==='batch_error'||entry.type==='websocket_connect_failure'?console.error:console.log;out('STAGE_EVENT',JSON.stringify(entry))});
+  const onSig=()=>supervisor.stop();process.once('SIGINT',onSig);process.once('SIGTERM',onSig);
+- try{const result=await supervisor.run();console.log(JSON.stringify(result,null,2));return 0}
++ try{const result=await supervisor.run();console.log(JSON.stringify(result,null,2));if(result.metrics.websocketConnections<1||result.metrics.batchPolls<1){console.error('NO_GO','SUPERVISOR_CONNECTIVITY_NOT_PROVEN');return 1;}return 0}
+  finally{process.off('SIGINT',onSig);process.off('SIGTERM',onSig)}
+ }
+ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))process.exitCode=await main();
+--- a/e2e-windows-runner.mjs
++++ b/e2e-windows-runner.mjs
+@@ -155,11 +155,13 @@
+  const wsKey=randomBytes(16).toString('base64');
+  return await new Promise((resolve,reject)=>{
+   const request=httpsRequest({hostname:url.hostname,port:443,path:route,method:'GET',headers:{...headers,'Upgrade':'websocket','Connection':'Upgrade','Sec-WebSocket-Version':'13','Sec-WebSocket-Key':wsKey},timeout:10000});
+-  let finished=false;function fail(e){if(finished)return;finished=true;reject(e);request.destroy()}
++  let finished=false;
++  const deadline=setTimeout(()=>fail(Error('WEBSOCKET_HARD_DEADLINE_12S')),12000);
++  function fail(e){if(finished)return;finished=true;clearTimeout(deadline);reject(e);request.destroy()}
+   request.on('upgrade',(res,socket,head)=>{
+    const expected=createHash('sha1').update(wsKey+'258EAFA5-E914-47DA-95CA-C5AB0DC85B11').digest('base64');
+    if(res.statusCode!==101||res.headers['sec-websocket-accept']!==expected){socket.destroy();return fail(Error('WEBSOCKET_UPGRADE_REJECTED'))}
+-   finished=true;h.calls.push({path:route,method:'GET',status:101,test_nonce:nonce});const ws=new RawWS(socket);if(head?.length)ws.feed(head);resolve(ws);
++   finished=true;clearTimeout(deadline);h.calls.push({path:route,method:'GET',status:101,test_nonce:nonce});const ws=new RawWS(socket);if(head?.length)ws.feed(head);resolve(ws);
+   });
+   request.on('response',res=>{res.resume();fail(Error('WEBSOCKET_HTTP_'+res.statusCode))});
+   request.on('timeout',()=>fail(Error('WEBSOCKET_CONNECT_TIMEOUT')));

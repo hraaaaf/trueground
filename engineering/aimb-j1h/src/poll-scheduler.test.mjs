@@ -1,0 +1,20 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {PollScheduler,CHANNELS,idleProjection,MIN_WAKE_GAP_MS} from './poll-scheduler.mjs';
+test('five independent channels reduced to one batch',()=>assert.equal(CHANNELS.length,5));
+test('one grouped batch per minute gives 98.333% reduction in nonce inserts',()=>{const r=idleProjection();assert.equal(r.legacyNonceInserts,86400);assert.equal(r.groupedNonceInserts,1440);assert.ok(r.reduction>=.98);});
+test('initial poll occurs immediately',()=>{const x=new PollScheduler();assert.equal(x.step(0),true);});
+test('normal next due is +60s',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:true});assert.equal(x.step(59_999),false);assert.equal(x.step(60_000),true);});
+test('WSS wakes are bounded by 15s after prior completion',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:true});x.wake(1000);assert.equal(x.step(14_999),false);assert.equal(x.step(15_000),true);});
+test('duplicate wake notifications coalesce',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:true});x.wake(1000);x.wake(1010);assert.equal(x.step(14_999),false);assert.equal(x.step(15_000),true);assert.equal(x.step(15_000),false);});
+test('wake during in-flight poll is preserved',()=>{const x=new PollScheduler();x.step(0);x.wake(10);x.complete(20,{ok:true});assert.equal(x.step(15_019),false);assert.equal(x.step(15_020),true);});
+test('transient HTTP failure retries after 5s',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:false});assert.equal(x.step(4999),false);assert.equal(x.step(5000),true);});
+test('exponential backoff bounded at 60s',()=>{const x=new PollScheduler();let now=0;for(let i=0;i<10;i++){assert.equal(x.step(now),true);x.complete(now,{ok:false});now=x.state().due;}assert.ok(x.state().due-now<=60_000);});
+test('partial failures trigger retries, not success',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:true,partialFailure:true});assert.equal(x.step(5000),true);});
+test('successful poll resets backoff',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:false});x.step(5000);x.complete(5000,{ok:true});assert.equal(x.state().retries,0);assert.equal(x.state().due,65000);});
+test('insufficient TTL safety margin rejected',()=>assert.throws(()=>new PollScheduler({fallbackMs:60000,minTtlMs:70000}),/ttl_margin/));
+test('fallback > TTL rejected',()=>assert.throws(()=>new PollScheduler({fallbackMs:90000,minTtlMs:80000}),/ttl_margin/));
+test('clock regression rejected',()=>{const x=new PollScheduler();x.wake(100);assert.throws(()=>x.wake(99),/monotonic/);});
+test('negative/invalid clock rejected',()=>assert.throws(()=>new PollScheduler().step(-1),/monotonic/));
+test('idle model explicit nonces not total D1 quota',()=>assert.match(idleProjection().disclaimer,/excluded/));
+
+test('WSS notification storm stays <= 4 polls per 60 seconds',()=>{const x=new PollScheduler();let polls=0;for(let ms=0;ms<60_000;ms+=100){x.wake(ms);if(x.step(ms)){polls++;x.complete(ms,{ok:true});}}assert.equal(MIN_WAKE_GAP_MS,15_000);assert.equal(polls,4);});
+test('wake after quiet fallback still responds on 250ms coalesce',()=>{const x=new PollScheduler();x.step(0);x.complete(0,{ok:true});x.wake(30_000);assert.equal(x.step(30_249),false);assert.equal(x.step(30_250),true);});

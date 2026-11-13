@@ -1,0 +1,112 @@
+name: AIMB J1-H isolated validation
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+    paths:
+      - 'engineering/aimb-j1h/**'
+      - '.github/workflows/aimb-j1h-ci.yml'
+      - '.gitattributes'
+permissions:
+  contents: read
+concurrency:
+  group: aimb-j1h-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify-and-unit-test:
+    name: AIMB V074 ${{ matrix.os }} / Node ${{ matrix.node }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['22', '24']
+    steps:
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Verify patch and 8 source hashes
+        run: node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs
+      - name: Syntax check key modules
+        working-directory: engineering/aimb-j1h/src
+        run: |
+          node --check supervisor-v07.mjs
+          node --check e2e-windows-runner.mjs
+      - name: Run all 80 supervisor unit tests (offline)
+        working-directory: engineering/aimb-j1h/src
+        run: node --test
+      - name: Parse Windows gate only - never execute against a host
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'engineering/aimb-j1h/windows-gate.ps1').Path,
+            [ref]$tokens,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          Write-Host 'Windows offline-first gate PS1 syntax verified.'
+      - name: Verify live signed gate fails closed without staging secrets
+        run: |
+          node --check engineering/aimb-j1h/live-staging-gate.mjs
+          node --test engineering/aimb-j1h/live-staging-gate.test.mjs
+      - name: Verify fail-closed D1 resumption gate (offline only)
+        run: node --test engineering/aimb-j1h/d1-safety-gate.test.mjs
+      - name: Verify signed H2-B wake proof rejects legacy fast polling (offline)
+        run: |
+          node --check engineering/aimb-j1h/h2b-live-wakeup.mjs
+          node --check engineering/aimb-j1h/h2b-rate-evidence.mjs
+          node --test engineering/aimb-j1h/h2b-rate-evidence.test.mjs
+      - name: No deployment or E2E claim
+        run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
+
+  staging-transport-probe:
+    name: AIMB staging transport (Windows, unsigned only)
+    runs-on: windows-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check staging HTTPS and anonymous WebSocket refusal
+        run: node engineering/aimb-j1h/staging-network-probe.mjs
+      - name: Scope declaration
+        if: always()
+        run: echo "Read-only anonymous transport only; signed WSS and 70s/180s supervisor NOT tested"
+
+  hermetic-signed-wss:
+    name: AIMB signed TLS/WebSocket loopback (Windows, ephemeral keys)
+    runs-on: windows-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout isolated source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: RSA signed WSS + real TLS + supervisor wake + ACK recovery
+        run: node --test engineering/aimb-j1h/signed-wss-loopback.test.mjs
+      - name: State limits
+        if: always()
+        run: echo "Loopback with generated ephemeral fixture keys and accelerated virtual clock; signed remote staging WSS and wall-clock 70s/180s NOT proven"
+
+# SECURITY: no secret-bearing jobs in pull_request workflows.
+# Signed staging execution must run only from a separately trusted, branch-restricted workflow.
