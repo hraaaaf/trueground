@@ -134,7 +134,8 @@ async function scenario(seconds){
   assert.ok(report.metrics.batchPolls>=2);
   assert.equal(report.metrics.statusRecovery,1);
   assert.equal(local.metrics.results,1);
-  assert.ok(report.metrics.pollReasons.fallback>=1);
+  if(seconds>=120)assert.ok(report.metrics.pollReasons.fallback>=1);
+  else assert.equal(report.metrics.pollReasons.fallback,0); // last wake batch at ~15s, fallback after ~75s
   assert.ok(report.metrics.websocketWakeups>=1);
   assert.ok(local.metrics.wake>=1);
   assert.equal(report.metrics.violations,0);
