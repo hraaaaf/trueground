@@ -15,6 +15,11 @@
 - The only workflow added is offline Windows CI, guarded to this branch and this directory, with read-only `contents` permission, immutable action SHAs, no secrets/environment, no staging requests, and no deploy step.
 - Offline workflow SHA-256: `ea7604993fbe78c2ac9b009a2aba6bce947716433bc580a32439544564424480`.
 
+## CI correction record
+
+- First candidate workflow run `43334495405` failed at the manifest step because the export publisher omitted `SHA256SUMS.txt` itself from the Git tree. The source manifest was valid; no Node or PowerShell candidate test ran in that attempt.
+- Corrected the publication set to include the manifest file (which lists every other allowlisted source/document file), and refreshed its SHA-256 entries. A follow-up Windows CI run is required before calling G2 successful.
+
 ## Local validation on Windows
 
 - Node.js test suite: 89 passed, 0 failed, exit 0.
