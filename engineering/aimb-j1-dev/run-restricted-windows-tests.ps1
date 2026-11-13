@@ -10,8 +10,7 @@ Set-Location -LiteralPath $root
 switch ($Suite) {
   'Node' {
     $exe = (Get-Command node.exe -ErrorAction Stop).Source
-    $tests = @(Get-ChildItem -LiteralPath $root -Recurse -Filter '*.test.mjs' -File | ForEach-Object { $_.FullName })
-    $testArgs = @('--test','--test-reporter=spec') + $tests
+    $testArgs = @('--test','--test-reporter=spec') + @(Get-ChildItem -LiteralPath $root -Recurse -Filter '*.test.mjs' -File | ForEach-Object { $_.FullName })
   }
   'PowerShell7' {
     $exe = (Get-Command pwsh.exe -ErrorAction Stop).Source
@@ -23,11 +22,6 @@ switch ($Suite) {
   }
 }
 
-function Quote-WindowsArgument([string]$Value) {
-  '"' + $Value.Replace('"','\"') + '"'
-}
-$commandLine = (Quote-WindowsArgument $exe) + ' ' + (($testArgs | ForEach-Object { Quote-WindowsArgument ([string]$_) }) -join ' ')
-
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal]::new($identity)
 if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -35,80 +29,56 @@ if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administra
   exit $LASTEXITCODE
 }
 
-$outPath = Join-Path $env:RUNNER_TEMP "aimb-j1-dev-$Suite.stdout.txt"
-$errPath = Join-Path $env:RUNNER_TEMP "aimb-j1-dev-$Suite.stderr.txt"
-$native = @'
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
-public static class AimbRestrictedTestProcess {
-  const uint TOKEN_ASSIGN_PRIMARY=0x0001, TOKEN_DUPLICATE=0x0002, TOKEN_QUERY=0x0008, TOKEN_ADJUST_DEFAULT=0x0080;
-  const uint SE_GROUP_INTEGRITY=0x00000020, SE_GROUP_INTEGRITY_ENABLED=0x00000040;
-  const uint CREATE_UNICODE_ENVIRONMENT=0x00000400, STARTF_USESTDHANDLES=0x00000100;
-  const uint GENERIC_WRITE=0x40000000, FILE_SHARE_READ=0x00000001, CREATE_ALWAYS=2, FILE_ATTRIBUTE_NORMAL=0x80;
-  [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct STARTUPINFO {
-    public uint cb; public string lpReserved; public string lpDesktop; public string lpTitle;
-    public uint dwX,dwY,dwXSize,dwYSize,dwXCountChars,dwYCountChars,dwFillAttribute,dwFlags;
-    public short wShowWindow,cbReserved2; public IntPtr lpReserved2,hStdInput,hStdOutput,hStdError;
-  }
-  [StructLayout(LayoutKind.Sequential)] struct PROCESS_INFORMATION { public IntPtr hProcess,hThread; public uint dwProcessId,dwThreadId; }
-  [StructLayout(LayoutKind.Sequential)] struct SECURITY_ATTRIBUTES { public int nLength; public IntPtr lpSecurityDescriptor; [MarshalAs(UnmanagedType.Bool)] public bool bInheritHandle; }
-  [StructLayout(LayoutKind.Sequential)] struct SID_AND_ATTRIBUTES { public IntPtr Sid; public uint Attributes; }
-  [StructLayout(LayoutKind.Sequential)] struct TOKEN_MANDATORY_LABEL { public SID_AND_ATTRIBUTES Label; }
-  [DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
-  [DllImport("kernel32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CloseHandle(IntPtr h);
-  [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr GetStdHandle(int nStdHandle);
-  [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern IntPtr CreateFileW(string name,uint access,uint share,ref SECURITY_ATTRIBUTES sa,uint creation,uint flags,IntPtr template);
-  [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool OpenProcessToken(IntPtr process,uint access,out IntPtr token);
-  [DllImport("advapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool ConvertStringSidToSidW(string text,out IntPtr sid);
-  [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr LocalFree(IntPtr memory);
-  [DllImport("advapi32.dll", SetLastError=true)] static extern uint GetLengthSid(IntPtr sid);
-  [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CreateRestrictedToken(IntPtr existing,uint flags,uint disableCount,IntPtr sids,uint deleteCount,IntPtr privileges,uint restrictCount,IntPtr restrictingSids,out IntPtr token);
-  [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool SetTokenInformation(IntPtr token,int informationClass,IntPtr information,uint informationLength);
-  [DllImport("advapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CreateProcessAsUserW(IntPtr token,string app,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,[MarshalAs(UnmanagedType.Bool)] bool inherit,uint flags,IntPtr environment,string cwd,ref STARTUPINFO startup,out PROCESS_INFORMATION info);
-  [DllImport("kernel32.dll", SetLastError=true)] static extern uint WaitForSingleObject(IntPtr h,uint ms);
-  [DllImport("kernel32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool GetExitCodeProcess(IntPtr h,out uint code);
-  public static int Run(string app,string command,string cwd,string stdout,string stderr) {
-    IntPtr source=IntPtr.Zero, restricted=IntPtr.Zero, outHandle=IntPtr.Zero, errHandle=IntPtr.Zero, adminSid=IntPtr.Zero, sidArray=IntPtr.Zero, mediumSid=IntPtr.Zero, labelMemory=IntPtr.Zero;
-    PROCESS_INFORMATION pi=new PROCESS_INFORMATION();
-    try {
-      if(!OpenProcessToken(GetCurrentProcess(),TOKEN_DUPLICATE|TOKEN_ASSIGN_PRIMARY|TOKEN_QUERY|TOKEN_ADJUST_DEFAULT,out source)) throw new Win32Exception(Marshal.GetLastWin32Error(),"OPEN_PROCESS_TOKEN_FAILED");
-      if(!ConvertStringSidToSidW("S-1-5-32-544",out adminSid)) throw new Win32Exception(Marshal.GetLastWin32Error(),"ADMIN_SID_CREATE_FAILED");
-      SID_AND_ATTRIBUTES disabledAdmin=new SID_AND_ATTRIBUTES(); disabledAdmin.Sid=adminSid; disabledAdmin.Attributes=0;
-      sidArray=Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SID_AND_ATTRIBUTES))); Marshal.StructureToPtr(disabledAdmin,sidArray,false);
-      if(!CreateRestrictedToken(source,0,1,sidArray,0,IntPtr.Zero,0,IntPtr.Zero,out restricted)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_TOKEN_FAILED");
-      if(!ConvertStringSidToSidW("S-1-16-8192",out mediumSid)) throw new Win32Exception(Marshal.GetLastWin32Error(),"MEDIUM_INTEGRITY_SID_CREATE_FAILED");
-      TOKEN_MANDATORY_LABEL label=new TOKEN_MANDATORY_LABEL(); label.Label.Sid=mediumSid; label.Label.Attributes=SE_GROUP_INTEGRITY|SE_GROUP_INTEGRITY_ENABLED;
-      labelMemory=Marshal.AllocHGlobal(Marshal.SizeOf(typeof(TOKEN_MANDATORY_LABEL))); Marshal.StructureToPtr(label,labelMemory,false);
-      uint labelLength=(uint)(Marshal.SizeOf(typeof(TOKEN_MANDATORY_LABEL))+GetLengthSid(mediumSid));
-      if(!SetTokenInformation(restricted,25,labelMemory,labelLength)) throw new Win32Exception(Marshal.GetLastWin32Error(),"SET_MEDIUM_INTEGRITY_FAILED");
-      SECURITY_ATTRIBUTES sa=new SECURITY_ATTRIBUTES(); sa.nLength=Marshal.SizeOf(typeof(SECURITY_ATTRIBUTES)); sa.bInheritHandle=true;
-      outHandle=CreateFileW(stdout,GENERIC_WRITE,FILE_SHARE_READ,ref sa,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,IntPtr.Zero);
-      if(outHandle==new IntPtr(-1)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_STDOUT_FAILED");
-      errHandle=CreateFileW(stderr,GENERIC_WRITE,FILE_SHARE_READ,ref sa,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,IntPtr.Zero);
-      if(errHandle==new IntPtr(-1)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_STDERR_FAILED");
-      STARTUPINFO si=new STARTUPINFO(); si.cb=(uint)Marshal.SizeOf(typeof(STARTUPINFO)); si.dwFlags=STARTF_USESTDHANDLES;
-      si.hStdInput=GetStdHandle(-10); si.hStdOutput=outHandle; si.hStdError=errHandle;
-      StringBuilder cmd=new StringBuilder(command);
-      if(!CreateProcessAsUserW(restricted,app,cmd,IntPtr.Zero,IntPtr.Zero,true,CREATE_UNICODE_ENVIRONMENT,IntPtr.Zero,cwd,ref si,out pi)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_PROCESS_FAILED");
-      if(WaitForSingleObject(pi.hProcess,1200000)!=0) throw new TimeoutException("RESTRICTED_TEST_PROCESS_TIMEOUT");
-      uint code; if(!GetExitCodeProcess(pi.hProcess,out code)) throw new Win32Exception(Marshal.GetLastWin32Error(),"GET_TEST_EXIT_CODE_FAILED");
-      return unchecked((int)code);
-    } finally {
-      if(pi.hThread!=IntPtr.Zero) CloseHandle(pi.hThread); if(pi.hProcess!=IntPtr.Zero) CloseHandle(pi.hProcess);
-      if(outHandle!=IntPtr.Zero&&outHandle!=new IntPtr(-1)) CloseHandle(outHandle); if(errHandle!=IntPtr.Zero&&errHandle!=new IntPtr(-1)) CloseHandle(errHandle);
-      if(restricted!=IntPtr.Zero) CloseHandle(restricted); if(source!=IntPtr.Zero) CloseHandle(source);
-      if(sidArray!=IntPtr.Zero) Marshal.FreeHGlobal(sidArray); if(labelMemory!=IntPtr.Zero) Marshal.FreeHGlobal(labelMemory);
-      if(adminSid!=IntPtr.Zero) LocalFree(adminSid); if(mediumSid!=IntPtr.Zero) LocalFree(mediumSid);
-    }
-  }
+# GitHub-hosted Windows jobs run elevated, while the candidate intentionally fails closed there.
+# Create a disposable standard account for this fixed test suite and remove it in finally.
+Import-Module Microsoft.PowerShell.LocalAccounts -ErrorAction Stop
+$username = 'aimbci' + [guid]::NewGuid().ToString('N').Substring(0,16)
+$plainPassword = [guid]::NewGuid().ToString('N') + [guid]::NewGuid().ToString('N') + 'Aa1!'
+$password = ConvertTo-SecureString $plainPassword -AsPlainText -Force
+$plainPassword = $null
+$account = $null
+$rootAcl = $null
+$logAcl = $null
+$rootRule = $null
+$logRule = $null
+$logDir = Join-Path $env:RUNNER_TEMP ("aimb-test-" + [guid]::NewGuid().ToString('N'))
+$started = $false
+try {
+  $account = New-LocalUser -Name $username -Password $password -Description 'Ephemeral AIMB offline CI test account' -AccountNeverExpires -PasswordNeverExpires
+  $sid = $account.SID
+  $adminGroup = Get-LocalGroup | Where-Object { $_.SID.Value -eq 'S-1-5-32-544' }
+  if (-not $adminGroup) { throw 'ADMIN_GROUP_NOT_FOUND' }
+  $adminMember = Get-LocalGroupMember -Group $adminGroup.Name | Where-Object { $_.SID.Value -eq $sid.Value }
+  if ($adminMember) { throw 'TEST_ACCOUNT_MUST_NOT_BE_ADMIN' }
+  $usersGroup = Get-LocalGroup | Where-Object { $_.SID.Value -eq 'S-1-5-32-545' }
+  if (-not $usersGroup) { throw 'USERS_GROUP_NOT_FOUND' }
+  $userMember = Get-LocalGroupMember -Group $usersGroup.Name | Where-Object { $_.SID.Value -eq $sid.Value }
+  if (-not $userMember) { Add-LocalGroupMember -Group $usersGroup.Name -Member $username }
+
+  $rootAcl = Get-Acl -LiteralPath $root
+  $rootRule = [System.Security.AccessControl.FileSystemAccessRule]::new($sid,'ReadAndExecute','ContainerInherit,ObjectInherit','None','Allow')
+  [void]$rootAcl.AddAccessRule($rootRule)
+  Set-Acl -LiteralPath $root -AclObject $rootAcl
+
+  New-Item -ItemType Directory -Path $logDir -Force | Out-Null
+  $logAcl = Get-Acl -LiteralPath $logDir
+  $logRule = [System.Security.AccessControl.FileSystemAccessRule]::new($sid,'Modify','ContainerInherit,ObjectInherit','None','Allow')
+  [void]$logAcl.AddAccessRule($logRule)
+  Set-Acl -LiteralPath $logDir -AclObject $logAcl
+
+  $stdout = Join-Path $logDir "$Suite.stdout.txt"
+  $stderr = Join-Path $logDir "$Suite.stderr.txt"
+  $argumentLine = ($testArgs | ForEach-Object { '"' + ([string]$_).Replace('"','\"') + '"' }) -join ' '
+  $credential = [PSCredential]::new("$env:COMPUTERNAME\$username",$password)
+  $process = Start-Process -FilePath $exe -ArgumentList $argumentLine -Credential $credential -LoadUserProfile -WorkingDirectory $root -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru -Wait -WindowStyle Hidden
+  $started = $true
+  if (Test-Path -LiteralPath $stdout) { Get-Content -LiteralPath $stdout }
+  if ((Test-Path -LiteralPath $stderr) -and (Get-Item -LiteralPath $stderr).Length -gt 0) { Get-Content -LiteralPath $stderr | ForEach-Object { Write-Host $_ } }
+  if ($process.ExitCode -ne 0) { throw "TEST_SUITE_FAILED suite=$Suite exit=$($process.ExitCode)" }
+  Write-Host "STANDARD_USER_TEST_SUITE_PASS suite=$Suite exit=0"
+} finally {
+  if ($password) { $password.Dispose() }
+  if ($logRule -and $logAcl) { [void]$logAcl.RemoveAccessRuleSpecific($logRule); Set-Acl -LiteralPath $logDir -AclObject $logAcl -ErrorAction SilentlyContinue }
+  if ($rootRule -and $rootAcl) { [void]$rootAcl.RemoveAccessRuleSpecific($rootRule); Set-Acl -LiteralPath $root -AclObject $rootAcl -ErrorAction SilentlyContinue }
+  if ($account) { Remove-LocalUser -SID $account.SID -ErrorAction SilentlyContinue }
 }
-'@
-Add-Type -TypeDefinition $native -Language CSharp
-$exit = [AimbRestrictedTestProcess]::Run($exe,$commandLine,$root,$outPath,$errPath)
-if (Test-Path -LiteralPath $outPath) { Get-Content -LiteralPath $outPath }
-if ((Test-Path -LiteralPath $errPath) -and (Get-Item -LiteralPath $errPath).Length -gt 0) { Get-Content -LiteralPath $errPath | ForEach-Object { Write-Host $_ } }
-if ($exit -ne 0) { throw "RESTRICTED_TEST_SUITE_FAILED suite=$Suite exit=$exit" }
-Write-Host "RESTRICTED_TEST_SUITE_PASS suite=$Suite exit=$exit"
