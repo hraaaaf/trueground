@@ -124,8 +124,11 @@ jobs:
           node --check engineering/aimb-j1-dev/worker.mjs
           node --check engineering/aimb-j1-dev/fixture.mjs
           node --check engineering/aimb-j1-dev/minimal-mcp.test.mjs
+          node --check engineering/aimb-j1-dev/v7-candidate/worker.js
+          node --check engineering/aimb-j1-dev/v7-candidate/staging-result.mjs
+          node --check engineering/aimb-j1-dev/v7-integration.test.mjs
       - name: Offline OAuth/JWKS/MCP tests (ephemeral RSA keys)
-        run: node --test engineering/aimb-j1-dev/minimal-mcp.test.mjs
+        run: node --test engineering/aimb-j1-dev/minimal-mcp.test.mjs engineering/aimb-j1-dev/v7-integration.test.mjs
       - name: Safety scope
         run: echo "No staging deployment, D1 access, persistent MCP endpoint, Lenovo, or live Auth0 credentials; fixture only"
 
