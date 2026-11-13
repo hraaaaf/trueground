@@ -6,7 +6,7 @@
 
 - SHA-256 exact du patch `patch-v074.diff` : `c5a3080d35793afe8f5b7e6d5b09d9e65e9103f6d857b07fadd1f681744b0a82`.
 - SHA-256 exact **des huit modules V074** dans `source-integrity.test.mjs` ; code clé : superviseur `fbc0674f592880f8b3f91bbfe80cad7dd19f8a276fb9329bdd67a027aea9d136`, runner `c2d9662d388be15b31d8360999e07c4d2a44d5885d1a9599975938e56b7ca0c7`.
-- Suite native **78 tests Node** dans `src/` sans accès réseau ni secret.
+- Suite native **80 tests Node** dans `src/` sans accès réseau ni secret.
 - Matrice Linux Ubuntu + Windows Server hébergé GitHub, Node.js 22 et 24.
 - `.gitattributes` force LF pour préserver les empreintes sur Windows.
 - Workflow en **lecture seule** GitHub : pas de Cloudflare, Vercel, tâches planifiées, fixture ou fusion automatique.
@@ -22,7 +22,7 @@ Le fichier [windows-gate.ps1](./windows-gate.ps1) est un **script offline-first*
 Depuis Codex sur le PC Windows, après revue humaine du script, le récupérer dans une copie locale GitHub, puis :
 
 ```powershell
-# Par défaut : SHA + 78 tests, aucun accès réseau staging
+# Par défaut : SHA + 80 tests, aucun accès réseau staging
 powershell -NoProfile -File .\engineering\aimb-j1h\windows-gate.ps1
 
 # Seulement après vérification de staging V7 et clé fixture privée locale :
@@ -35,7 +35,7 @@ Si le PC est hors ligne ou si la clé locale manque, le résultat est **NO-GO po
 
 ## Gates restants pour clôture humaine J1-H
 
-1. CI offline 78/78 et SHA parfait sur les quatre combinaisons.
+1. CI offline 80/80 et SHA parfait sur les quatre combinaisons.
 2. Sur PC Windows local : diagnostic V074 70 secondes, `STAGE_BOOT`, `supervisor_started`, `websocket_connected` ou erreur de connect explicitement bornée 12 secondes ; consigner et traiter toute erreur.
 3. Si connexion réelle confirmée : session 180 secondes avec preuves de `poll_started/poll_finished`, distinction wakeup/fallback/retry, preuve de l'origine ou de l'indétermination du poll +5,1 s.
 4. D1 staging, Durable Objects/quotas 24 heures et sécurité par revue indépendante, avant GO de production explicite.
@@ -54,10 +54,14 @@ Le job `live-staging-signed-wss` est **désactivé par défaut** et réservé à
 La création/activation de cet environnement et l'ajout du secret nécessitent une intervention humaine dans les paramètres GitHub. Le GO verbal autorise le test, **mais il ne fournit pas la clé privée ni les protections GitHub**. Le CI automatique ne remplace pas cette configuration.
 
 Après approbation de l'environnement, le job :
-1. refait le contrôle byte-exact et les 78 tests hors ligne avant chargement de la clé ;
+1. refait le contrôle byte-exact et les 80 tests hors ligne avant chargement de la clé ;
 2. charge temporairement le secret dans un fichier du runner, effacé systématiquement ;
 3. vérifie l'empreinte RSA, la santé du staging et la connexion WSS signée ;
 4. lance **70 secondes réelles**, puis **180 secondes réelles** uniquement si la première session réussit ;
 5. publie seulement des compteurs d'événements et des métriques synthétiques, pas les traces brutes ni les nonces.
 
 Cette validation autorise seulement des polls et reçus de jobs **fixture** dans le staging isolé. Elle n'exécute aucune commande Windows réelle, n'écrit aucun fichier utilisateur, ne modifie ni la production V15, ni le déploiement Cloudflare, ni Vercel. Un résultat PASS ne prouve pas à lui seul la cause du poll +5,1 s ni les quotas 24 h D1/DO.
+
+## J1-H 2026-11-13 — WSS wake rate cap (tests offlines uniquement)
+
+La cadence de reveil WebSocket du superviseur groupe est bornee a 15 secondes entre fin de lot et nouveau lot; la cadence au repos reste de 60 secondes. Deux nouveaux tests mettent sous charge les evenements WSS repetes et preservent le reveil rapide apres une periode calme. Les huit modules dans `source-integrity.test.mjs` et dans la porte Windows sont re-epingles aux nouveaux SHA-256. Ce patch ne concerne PAS les trois anciens pollers, qui doivent rester desactives apres l'incident D1. Le changement n'a pas ete deploye sur Windows/Cloudflare; un test signe reel et l'audit des quotas de 24h restent obligatoires.
