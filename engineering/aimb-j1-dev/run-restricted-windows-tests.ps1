@@ -45,7 +45,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 public static class AimbRestrictedTestProcess {
   const uint TOKEN_ASSIGN_PRIMARY=0x0001, TOKEN_DUPLICATE=0x0002, TOKEN_QUERY=0x0008;
-  const uint DISABLE_MAX_PRIVILEGE=0x00000001, LUA_TOKEN=0x00000004;
+  const uint LUA_TOKEN=0x00000004;
   const uint CREATE_UNICODE_ENVIRONMENT=0x00000400, STARTF_USESTDHANDLES=0x00000100;
   const uint GENERIC_WRITE=0x40000000, FILE_SHARE_READ=0x00000001, CREATE_ALWAYS=2, FILE_ATTRIBUTE_NORMAL=0x80;
   [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct STARTUPINFO {
@@ -69,7 +69,7 @@ public static class AimbRestrictedTestProcess {
     PROCESS_INFORMATION pi=new PROCESS_INFORMATION();
     try {
       if(!OpenProcessToken(GetCurrentProcess(),TOKEN_DUPLICATE|TOKEN_ASSIGN_PRIMARY|TOKEN_QUERY,out source)) throw new Win32Exception(Marshal.GetLastWin32Error(),"OPEN_PROCESS_TOKEN_FAILED");
-      if(!CreateRestrictedToken(source,DISABLE_MAX_PRIVILEGE|LUA_TOKEN,0,IntPtr.Zero,0,IntPtr.Zero,0,IntPtr.Zero,out restricted)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_TOKEN_FAILED");
+      if(!CreateRestrictedToken(source,LUA_TOKEN,0,IntPtr.Zero,0,IntPtr.Zero,0,IntPtr.Zero,out restricted)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_TOKEN_FAILED");
       SECURITY_ATTRIBUTES sa=new SECURITY_ATTRIBUTES(); sa.nLength=Marshal.SizeOf(typeof(SECURITY_ATTRIBUTES)); sa.bInheritHandle=true;
       outHandle=CreateFileW(stdout,GENERIC_WRITE,FILE_SHARE_READ,ref sa,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,IntPtr.Zero);
       if(outHandle==new IntPtr(-1)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_STDOUT_FAILED");
