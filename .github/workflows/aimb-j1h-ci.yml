@@ -58,6 +58,8 @@ jobs:
         run: |
           node --check engineering/aimb-j1h/live-staging-gate.mjs
           node --test engineering/aimb-j1h/live-staging-gate.test.mjs
+      - name: Verify fail-closed D1 resumption gate (offline only)
+        run: node --test engineering/aimb-j1h/d1-safety-gate.test.mjs
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
 
