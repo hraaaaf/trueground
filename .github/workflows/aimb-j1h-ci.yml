@@ -38,7 +38,7 @@ jobs:
         run: |
           node --check supervisor-v07.mjs
           node --check e2e-windows-runner.mjs
-      - name: Run all 78 supervisor unit tests (offline)
+      - name: Run all 80 supervisor unit tests (offline)
         working-directory: engineering/aimb-j1h/src
         run: node --test
       - name: Parse Windows gate only - never execute against a host
@@ -58,6 +58,13 @@ jobs:
         run: |
           node --check engineering/aimb-j1h/live-staging-gate.mjs
           node --test engineering/aimb-j1h/live-staging-gate.test.mjs
+      - name: Verify fail-closed D1 resumption gate (offline only)
+        run: node --test engineering/aimb-j1h/d1-safety-gate.test.mjs
+      - name: Verify signed H2-B wake proof rejects legacy fast polling (offline)
+        run: |
+          node --check engineering/aimb-j1h/h2b-live-wakeup.mjs
+          node --check engineering/aimb-j1h/h2b-rate-evidence.mjs
+          node --test engineering/aimb-j1h/h2b-rate-evidence.test.mjs
       - name: No deployment or E2E claim
         run: echo "Offline tests only - neither live staging signed WebSocket nor local Windows PC E2E tested; NO MERGE/NO DEPLOY"
 
