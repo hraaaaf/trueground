@@ -44,8 +44,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 public static class AimbRestrictedTestProcess {
-  const uint TOKEN_ASSIGN_PRIMARY=0x0001, TOKEN_DUPLICATE=0x0002, TOKEN_QUERY=0x0008;
-  const uint LUA_TOKEN=0x00000004;
+  const uint TOKEN_ASSIGN_PRIMARY=0x0001, TOKEN_DUPLICATE=0x0002, TOKEN_QUERY=0x0008, TOKEN_ADJUST_DEFAULT=0x0080;
+  const uint SE_GROUP_INTEGRITY=0x00000020, SE_GROUP_INTEGRITY_ENABLED=0x00000040;
   const uint CREATE_UNICODE_ENVIRONMENT=0x00000400, STARTF_USESTDHANDLES=0x00000100;
   const uint GENERIC_WRITE=0x40000000, FILE_SHARE_READ=0x00000001, CREATE_ALWAYS=2, FILE_ATTRIBUTE_NORMAL=0x80;
   [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)] struct STARTUPINFO {
@@ -55,21 +55,35 @@ public static class AimbRestrictedTestProcess {
   }
   [StructLayout(LayoutKind.Sequential)] struct PROCESS_INFORMATION { public IntPtr hProcess,hThread; public uint dwProcessId,dwThreadId; }
   [StructLayout(LayoutKind.Sequential)] struct SECURITY_ATTRIBUTES { public int nLength; public IntPtr lpSecurityDescriptor; [MarshalAs(UnmanagedType.Bool)] public bool bInheritHandle; }
+  [StructLayout(LayoutKind.Sequential)] struct SID_AND_ATTRIBUTES { public IntPtr Sid; public uint Attributes; }
+  [StructLayout(LayoutKind.Sequential)] struct TOKEN_MANDATORY_LABEL { public SID_AND_ATTRIBUTES Label; }
   [DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
   [DllImport("kernel32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CloseHandle(IntPtr h);
   [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr GetStdHandle(int nStdHandle);
   [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)] static extern IntPtr CreateFileW(string name,uint access,uint share,ref SECURITY_ATTRIBUTES sa,uint creation,uint flags,IntPtr template);
   [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool OpenProcessToken(IntPtr process,uint access,out IntPtr token);
+  [DllImport("advapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool ConvertStringSidToSidW(string text,out IntPtr sid);
+  [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr LocalFree(IntPtr memory);
+  [DllImport("advapi32.dll", SetLastError=true)] static extern uint GetLengthSid(IntPtr sid);
   [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CreateRestrictedToken(IntPtr existing,uint flags,uint disableCount,IntPtr sids,uint deleteCount,IntPtr privileges,uint restrictCount,IntPtr restrictingSids,out IntPtr token);
+  [DllImport("advapi32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool SetTokenInformation(IntPtr token,int informationClass,IntPtr information,uint informationLength);
   [DllImport("advapi32.dll", CharSet=CharSet.Unicode, SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool CreateProcessAsUserW(IntPtr token,string app,StringBuilder command,IntPtr processAttributes,IntPtr threadAttributes,[MarshalAs(UnmanagedType.Bool)] bool inherit,uint flags,IntPtr environment,string cwd,ref STARTUPINFO startup,out PROCESS_INFORMATION info);
   [DllImport("kernel32.dll", SetLastError=true)] static extern uint WaitForSingleObject(IntPtr h,uint ms);
   [DllImport("kernel32.dll", SetLastError=true)] [return:MarshalAs(UnmanagedType.Bool)] static extern bool GetExitCodeProcess(IntPtr h,out uint code);
   public static int Run(string app,string command,string cwd,string stdout,string stderr) {
-    IntPtr source=IntPtr.Zero, restricted=IntPtr.Zero, outHandle=IntPtr.Zero, errHandle=IntPtr.Zero;
+    IntPtr source=IntPtr.Zero, restricted=IntPtr.Zero, outHandle=IntPtr.Zero, errHandle=IntPtr.Zero, adminSid=IntPtr.Zero, sidArray=IntPtr.Zero, mediumSid=IntPtr.Zero, labelMemory=IntPtr.Zero;
     PROCESS_INFORMATION pi=new PROCESS_INFORMATION();
     try {
-      if(!OpenProcessToken(GetCurrentProcess(),TOKEN_DUPLICATE|TOKEN_ASSIGN_PRIMARY|TOKEN_QUERY,out source)) throw new Win32Exception(Marshal.GetLastWin32Error(),"OPEN_PROCESS_TOKEN_FAILED");
-      if(!CreateRestrictedToken(source,LUA_TOKEN,0,IntPtr.Zero,0,IntPtr.Zero,0,IntPtr.Zero,out restricted)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_TOKEN_FAILED");
+      if(!OpenProcessToken(GetCurrentProcess(),TOKEN_DUPLICATE|TOKEN_ASSIGN_PRIMARY|TOKEN_QUERY|TOKEN_ADJUST_DEFAULT,out source)) throw new Win32Exception(Marshal.GetLastWin32Error(),"OPEN_PROCESS_TOKEN_FAILED");
+      if(!ConvertStringSidToSidW("S-1-5-32-544",out adminSid)) throw new Win32Exception(Marshal.GetLastWin32Error(),"ADMIN_SID_CREATE_FAILED");
+      SID_AND_ATTRIBUTES disabledAdmin=new SID_AND_ATTRIBUTES(); disabledAdmin.Sid=adminSid; disabledAdmin.Attributes=0;
+      sidArray=Marshal.AllocHGlobal(Marshal.SizeOf(typeof(SID_AND_ATTRIBUTES))); Marshal.StructureToPtr(disabledAdmin,sidArray,false);
+      if(!CreateRestrictedToken(source,0,1,sidArray,0,IntPtr.Zero,0,IntPtr.Zero,out restricted)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_RESTRICTED_TOKEN_FAILED");
+      if(!ConvertStringSidToSidW("S-1-16-8192",out mediumSid)) throw new Win32Exception(Marshal.GetLastWin32Error(),"MEDIUM_INTEGRITY_SID_CREATE_FAILED");
+      TOKEN_MANDATORY_LABEL label=new TOKEN_MANDATORY_LABEL(); label.Label.Sid=mediumSid; label.Label.Attributes=SE_GROUP_INTEGRITY|SE_GROUP_INTEGRITY_ENABLED;
+      labelMemory=Marshal.AllocHGlobal(Marshal.SizeOf(typeof(TOKEN_MANDATORY_LABEL))); Marshal.StructureToPtr(label,labelMemory,false);
+      uint labelLength=(uint)(Marshal.SizeOf(typeof(TOKEN_MANDATORY_LABEL))+GetLengthSid(mediumSid));
+      if(!SetTokenInformation(restricted,25,labelMemory,labelLength)) throw new Win32Exception(Marshal.GetLastWin32Error(),"SET_MEDIUM_INTEGRITY_FAILED");
       SECURITY_ATTRIBUTES sa=new SECURITY_ATTRIBUTES(); sa.nLength=Marshal.SizeOf(typeof(SECURITY_ATTRIBUTES)); sa.bInheritHandle=true;
       outHandle=CreateFileW(stdout,GENERIC_WRITE,FILE_SHARE_READ,ref sa,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,IntPtr.Zero);
       if(outHandle==new IntPtr(-1)) throw new Win32Exception(Marshal.GetLastWin32Error(),"CREATE_STDOUT_FAILED");
@@ -86,6 +100,8 @@ public static class AimbRestrictedTestProcess {
       if(pi.hThread!=IntPtr.Zero) CloseHandle(pi.hThread); if(pi.hProcess!=IntPtr.Zero) CloseHandle(pi.hProcess);
       if(outHandle!=IntPtr.Zero&&outHandle!=new IntPtr(-1)) CloseHandle(outHandle); if(errHandle!=IntPtr.Zero&&errHandle!=new IntPtr(-1)) CloseHandle(errHandle);
       if(restricted!=IntPtr.Zero) CloseHandle(restricted); if(source!=IntPtr.Zero) CloseHandle(source);
+      if(sidArray!=IntPtr.Zero) Marshal.FreeHGlobal(sidArray); if(labelMemory!=IntPtr.Zero) Marshal.FreeHGlobal(labelMemory);
+      if(adminSid!=IntPtr.Zero) LocalFree(adminSid); if(mediumSid!=IntPtr.Zero) LocalFree(mediumSid);
     }
   }
 }
