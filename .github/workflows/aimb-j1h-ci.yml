@@ -46,7 +46,22 @@ jobs:
           node --check engineering/aimb-j1h/self-repair/cadence-core.mjs
           node --check engineering/aimb-j1h/self-repair/repair-cli.mjs
           node --test engineering/aimb-j1h/self-repair/cadence-core.test.mjs
-      - name: P0 Windows installer parser and DRY RUN only (NO Install)
+      - name: P0 installer parser and DRY RUN (Windows PowerShell 5.1)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'engineering/aimb-j1h/self-repair/install-local.ps1').Path,
+            [ref]$tokens,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          & .\engineering\aimb-j1h\self-repair\install-local.ps1 -ExpectedCommit $env:GITHUB_SHA
+          if (-not $?) { throw 'INSTALLER_DRY_RUN_FAILED_WINPS51' }
+          Write-Output 'P0 WinPS 5.1 dry run PASSED: no agent/task/Worker changes.'
+      - name: P0 installer parser and DRY RUN only (PowerShell 7; NO Install)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -60,7 +75,22 @@ jobs:
           if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
           & .\engineering\aimb-j1h\self-repair\install-local.ps1 -ExpectedCommit $env:GITHUB_SHA
           if ($LASTEXITCODE -ne 0) { throw 'INSTALLER_DRY_RUN_FAILED' }
-          Write-Output 'P0 dry run PASSED: no agent/task/Worker changes.'
+          Write-Output 'P0 PowerShell 7 dry run PASSED: no agent/task/Worker changes.'
+      - name: P0 WinPS 5.1 inherited mixed PSModulePath regression
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $installer = (Resolve-Path 'engineering/aimb-j1h/self-repair/install-local.ps1').Path
+          $env:PSModulePath = "$env:USERPROFILE\Documents\PowerShell\Modules;$env:ProgramFiles\PowerShell\Modules;$PSHOME\Modules;$env:USERPROFILE\Documents\WindowsPowerShell\Modules;$env:ProgramFiles\WindowsPowerShell\Modules;$env:WINDIR\system32\WindowsPowerShell\v1.0\Modules"
+          $stdout = Join-Path $env:RUNNER_TEMP 'aimb-p0-winps51.stdout.txt'
+          $stderr = Join-Path $env:RUNNER_TEMP 'aimb-p0-winps51.stderr.txt'
+          $args = @('-NoProfile','-NonInteractive','-File',("`"$installer`""),'-ExpectedCommit',$env:GITHUB_SHA)
+          $child = Start-Process -FilePath "$env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList $args -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          Get-Content -LiteralPath $stdout
+          if (Test-Path -LiteralPath $stderr) { Get-Content -LiteralPath $stderr }
+          if ($child.ExitCode -ne 0) { throw "INHERITED_WINPS51_DRY_RUN_FAILED_EXIT_$($child.ExitCode)" }
+          if (-not (Select-String -LiteralPath $stdout -SimpleMatch 'DRY_RUN_ONLY:' -Quiet)) { throw 'INHERITED_WINPS51_DRY_RUN_MARKER_MISSING' }
+          Write-Output 'P0 inherited WinPS 5.1 dry run PASSED.'
       - name: Parse Windows gate only - never execute against a host
         if: runner.os == 'Windows'
         shell: pwsh

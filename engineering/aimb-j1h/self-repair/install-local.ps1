@@ -22,11 +22,23 @@ if($LASTEXITCODE -ne 0 -or $head -notmatch '^[a-f0-9]{40}$'){throw 'NO_GO_GIT_HE
 $dirty=@(& $git.Source -C $repoRoot status --porcelain)
 if($LASTEXITCODE -ne 0 -or $dirty.Count -ne 0){throw 'NO_GO_DIRTY_CHECKOUT'}
 if(-not $ExpectedCommit -or $head -ne $ExpectedCommit){throw 'NO_GO_UNREVIEWED_COMMIT'}
+function Get-Sha256Hex {
+ param([Parameter(Mandatory=$true)][string]$LiteralPath)
+ $stream=[System.IO.File]::OpenRead($LiteralPath)
+ $sha=[System.Security.Cryptography.SHA256]::Create()
+ try {
+  $digest=$sha.ComputeHash($stream)
+  ([System.BitConverter]::ToString($digest)).Replace('-','').ToLowerInvariant()
+ } finally {
+  $sha.Dispose()
+  $stream.Dispose()
+ }
+}
 $hashes=@{}
 foreach($name in $files){
  $file=Join-Path $sourceDir $name
  if(-not(Test-Path -LiteralPath $file -PathType Leaf)){throw ('NO_GO_MISSING_'+$name)}
- $hashes[$name]=(Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+ $hashes[$name]=(Get-Sha256Hex -LiteralPath $file)
 }
 if(Test-Path -LiteralPath $destination){throw 'NO_GO_DESTINATION_ALREADY_EXISTS'}
 Write-Output ('AIMB_P0_PREFLIGHT_OK HEAD='+$head+' DEST='+$destination)
@@ -36,7 +48,7 @@ try{
  New-Item -Path $destination -ItemType Directory -ErrorAction Stop | Out-Null
  foreach($name in $files){Copy-Item -LiteralPath (Join-Path $sourceDir $name) -Destination (Join-Path $destination $name) -ErrorAction Stop}
  foreach($name in $files){
-  $copied=(Get-FileHash -LiteralPath (Join-Path $destination $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+  $copied=(Get-Sha256Hex -LiteralPath (Join-Path $destination $name))
   if($copied -ne $hashes[$name]){throw ('NO_GO_COPY_SHA_'+$name)}
  }
 }catch{
