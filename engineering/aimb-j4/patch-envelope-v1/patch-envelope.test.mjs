@@ -227,5 +227,3 @@ test('duplicate claims in one atomic request are rejected', () => {
   const ledger = new NonceLedger();
   expectCode('NONCE_REUSE', () => ledger.claimMany([{ id: 'same', expiresAt: NOW + 5 }, { id: 'same', expiresAt: NOW + 6 }], NOW));
 });
-
-\n
