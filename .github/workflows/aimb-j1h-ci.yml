@@ -41,6 +41,26 @@ jobs:
       - name: Run all 80 supervisor unit tests (offline)
         working-directory: engineering/aimb-j1h/src
         run: node --test
+      - name: Offline P0 self-repair patch engine tests (synthetic fixtures only)
+        run: |
+          node --check engineering/aimb-j1h/self-repair/cadence-core.mjs
+          node --check engineering/aimb-j1h/self-repair/repair-cli.mjs
+          node --test engineering/aimb-j1h/self-repair/cadence-core.test.mjs
+      - name: P0 Windows installer parser and DRY RUN only (NO Install)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'engineering/aimb-j1h/self-repair/install-local.ps1').Path,
+            [ref]$tokens,
+            [ref]$errors
+          )
+          if ($errors.Count -gt 0) { $errors | Format-List; exit 1 }
+          & .\engineering\aimb-j1h\self-repair\install-local.ps1 -ExpectedCommit $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'INSTALLER_DRY_RUN_FAILED' }
+          Write-Output 'P0 dry run PASSED: no agent/task/Worker changes.'
       - name: Parse Windows gate only - never execute against a host
         if: runner.os == 'Windows'
         shell: pwsh
