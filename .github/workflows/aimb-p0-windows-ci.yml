@@ -1,0 +1,80 @@
+name: AIMB P0 Windows CI (manual / no deployment)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aimb-p0-windows-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-offline:
+    if: github.ref == 'refs/heads/chore/aimb-g1-g3-windows-ci-20261112'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout exact isolated branch revision (no persisted credentials)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Basic source credential guard (no secrets allowed in a public repository)
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = Get-ChildItem engineering/aimb-j1h -Recurse -File | Where-Object { $_.FullName -notmatch '[\\/](node_modules|\.git)[\\/]' }
+          foreach ($f in $files) {
+            if ($f.Name -match '(?i)^(id_rsa|id_ed25519|credentials\.json|\.env.*)$|\.(pem|p12|pfx|key)$') { throw "Prohibited credential filename: $($f.Name)" }
+            if ($f.Length -gt 1MB) { throw "Unreviewed large source file: $($f.FullName)" }
+            if ($f.Extension -in @('.js','.mjs','.cjs','.md','.ps1','.json','.yml','.yaml')) {
+              if (Select-String -LiteralPath $f.FullName -Pattern '-----BEGIN (RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----' -Quiet) { throw "Private-key marker detected: $($f.Name)" }
+            }
+          }
+          Write-Host "Scanned $($files.Count) source files; filename/PEM checks passed"
+      - name: Syntax check main Node modules
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = Get-ChildItem engineering/aimb-j1h -Recurse -File | Where-Object { $_.Extension -in @('.js','.mjs','.cjs') }
+          foreach ($f in $files) { node --check $f.FullName; if ($LASTEXITCODE -ne 0) { throw "node --check failed: $($f.Name)" } }
+          Write-Host "Syntax passed: $($files.Count) JavaScript files"
+      - name: Integrity tests and offline unit tests
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -Type Directory -Force ci-results | Out-Null
+          node --version | Out-File ci-results/node.txt
+          node --test engineering/aimb-j1h/patch-integrity.test.mjs engineering/aimb-j1h/source-integrity.test.mjs | Tee-Object ci-results/integrity.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Integrity tests failed' }
+          Push-Location engineering/aimb-j1h/src
+          try {
+            node --test | Tee-Object ../../../ci-results/unit-tests.txt
+            if ($LASTEXITCODE -ne 0) { throw 'Offline Node tests failed' }
+          } finally { Pop-Location }
+          node --test engineering/aimb-j1h/live-staging-gate.test.mjs | Tee-Object ci-results/live-gate-mock.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Mock live-gate tests failed' }
+      - name: Parse PowerShell Windows gate (never execute it)
+        run: |
+          $tokens = $null; $errors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path engineering/aimb-j1h/windows-gate.ps1).Path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count -gt 0) { $errors | Format-List; throw 'PowerShell parse failed' }
+          'Windows gate parsed without executing commands' | Out-File ci-results/powershell-parse.txt
+      - name: SHA-256 evidence manifest
+        if: always()
+        run: |
+          New-Item -ItemType Directory -Force ci-results | Out-Null
+          $files = Get-ChildItem ci-results -File | Where-Object Name -ne 'SHA256SUMS.txt'
+          @($files | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($_.Name)" }) | Set-Content ci-results/SHA256SUMS.txt
+      - name: Upload offline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimb-p0-offline-windows-${{ github.run_id }}
+          path: ci-results/
+          retention-days: 7
+          if-no-files-found: warn

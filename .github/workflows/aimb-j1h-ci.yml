@@ -5,6 +5,7 @@ on:
     types: [opened, reopened, synchronize, labeled]
     paths:
       - 'engineering/aimb-j1h/**'
+      - 'engineering/aimb-j1-dev/**'
       - '.github/workflows/aimb-j1h-ci.yml'
       - '.gitattributes'
 permissions:
@@ -83,6 +84,8 @@ jobs:
           node-version: '24'
       - name: Check staging HTTPS and anonymous WebSocket refusal
         run: node engineering/aimb-j1h/staging-network-probe.mjs
+      - name: Check staging MCP OAuth metadata and anonymous refusal (no D1 jobs)
+        run: node engineering/aimb-j1h/staging-mcp-smoke.mjs
       - name: Scope declaration
         if: always()
         run: echo "Read-only anonymous transport only; signed WSS and 70s/180s supervisor NOT tested"
@@ -107,6 +110,36 @@ jobs:
       - name: State limits
         if: always()
         run: echo "Loopback with generated ephemeral fixture keys and accelerated virtual clock; signed remote staging WSS and wall-clock 70s/180s NOT proven"
+
+
+  mcp-fixture-windows:
+    name: AIMB minimal MCP fixture Auth0 mock (Windows Node 24)
+    runs-on: windows-latest
+    timeout-minutes: 6
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout isolated PR code (no persisted Git credentials)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Syntax check J1 single-fixture MCP
+        run: |
+          node --check engineering/aimb-j1-dev/minimal-mcp.mjs
+          node --check engineering/aimb-j1-dev/worker.mjs
+          node --check engineering/aimb-j1-dev/fixture.mjs
+          node --check engineering/aimb-j1-dev/minimal-mcp.test.mjs
+          node --check engineering/aimb-j1-dev/v7-candidate/worker.js
+          node --check engineering/aimb-j1-dev/v7-candidate/staging-result.mjs
+          node --check engineering/aimb-j1-dev/v7-integration.test.mjs
+      - name: Offline OAuth/JWKS/MCP tests (ephemeral RSA keys)
+        run: node --test engineering/aimb-j1-dev/minimal-mcp.test.mjs engineering/aimb-j1-dev/v7-integration.test.mjs
+      - name: Safety scope
+        run: echo "No staging deployment, D1 access, persistent MCP endpoint, Lenovo, or live Auth0 credentials; fixture only"
 
 # SECURITY: no secret-bearing jobs in pull_request workflows.
 # Signed staging execution must run only from a separately trusted, branch-restricted workflow.

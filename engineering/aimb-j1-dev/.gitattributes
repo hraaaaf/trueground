@@ -1,0 +1,2 @@
+# SHA256SUMS.txt is byte-oriented; do not normalize line endings on Windows checkouts.
+* -text
