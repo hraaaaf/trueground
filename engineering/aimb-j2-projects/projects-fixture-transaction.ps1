@@ -30,10 +30,13 @@ function Invoke-AimbProjectsFixtureTransaction {
  $target=Join-Path $root 'workspace-agent.ps1'
  $stage=Join-Path $root 'aimb-projects.stage'
  $backup=Join-Path $root 'aimb-projects.backup'
+ $restoreStage=Join-Path $root 'aimb-projects.restore-stage'
+ $failedCandidate=Join-Path $root 'aimb-projects.failed'
  $targetItem=Get-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
  if($null -eq $targetItem -or $targetItem.PSIsContainer -or
     ($targetItem.Attributes -band [IO.FileAttributes]::ReparsePoint) -or
-    (Test-Path -LiteralPath $stage) -or (Test-Path -LiteralPath $backup)){
+    (Test-Path -LiteralPath $stage) -or (Test-Path -LiteralPath $backup) -or
+    (Test-Path -LiteralPath $restoreStage) -or (Test-Path -LiteralPath $failedCandidate)){
   $result.reason='unsafe_fixture_files';return [pscustomobject]$result
  }
  $oldHash=(Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -68,7 +71,9 @@ function Invoke-AimbProjectsFixtureTransaction {
     if((Get-FileHash -LiteralPath $backup -Algorithm SHA256).Hash.ToLowerInvariant() -cne $oldHash){
       throw 'backup_corrupted'
     }
-    [IO.File]::Replace($backup,$target,$null)
+    # Stage recovery in the same fixture directory; keep both original backup and failed candidate as evidence.
+    [IO.File]::Copy($backup,$restoreStage)
+    [IO.File]::Replace($restoreStage,$target,$failedCandidate)
     if((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash.ToLowerInvariant() -cne $oldHash){
       throw 'restored_hash_mismatch'
     }
@@ -78,6 +83,7 @@ function Invoke-AimbProjectsFixtureTransaction {
   }
  } finally {
   if(Test-Path -LiteralPath $stage){Remove-Item -LiteralPath $stage -Force -ErrorAction SilentlyContinue}
+  if(Test-Path -LiteralPath $restoreStage){Remove-Item -LiteralPath $restoreStage -Force -ErrorAction SilentlyContinue}
  }
  return [pscustomobject]$result
 }
