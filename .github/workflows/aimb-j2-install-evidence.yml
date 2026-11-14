@@ -1,0 +1,39 @@
+name: AIMB J2 install evidence offline
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'engineering/aimb-j2-projects/install-evidence-contract.ps1'
+      - 'engineering/aimb-j2-projects/install-evidence-contract.test.ps1'
+      - 'engineering/aimb-j2-projects/projects-local-preflight.readonly.ps1'
+      - 'engineering/aimb-j2-projects/projects-fixture-transaction.ps1'
+      - 'engineering/aimb-j2-projects/projects-fixture-transaction.test.ps1'
+      - 'engineering/aimb-j2-projects/INSTALL_CONTRACT_GATE.md'
+      - '.github/workflows/aimb-j2-install-evidence.yml'
+permissions:
+  contents: read
+concurrency:
+  group: aimb-j2-install-contract-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  offline-ps51:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Parse PowerShell 5.1 and check offline evidence gates
+        shell: powershell
+        run: |
+          $tokens=$null
+          $errors=$null
+          foreach($f in @('install-evidence-contract.ps1','install-evidence-contract.test.ps1','projects-local-preflight.readonly.ps1','projects-fixture-transaction.ps1','projects-fixture-transaction.test.ps1')){
+            $path=(Resolve-Path ("engineering/aimb-j2-projects/"+$f)).Path
+            [void][System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors)
+            if($errors.Count -gt 0){$errors|Format-List;throw ('ParseFailed:'+ $f)}
+          }
+          & .\engineering\aimb-j2-projects\install-evidence-contract.test.ps1
+          if(-not $?){throw 'EvidenceFixtureFailed'}
+          & .\engineering\aimb-j2-projects\projects-fixture-transaction.test.ps1
+          if(-not $?){throw 'TransactionFixtureFailed'}
