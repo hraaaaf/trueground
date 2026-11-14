@@ -1,0 +1,33 @@
+name: AIMB J2 offline source wiring
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'engineering/aimb-j2-projects/**'
+      - '.github/workflows/aimb-j2-wiring-offline.yml'
+  push:
+    branches:
+      - 'feat/aimb-j2-workspace-projects-wiring-20261114'
+    paths:
+      - 'engineering/aimb-j2-projects/**'
+      - '.github/workflows/aimb-j2-wiring-offline.yml'
+permissions:
+  contents: read
+jobs:
+  windows-fixture:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: PS5.1 parse and synthetic source tests
+        shell: powershell
+        run: |
+          $tokens=$null; $errors=$null
+          foreach($f in @('workspace-projects-wiring.ps1','workspace-projects-wiring.test.ps1')){
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path ("engineering/aimb-j2-projects/"+$f)).Path,[ref]$tokens,[ref]$errors)
+            if($errors.Count -gt 0){$errors | Format-List; throw 'ParseFailed'}
+          }
+          & .\engineering\aimb-j2-projects\workspace-projects-wiring.test.ps1
+          if(-not $?){throw 'FixtureFailed'}
