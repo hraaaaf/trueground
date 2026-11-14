@@ -14,7 +14,7 @@ function Invoke-AimbProjectDrain {
  for($i=0;$i -lt $MaxJobs;$i++){
   try {$response=& $Poll} catch {$status.status='no_go';$status.reason='poll_error';break}
   $status.polls++
-  if($null -eq $response -or $null -eq $response.command){break}
+  if($null -eq $response -or $null -eq $response.command){$status.reason='empty';break}
   $job=$response.command
   if($null -eq $job.id -or ([string]$job.id) -cnotmatch '^[a-f0-9-]{36}$' -or
      $job.action -cnotin @('list_project_files','read_project_text') -or
