@@ -1,0 +1,44 @@
+name: AIMB J2 Projects bounded drain offline
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'engineering/aimb-j2-projects/**'
+      - '.github/workflows/aimb-j2-projects-offline.yml'
+  push:
+    branches:
+      - 'feat/aimb-j2-projects-bounded-drain-20261114'
+    paths:
+      - 'engineering/aimb-j2-projects/**'
+      - '.github/workflows/aimb-j2-projects-offline.yml'
+permissions:
+  contents: read
+concurrency:
+  group: aimb-j2-projects-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  windows-offline:
+    name: PowerShell 5.1 fixtures on Windows
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout audited source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Parse and test without real agents
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          foreach($name in @('project-drain.ps1','project-drain.test.ps1')) {
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path ("engineering/aimb-j2-projects/"+$name)).Path,
+              [ref]$tokens,[ref]$errors
+            )
+            if($errors.Count -gt 0){$errors | Format-List; exit 1}
+          }
+          & .\engineering\aimb-j2-projects\project-drain.test.ps1
+          if (-not $?) {throw 'OFFLINE_FIXTURE_TEST_FAILED'}
+      - name: Limit
+        run: echo "Only synthetic callbacks. No Windows agent, D1, Cloudflare, plugin, Task Scheduler, or deployment."
