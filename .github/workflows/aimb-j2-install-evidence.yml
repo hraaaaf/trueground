@@ -6,6 +6,8 @@ on:
       - 'engineering/aimb-j2-projects/install-evidence-contract.ps1'
       - 'engineering/aimb-j2-projects/install-evidence-contract.test.ps1'
       - 'engineering/aimb-j2-projects/projects-local-preflight.readonly.ps1'
+      - 'engineering/aimb-j2-projects/projects-fixture-transaction.ps1'
+      - 'engineering/aimb-j2-projects/projects-fixture-transaction.test.ps1'
       - 'engineering/aimb-j2-projects/INSTALL_CONTRACT_GATE.md'
       - '.github/workflows/aimb-j2-install-evidence.yml'
 permissions:
@@ -26,10 +28,12 @@ jobs:
         run: |
           $tokens=$null
           $errors=$null
-          foreach($f in @('install-evidence-contract.ps1','install-evidence-contract.test.ps1','projects-local-preflight.readonly.ps1')){
+          foreach($f in @('install-evidence-contract.ps1','install-evidence-contract.test.ps1','projects-local-preflight.readonly.ps1','projects-fixture-transaction.ps1','projects-fixture-transaction.test.ps1')){
             $path=(Resolve-Path ("engineering/aimb-j2-projects/"+$f)).Path
             [void][System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors)
             if($errors.Count -gt 0){$errors|Format-List;throw ('ParseFailed:'+ $f)}
           }
           & .\engineering\aimb-j2-projects\install-evidence-contract.test.ps1
           if(-not $?){throw 'EvidenceFixtureFailed'}
+          & .\engineering\aimb-j2-projects\projects-fixture-transaction.test.ps1
+          if(-not $?){throw 'TransactionFixtureFailed'}
