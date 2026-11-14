@@ -11,7 +11,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: aimb-j2-install-contract-pr
+  group: aimb-j2-install-contract-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
   offline-ps51:
