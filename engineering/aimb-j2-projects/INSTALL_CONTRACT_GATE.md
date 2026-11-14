@@ -30,3 +30,10 @@ Real Lenovo presence is online, but the plugin reports `remote_commands=false`, 
 The objective of ODM #51 is reliable **development autonomy** through GitHub/CI; J4 autonomous self-repair is a separate, deferred project. Do not credit J2 completion on synthetic CI alone.
 
 Roadmap canonical at the time of authoring: V2 **13/24 (54.2%)**, J2 **2/4 (50%)**, J4 **0/5 (0%)**.
+
+## Windows temporary fixture transaction (new)
+
+- `projects-fixture-transaction.ps1` performs a **real byte swap only inside a direct child of the Windows TEMP directory with an `AIMB_J2_Fixture_*` name**, never the Lenovo agent directory. It checks old/candidate SHA-256, refuses stale backup/staging files, uses Windows `File.Replace` to back up the original during replacement, and attempts local fixture restore on injected post-commit failure.
+- `projects-fixture-transaction.test.ps1` creates and destroys synthetic temporary files to test stale state, wrong hashes, abort before commit, simulated failure after commit and byte-exact rollback. CI automatically executes these tests on a hosted Windows runner; there is no real device access.
+- This **is not safe to repurpose as a live installer**: it has no native persistent handle pinning, ACL/owner enforcement, complete reparse/TOCTOU attestation, independent approval signature, durable journal, crash-recovery service, or scheduled-task management. It deliberately refuses non-fixture target locations.
+- The local diagnostic also remains read-only and was not run on the user's Lenovo.
